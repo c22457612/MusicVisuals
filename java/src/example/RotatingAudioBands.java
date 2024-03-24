@@ -8,7 +8,7 @@ public class RotatingAudioBands extends Visual {
 
     public void settings()
     {
-        size(800, 800, P3D);
+        size(850, 850, P3D);
         println("CWD: " + System.getProperty("user.dir"));
         //fullScreen(P3D, SPAN);
     }
@@ -64,7 +64,7 @@ public class RotatingAudioBands extends Visual {
         camera(0, -500, 500, 0, 0, 0, 0, 1, 0);
         //translate(0, 0, -250);
 
-        rot += getAmplitude() / 8.0f;
+        rot += getAmplitude() / 16.0f;
 
         rotateY(rot);
         float[] bands = getSmoothedBands();
@@ -79,7 +79,7 @@ public class RotatingAudioBands extends Visual {
             pushMatrix();
             translate(x, - h / 2 , z);
             rotateY(theta);
-            box(50, h, 50);
+            box(60, h, 60);
             popMatrix();
         }
 

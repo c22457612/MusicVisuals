@@ -84,7 +84,7 @@ public class CubeVisual extends Visual
             
             box(smoothedBoxSize);
         }
-        angle += 0.01f;
+        angle += 0.02f;
     }
     float angle = 0;
 } 
