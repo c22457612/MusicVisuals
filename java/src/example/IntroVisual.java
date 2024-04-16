@@ -291,6 +291,26 @@ public class IntroVisual extends PApplet {
         }
     }
 
+    public void drawRainbowWave() {
+        float centerX = width * 0.5f;
+        float centerY = height * 0.5f;
+        float baseRadius = 110; // Base radius of the wave
+        float maxWaveAmplitude = 150; // Max additional amplitude, adjusted for smoother wave
+        float angleStep = TWO_PI / fft.specSize();
+    
+        float smoothingFactor = 0.2f; // Increase for smoother transitions
+        float maxFFTAmplitude = 0; // We'll calculate this each frame
+    
+        // Find the maximum FFT amplitude for normalization
+        for (int i = 0; i < fft.specSize(); i++) {
+            maxFFTAmplitude = max(maxFFTAmplitude, fft.getBand(i));
+        }
+    
+        if (maxFFTAmplitude == 0) maxFFTAmplitude = 1; // Prevent division by zero
+    
+        
+    }
+
     
     
 
