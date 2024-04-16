@@ -308,7 +308,31 @@ public class IntroVisual extends PApplet {
     
         if (maxFFTAmplitude == 0) maxFFTAmplitude = 1; // Prevent division by zero
     
-        
+        beginShape();
+        noFill();
+        strokeWeight(2); // Stroke thickness
+    
+        for (int i = 0; i < fft.specSize(); i++) {
+            float amplitude = fft.getBand(i);
+    
+            // Smooth the amplitude over time
+            prevAmplitudes[i] = lerp(prevAmplitudes[i], amplitude, smoothingFactor);
+    
+            // Normalize the smoothed amplitude
+            float normalizedAmplitude = map(prevAmplitudes[i], 0, maxFFTAmplitude, 0, maxWaveAmplitude);
+    
+            // Calculate the coordinates
+            float x = centerX + (baseRadius + normalizedAmplitude) * cos(i * angleStep);
+            float y = centerY + (baseRadius + normalizedAmplitude) * sin(i * angleStep);
+    
+            // Dynamic color based on frameCount, similar to the circle's stroke color
+            int colorValue = (int) (128 + 128 * sin(i * 0.1f + frameCount * 0.02f));
+            stroke(color(255 - colorValue, colorValue, 255));
+    
+            vertex(x, y); // Place the vertex for the wave
+        }
+    
+        endShape(CLOSE);
     }
 
     
