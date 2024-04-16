@@ -32,6 +32,22 @@ public class IntroVisual extends PApplet {
     boolean rainbowWaveVisible = false;
     ArrayList<PVector> wavePoints = new ArrayList<PVector>();
 
+    // Pyramid variables
+    float pyramidSize = 90; // half the size of the diamond
+    float pyramidXPosTop = 0;
+    float pyramidXPosBottom = 0;
+    float pyramidRotation = 0;
+    float pyramidMoveSpeed = 1;
+    boolean pyramidsVisible=false;
+
+    float pyramidCenterX = 208;
+    float pyramidCenterY = height / 2;
+
+    // Determine the range of Y values to draw the squiggly line.
+    float startY = pyramidCenterY - pyramidSize;
+    float endY = pyramidCenterY + pyramidSize;
+    
+
     boolean circleVisible = false; //circle visualizer variables
     float circleOpacity = 0;
     float circleMaxRadius = 110; 
@@ -140,6 +156,72 @@ public class IntroVisual extends PApplet {
         
         popMatrix();
     }
+
+    public void drawPyramids() {
+        // Top pyramid and its additional bottom pyramid
+        pushMatrix();
+        translate(width / 2 + pyramidXPosTop, height / 2, -200);
+        rotateY(pyramidRotation);
+    
+        // Draw the top pyramid (inverted)
+        pushMatrix();
+        translate(0, -pyramidSize, 0);
+        rotateX(PI);
+        drawPyramid(pyramidSize);
+        popMatrix();
+    
+        // Draw the additional bottom pyramid (upright) underneath the top pyramid
+        if (abs(pyramidXPosTop) >= width / 3) {
+            translate(0, pyramidSize, 0);
+            drawPyramid(pyramidSize);
+        }
+        popMatrix();
+    
+        // Bottom pyramid and its additional top pyramid
+        pushMatrix();
+        translate(width / 2 + pyramidXPosBottom, height / 2, -200);
+        rotateY(pyramidRotation);
+    
+        // Draw the bottom pyramid (upright)
+        pushMatrix();
+        translate(0, pyramidSize, 0);
+        drawPyramid(pyramidSize);
+        popMatrix();
+    
+        // Draw the additional top pyramid (inverted) above the bottom pyramid
+        if (abs(pyramidXPosBottom) >= width / 3) {
+            translate(0, -pyramidSize, 0);
+            rotateX(PI);
+            drawPyramid(pyramidSize);
+        }
+        popMatrix();
+    }
+
+    public void drawPyramid(float size) {
+        beginShape(TRIANGLES);
+        if (pyramidsVisible) {
+            strokeWeight(2); // Outlines visible
+        } else {
+            strokeWeight(0); // Outlines invisible
+        }
+        vertex(-size / 2, -size / 2, -size / 2);
+        vertex(size / 2, -size / 2, -size / 2);
+        vertex(0, size / 2, 0);
+
+        vertex(size / 2, -size / 2, -size / 2);
+        vertex(size / 2, -size / 2, size / 2);
+        vertex(0, size / 2, 0);
+
+        vertex(size / 2, -size / 2, size / 2);
+        vertex(-size / 2, -size / 2, size / 2);
+        vertex(0, size / 2, 0);
+
+        vertex(-size / 2, -size / 2, size / 2);
+        vertex(-size / 2, -size / 2, -size / 2);
+        vertex(0, size / 2, 0);
+        endShape(CLOSE);
+    }
+
     
     
 
