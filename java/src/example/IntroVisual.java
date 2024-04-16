@@ -222,6 +222,50 @@ public class IntroVisual extends PApplet {
         endShape(CLOSE);
     }
 
+    public void drawSoundWave(){
+        
+        fft.forward(player.mix);
+        noiseDetail(2, 0.2f); // Adjust noise detail for smoother or rougher transitions
+
+        float waveFrequency = 0.5f; // Controls the frequency of the sine wave
+        float maxAmplitude = 1f; //double the frequency
+        float waveLength = 202;// length to touch the left pyramid top
+        
+        //top left pyramid
+        for (float y = 0; y <=waveLength ; y+=0.1) { //top left pyramid
+            int index = (int) map(y, height, 0, 0, fft.avgSize() - 1);
+            float amplitude = fft.getAvg(index) * waveHeight; // Scale the amplitude based on FFT average
+            // Use the x value as the input to the sin function to create a horizontal wave
+            float x = sin((height - y) * waveFrequency + frameCount * 0.05f) * amplitude * maxAmplitude;
+            x += 208; // line up with pyramid ,width/3
+        
+            // Change the color over time based on the amplitude
+            int colorValue = (int) map(amplitude, 0, maxAmplitude, 0, 255);
+            stroke(color(255 - colorValue, colorValue, 255));
+        
+            // Draw the wave by connecting points vertically
+            line(x, y, x, y - 0.1f); // Draw points upward for a vertical wave
+        }
+
+        //top right pyramid
+        for (float y = 0; y <=waveLength ; y+=0.1) { //top left pyramid
+            int index = (int) map(y, height, 0, 0, fft.avgSize() - 1);
+            float amplitude = fft.getAvg(index) * waveHeight; // Scale the amplitude based on FFT average
+            // Use the x value as the input to the sin function to create a horizontal wave
+            float x = sin((height - y) * waveFrequency + frameCount * 0.05f) * amplitude * maxAmplitude;
+            x += 593; // line up with pyramid
+        
+            // Change the color over time based on the amplitude
+            int colorValue = (int) map(amplitude, 0, maxAmplitude, 0, 255);
+            stroke(color(255 - colorValue, colorValue, 255));
+        
+            // Draw the wave by connecting points vertically
+            line(x, y, x, y - 0.1f); // Draw points upward for a vertical wave
+        }
+
+        
+    }
+
     
     
 
