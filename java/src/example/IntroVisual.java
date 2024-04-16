@@ -263,7 +263,32 @@ public class IntroVisual extends PApplet {
             line(x, y, x, y - 0.1f); // Draw points upward for a vertical wave
         }
 
-        
+        // bottom left pyramid
+        float bottomWaveAmplitudeScale = 0.02f; // Adjust this to make the bottom waves less reactive 
+
+        for (float y = height; y >= height - waveLength; y -= 0.1) {
+            int index = (int) map(height - y, 0, height, 0, fft.avgSize() - 1);
+            float amplitude = fft.getAvg(index) * waveHeight * bottomWaveAmplitudeScale; // Apply the scale here
+            float x = sin(((height - y) * waveFrequency - frameCount * 0.2f)) * amplitude * maxAmplitude; 
+            x += 208;
+
+            int colorValue = (int) map(amplitude, 0, maxAmplitude, 0, 255);
+            stroke(color(255 - colorValue, colorValue, 255));
+
+            line(x, y, x, y + 0.1f);
+        }
+
+        for (float y = height; y >= height - waveLength; y -= 0.1) {
+            int index = (int) map(height - y, 0, height, 0, fft.avgSize() - 1);
+            float amplitude = fft.getAvg(index) * waveHeight * bottomWaveAmplitudeScale; // Apply the scale here
+            float x = sin(((height - y) * waveFrequency - frameCount * 0.2f)) * amplitude * maxAmplitude; 
+            x += 593;
+
+            int colorValue = (int) map(amplitude, 0, maxAmplitude, 0, 255);
+            stroke(color(255 - colorValue, colorValue, 255));
+
+            line(x, y, x, y + 0.1f);
+        }
     }
 
     
