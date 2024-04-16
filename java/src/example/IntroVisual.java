@@ -345,6 +345,19 @@ public class IntroVisual extends PApplet {
         strokeWeight(2);
         ellipse(width / 2, height / 2, circleMaxRadius * 2, circleMaxRadius * 2);
     }
+
+    public void drawFadingCircleWithTiming() {
+        if (circleOpacity < 255) {
+            circleOpacity += 5; // Control the speed of the fade-in effect
+        }
+    
+        // Draw the circle with the current opacity
+        int colorValue = (int) (128 + 128 * sin(frameCount * 0.05f));
+        noFill(); // Do not fill the circle
+        stroke(color(255 - colorValue, colorValue, 255), circleOpacity); // Set the stroke color and opacity
+        strokeWeight(2); // Set the stroke width
+        ellipse(width / 2, height / 2, circleMaxRadius * 2, circleMaxRadius * 2); // Draw the circle centered
+    }
     
 
     public void stop() {
