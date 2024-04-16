@@ -32,15 +32,19 @@ public class IntroVisual extends PApplet {
     boolean rainbowWaveVisible = false;
     ArrayList<PVector> wavePoints = new ArrayList<PVector>();
 
-    boolean circleVisible = false;
+    boolean circleVisible = false; //circle visualizer variables
     float circleOpacity = 0;
-    float circleMaxRadius = 110; // Adjust this to your desired size
+    float circleMaxRadius = 110; 
     long circleFadeStartTime = -1;
+
+    float currentRotationY = 0; //diamond variable
+    float transparentColour = 255f; // Start fully opaque
 
     PFont font;
     int fontSize = 48; // Adjust size as needed
 
-    boolean playIntro=true;    
+    boolean playIntro=true; 
+
 
 
     public static void main(String[] args) {
@@ -83,6 +87,58 @@ public class IntroVisual extends PApplet {
             
           
        
+    }
+
+    public void drawDiamond() {
+        pushMatrix();
+        translate(width / 2, height / 2, -400);
+        rotateX(currentRotationY);
+        rotateY(currentRotationY);
+        
+        stroke((frameCount % 255), 255, 255);
+        strokeWeight(2);
+        fill(255, 0, 0, transparentColour); // Use current transparency level
+        
+        float size = 180;
+        float mid = size / 2;
+        
+        // Draw the diamond
+        beginShape(TRIANGLES);
+        vertex(0, -size, 0);// top pyramid 1
+        vertex(-mid, 0, -mid);
+        vertex(mid, 0, -mid);
+
+        vertex(0, -size, 0); //top pyramid 2
+        vertex(mid, 0, -mid);
+        vertex(mid, 0, mid);
+
+        vertex(0, -size, 0); // top pyramid 3
+        vertex(mid, 0, mid);
+        vertex(-mid, 0, mid);
+
+        vertex(0, -size, 0); //top pyramid 4
+        vertex(-mid, 0, mid);
+        vertex(-mid, 0, -mid);
+
+        vertex(0, size, 0); //bottom pyramid 1
+        vertex(-mid, 0, -mid);
+        vertex(mid, 0, -mid);
+
+        vertex(0, size, 0); //bottom pyramid 2
+        vertex(mid, 0, -mid);
+        vertex(mid, 0, mid);
+
+        vertex(0, size, 0);//bottom pyramid 3
+        vertex(mid, 0, mid);
+        vertex(-mid, 0, mid);
+
+        vertex(0, size, 0);//bottom pyramid 4
+        vertex(-mid, 0, mid);
+        vertex(-mid, 0, -mid);
+
+        endShape(CLOSE);
+        
+        popMatrix();
     }
     
     
