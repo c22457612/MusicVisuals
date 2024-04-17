@@ -67,6 +67,10 @@ public class IntroVisual extends PApplet {
     int fontSize = 48; // Adjust size as needed
 
     boolean playIntro=true; 
+    boolean startDrawingShapes=false;
+    AudioPlayer soundToVisualize = null;
+
+    boolean startFading = false; // This flag will start the fading process.
 
 
     public void settings() {
@@ -119,6 +123,44 @@ public class IntroVisual extends PApplet {
             currentRotationY += rotationSpeed;
             if (transparentColour > 0) {
                 transparentColour -= 0.5;
+            }
+        }
+        
+        currentRotationY %= TWO_PI;
+        if (!startDrawingShapes){ //logic for intro
+            drawDiamond();
+            drawPyramids();
+            drawSoundWave();
+
+            if (soundToVisualize != null) {
+                fft.forward(soundToVisualize.mix);
+                drawRainbowWave();
+                circleVisible = false; // Hide the circle when the rainbow wave is drawn
+            } else {
+                // No sound is playing from the interactive sounds, check for first soundtrack finish
+                if (isFirstSoundtrackFinished && !isInteractiveSoundFinished) {
+                    isInteractiveSoundFinished = true;
+                    circleVisible = true; // Show circle since interactive sounds have finished
+                }
+            }
+
+            // Ensure circle visibility logic
+            if (!player.isPlaying() && hasStartedPlaying && !isFirstSoundtrackFinished) {
+                isFirstSoundtrackFinished = true; // Mark that the first soundtrack has finished
+                circleVisible = true; // Show circle since the soundtrack finished
+            }
+            if (circleFadeStartTime > 0 && millis() > circleFadeStartTime &&!startFading) {// initial fade in
+                drawFadingCircleWithTiming();
+            }
+
+            // Draw the fading circle if visible
+            if (circleVisible && !startFading) {
+                drawFadingCircleWithTiming();
+            }
+
+            if (spinning && player.position() > 9000) { // Check if 8 seconds have passed
+                // Draw the neon text at the bottom center of the screen
+                drawNeonTextWithFade("Press Enter:", width / 2, height - fontSize, color(0, 255, 255), player.position() - 9000);
             }
         }
     
@@ -379,6 +421,25 @@ public class IntroVisual extends PApplet {
         stroke(color(255 - colorValue, colorValue, 255), circleOpacity); // Set the stroke color and opacity
         strokeWeight(2); // Set the stroke width
         ellipse(width / 2, height / 2, circleMaxRadius * 2, circleMaxRadius * 2); // Draw the circle centered
+    }
+
+    void drawNeonTextWithFade(String text, float x, float y, int glowColor, float time) {
+        // Calculate fade in based on time
+        float fade = map(time, 0, 2000, 0, 255); // fade in over 2 seconds
+        fade = constrain(fade, 0, 255); // Make sure fade doesn't go beyond 255
+    
+        // Set the text size for the solid text on top
+        textSize(fontSize);
+    
+        // Draw the glowing text with fewer layers for a simpler look
+        fill(glowColor, fade); // Use fade for alpha
+        for (int i = 3; i > 0; i--) { // Only 3 layers of glow for simplicity
+            text(text, x, y + i); // Slight offset for the glow layers
+        }
+    
+        // Draw the solid text on top
+        fill(255, fade); // Use fade for alpha
+        text(text, x, y); // Draw the text at the original position
     }
     
 
