@@ -32,6 +32,16 @@ public class IntroVisual extends PApplet {
     boolean rainbowWaveVisible = false;
     ArrayList<PVector> wavePoints = new ArrayList<PVector>();
 
+    //diamond variables
+    boolean spinning = false; // Start without spinning
+    boolean stopping = false;
+    float currentRotationY = 0;
+    float targetRotationY = PI / 37; // Default upright position
+    float rotationIncrement = 0.01f;
+    float rotationSpeed = 0.01f;
+    float stoppingSpeed = 0.005f;
+    float transparentColour = 255f; // Start fully opaque
+
     // Pyramid variables
     float pyramidSize = 90; // half the size of the diamond
     float pyramidXPosTop = 0;
@@ -52,9 +62,6 @@ public class IntroVisual extends PApplet {
     float circleOpacity = 0;
     float circleMaxRadius = 110; 
     long circleFadeStartTime = -1;
-
-    float currentRotationY = 0; //diamond variable
-    float transparentColour = 255f; // Start fully opaque
 
     PFont font;
     int fontSize = 48; // Adjust size as needed
@@ -99,6 +106,26 @@ public class IntroVisual extends PApplet {
     public void draw() {
         background(0); // Set background to black
         
+        if (spinning) {
+            if (rotationSpeed < 0.05) {
+                rotationSpeed += 0.0001;
+            }
+            pyramidRotation += rotationSpeed; // Keep rotating the pyramids continuously
+            if (abs(pyramidXPosTop) < width / 3) {
+                pyramidXPosTop -= pyramidMoveSpeed;
+            } else {
+                pyramidsVisible = true;
+            }
+            if (abs(pyramidXPosBottom) < width / 3) {
+                pyramidXPosBottom += pyramidMoveSpeed;
+            } else {
+                pyramidsVisible = true;
+            }
+            currentRotationY += rotationSpeed;
+            if (transparentColour > 0) {
+                transparentColour -= 0.5;
+            }
+        }
     
             
           
