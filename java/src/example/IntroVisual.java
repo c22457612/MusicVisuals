@@ -69,11 +69,6 @@ public class IntroVisual extends PApplet {
     boolean playIntro=true; 
 
 
-
-    public static void main(String[] args) {
-        PApplet.main("example.playIntro");
-    }
-
     public void settings() {
         size(800, 600, P3D);
     }
@@ -395,9 +390,25 @@ public class IntroVisual extends PApplet {
     
     
 
+    public void keyPressed() {
+        if (key == ' ') {
+            spinning = !spinning; // Toggle spinning state
+            if(spinning){
+                player.play();
+                hasStartedPlaying = true;
+                isFirstSoundtrackFinished = false; // Reset this flag when the first soundtrack starts
+                circleOpacity = 0; // Reset opacity to allow fade-in effect
+                // Set the start time for the circle to fade in (e.g., after 10 seconds)
+                circleFadeStartTime = millis() + 10000; // 10,000 milliseconds from now
+            } else {
+                player.pause();
+            }
+        }
+    }
     
-    
-    
+    public static void main(String[] args) {
+        PApplet.main("example.IntroVisual");
+    }
     
 
 }
