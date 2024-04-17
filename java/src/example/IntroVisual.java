@@ -63,8 +63,6 @@ public class IntroVisual extends PApplet {
     float circleMaxRadius = 110; 
     long circleFadeStartTime = -1;
 
-    long fadeStartTime = 0; // This will store the time when fading starts.
-
     PFont font;
     int fontSize = 48; // Adjust size as needed
 
@@ -73,6 +71,9 @@ public class IntroVisual extends PApplet {
     AudioPlayer soundToVisualize = null;
 
     boolean startFading = false; // This flag will start the fading process.
+    float fadeAmount = 0; // This controls the opacity of the black overlay.
+    long fadeStartTime = 0; // This will store the time when fading starts.
+    long fadeDuration=6000;
 
 
     public void settings() {
@@ -537,6 +538,20 @@ public class IntroVisual extends PApplet {
             // Reinitialize FFT with the current sound's buffer size and sample rate
             fft = new FFT(sound.bufferSize(), sound.sampleRate());
             fft.logAverages(10, 1);
+        }
+
+        public void updateFading() {
+            if (startFading && millis() - fadeStartTime > fadeDuration) {
+                startFading = false; // Stop fading after 6 seconds
+                startDrawingShapes=true;
+                playSound(song);
+            }
+    
+            if (startFading) {
+                // Perform fading logic here
+                fadeAmount = map(millis() - fadeStartTime, 0, fadeDuration, 0, 255);
+                fadeAmount = constrain(fadeAmount, 0, 255);
+            }
         }
     
     public static void main(String[] args) {
