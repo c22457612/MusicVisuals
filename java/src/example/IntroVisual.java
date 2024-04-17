@@ -166,7 +166,40 @@ public class IntroVisual extends PApplet {
                 drawNeonTextWithFade("Press Enter:", width / 2, height - fontSize, color(0, 255, 255), player.position() - 9000);
             }
         }
-    
+        
+        if (sound1.isPlaying()) {
+            soundToVisualize = sound1;
+        } else if (sound2.isPlaying()) {
+            soundToVisualize = sound2;
+        } else if (sound3.isPlaying()) {
+            soundToVisualize = sound3;
+        } else if (sound4.isPlaying()) {
+            soundToVisualize = sound4;
+        } else if (sound5.isPlaying()) {
+            soundToVisualize = sound5;
+        }else if (song.isPlaying()) {
+            soundToVisualize = song;
+        }
+
+
+        if (startFading) {
+            circleVisible=false;
+            long timeElapsed = millis() - fadeStartTime;
+            fadeAmount = map(timeElapsed, 0, 3000, 0, 255); // Fade over 3 seconds
+            fadeAmount = constrain(fadeAmount, 0, 255); // Ensure fadeAmount does not exceed 255
+            updateFading();
+            //println("fade amount"+fadeAmount); //debugging statement
+            
+            if (fadeAmount>=255){
+                startFading=false;
+                fadeAmount=0;// make black cover transparent again
+            }
+        }
+
+        if (fadeAmount > 0) {
+            fill(0, fadeAmount);
+            rect(0, 0, width, height);
+        }
             
           
        
