@@ -288,12 +288,19 @@ public class IntroVisual extends PApplet {
 
     public void drawSoundWave(){
         
-        fft.forward(player.mix);
-        noiseDetail(2, 0.2f); // Adjust noise detail for smoother or rougher transitions
+        noiseDetail(10, 0.3f); // Adjust noise detail for smoother or rougher transitions
 
         float waveFrequency = 0.5f; // Controls the frequency of the sine wave
         float maxAmplitude = 1f; //double the frequency
-        float waveLength = 202;// length to touch the left pyramid top
+        float waveLength = height/2.8f;// length to properly touch the left pyramid top
+
+        if (!startDrawingShapes){
+            fft.forward(player.mix);
+        }else
+        {
+            fft.forward(song.mix);
+            waveLength=height/2;
+        }
         
         //top left pyramid
         for (float y = 0; y <=waveLength ; y+=0.1) { //top left pyramid
@@ -301,7 +308,7 @@ public class IntroVisual extends PApplet {
             float amplitude = fft.getAvg(index) * waveHeight; // Scale the amplitude based on FFT average
             // Use the x value as the input to the sin function to create a horizontal wave
             float x = sin((height - y) * waveFrequency + frameCount * 0.05f) * amplitude * maxAmplitude;
-            x += 208; // line up with pyramid ,width/3
+            x += width/4f; // line up with pyramid properly for full screen
         
             // Change the color over time based on the amplitude
             int colorValue = (int) map(amplitude, 0, maxAmplitude, 0, 255);
@@ -317,7 +324,7 @@ public class IntroVisual extends PApplet {
             float amplitude = fft.getAvg(index) * waveHeight; // Scale the amplitude based on FFT average
             // Use the x value as the input to the sin function to create a horizontal wave
             float x = sin((height - y) * waveFrequency + frameCount * 0.05f) * amplitude * maxAmplitude;
-            x += 593; // line up with pyramid
+            x += width/1.331f; // line up with pyramid full screen
         
             // Change the color over time based on the amplitude
             int colorValue = (int) map(amplitude, 0, maxAmplitude, 0, 255);
@@ -334,7 +341,7 @@ public class IntroVisual extends PApplet {
             int index = (int) map(height - y, 0, height, 0, fft.avgSize() - 1);
             float amplitude = fft.getAvg(index) * waveHeight * bottomWaveAmplitudeScale; // Apply the scale here
             float x = sin(((height - y) * waveFrequency - frameCount * 0.2f)) * amplitude * maxAmplitude; 
-            x += 208;
+            x += width/4;
 
             int colorValue = (int) map(amplitude, 0, maxAmplitude, 0, 255);
             stroke(color(255 - colorValue, colorValue, 255));
@@ -342,11 +349,12 @@ public class IntroVisual extends PApplet {
             line(x, y, x, y + 0.1f);
         }
 
+        //bottom right pyramid
         for (float y = height; y >= height - waveLength; y -= 0.1) {
             int index = (int) map(height - y, 0, height, 0, fft.avgSize() - 1);
             float amplitude = fft.getAvg(index) * waveHeight * bottomWaveAmplitudeScale; // Apply the scale here
             float x = sin(((height - y) * waveFrequency - frameCount * 0.2f)) * amplitude * maxAmplitude; 
-            x += 593;
+            x += width/1.331f;
 
             int colorValue = (int) map(amplitude, 0, maxAmplitude, 0, 255);
             stroke(color(255 - colorValue, colorValue, 255));
