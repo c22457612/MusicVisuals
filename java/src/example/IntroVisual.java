@@ -63,6 +63,8 @@ public class IntroVisual extends PApplet {
     float circleMaxRadius = 110; 
     long circleFadeStartTime = -1;
 
+    long fadeStartTime = 0; // This will store the time when fading starts.
+
     PFont font;
     int fontSize = 48; // Adjust size as needed
 
@@ -472,8 +474,70 @@ public class IntroVisual extends PApplet {
             } else {
                 player.pause();
             }
+        } else if (key == '1') {
+            if (!startDrawingShapes){
+                playSound(sound1);
+            }
+            } else if (key == '2') {
+                playSound(sound2);
+            }else if(key=='3'){
+                playSound(sound3);
+            }else if(key=='4'){
+                playSound(sound4);
+            }else if(key==ENTER){
+                drawRainbowWave();
+                playSound(sound5);
+                startFading = true;
+                fadeStartTime = millis(); //will eventually trigger startDrawingShapes boolean
+                
+            }else if(key=='5'){
+                playSound(song);
+                startFading=false;
+                startDrawingShapes=true; //manually start
+            }
         }
-    }
+
+        private void playSound(AudioPlayer sound) {
+            if (sound == null) {
+                println("Error: Attempted to play a null sound.");
+                return;
+            }
+        
+            // Stop all sounds and prepare to play the selected one.
+            if (sound1.isPlaying()) {
+                sound1.pause();
+                sound1.rewind();
+            }
+            if (sound2.isPlaying()) {
+                sound2.pause();
+                sound2.rewind();
+            }
+            if (sound3.isPlaying()) {
+                sound3.pause();
+                sound3.rewind();
+            }
+            if (sound4.isPlaying()) {
+                sound4.pause();
+                sound4.rewind();
+            }
+            if (sound5.isPlaying()) {
+                sound5.pause();
+                sound5.rewind();
+            }
+            if (song.isPlaying()) {
+                song.pause();
+                song.rewind();
+            }
+            
+        
+            // Play the selected sound.
+            sound.play();
+            isInteractiveSoundFinished = false; // Set to false when any interactive sound starts
+        
+            // Reinitialize FFT with the current sound's buffer size and sample rate
+            fft = new FFT(sound.bufferSize(), sound.sampleRate());
+            fft.logAverages(10, 1);
+        }
     
     public static void main(String[] args) {
         PApplet.main("example.IntroVisual");
