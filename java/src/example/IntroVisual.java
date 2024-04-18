@@ -91,6 +91,11 @@ public class IntroVisual extends PApplet {
     float angleY;
     float angleZ;
 
+    float sphereY=height/2;         // Current y-position of the sphere
+    float sphereRadius = 50; // Radius of the sphere
+    float movementSpeed = 2; // Speed of vertical movement
+    boolean movingUp = true; // Direction control flag
+
 
     public void settings() {
         size(800, 600, P3D);
@@ -728,6 +733,25 @@ public class IntroVisual extends PApplet {
             }
             endShape(CLOSE);
             popMatrix();
+        }
+
+        void drawMovingSphere(float x, float y, float r) {
+            pushMatrix(); // Save the current state of transformations
+            translate(x, y); // Move to the location where we want to draw our sphere
+            sphere(r); // Draw the sphere with the specified radius
+    
+            if (movingUp) {
+                sphereY -= movementSpeed; // Move the sphere up
+                if (sphereY < sphereRadius) { // If it reaches the top, reverse direction
+                    movingUp = false;
+                }
+            } else {
+                sphereY += movementSpeed; // Move the sphere down
+                if (sphereY > height - sphereRadius) { // If it reaches the bottom, reverse direction
+                    movingUp = true;
+                }
+            }
+            popMatrix(); // Restore original state of transformations
         }
     
     public static void main(String[] args) {
