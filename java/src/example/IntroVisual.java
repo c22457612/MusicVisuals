@@ -101,6 +101,14 @@ public class IntroVisual extends PApplet {
     boolean movingUp = true; // Direction control flag
 
 
+    //mouse clicked variables
+    ArrayList<PVector> smallCubePositions = new ArrayList<PVector>();
+    boolean cubeClicked=false;
+    final int NUM_MODES = 3;  // Change this based on the number of modes you have
+    boolean[] modes = new boolean[NUM_MODES];
+    int currentModeIndex = 0;  // Index of the currently active mode
+
+
     public void settings() {
         size(800, 600, P3D);
     }
@@ -128,6 +136,13 @@ public class IntroVisual extends PApplet {
         
         // Font settings
         textAlign(CENTER, CENTER);
+
+        smallCubePositions.add(new PVector(width / 1.14f, height / 2, 0)); 
+        smallCubePositions.add(new PVector(width / 8.4f, height / 2, 0)); 
+        for (int i = 0; i < NUM_MODES; i++) {
+            modes[i] = false;
+        }
+        modes[currentModeIndex] = true;  // Activate the first mode initially
     }
 
     public void draw() {
@@ -241,6 +256,8 @@ public class IntroVisual extends PApplet {
             fill(180, 230, 230); //light blue
             text("press space",width/2,height-fontSize);
             drawDiamond();
+            noFill();
+            drawMovingSphere(width /2, height/2, sphereRadius);
         }
     }
 
@@ -671,6 +688,38 @@ public class IntroVisual extends PApplet {
 
 
         // You can add more conditions for additional sounds here
+    }
+
+    public void mouseClicked() {
+        for (PVector cubePos : smallCubePositions) {
+            // Convert 3D position to screen coordinates
+            float screenX = screenX(cubePos.x, cubePos.y, cubePos.z);
+            float screenY = screenY(cubePos.x, cubePos.y, cubePos.z);
+            
+            // Check if the mouse click is within a certain radius of the cube's screen position
+            float distance = dist(mouseX, mouseY, screenX, screenY);
+            if (distance < 20) { // Adjust sensitivity as needed
+                println("Clicked on cube at " + cubePos);
+                handleCubeClick(cubePos);
+            }
+            else
+            {
+                cubeClicked=false;
+            }
+        }
+    }
+    
+    public void handleCubeClick(PVector cubePosition) {
+        // Handle the event when a cube is clicked
+        println("Cube clicked at: " + cubePosition);
+        cycleModes();
+        cubeClicked=true;
+    }
+
+    void cycleModes() {
+        modes[currentModeIndex] = false;  // Deactivate the current mode
+        currentModeIndex = (currentModeIndex + 1) % NUM_MODES;  // Move to the next mode, wrapping around if necessary
+        modes[currentModeIndex] = true;  // Activate the new mode
     }
 
         private void playSound(AudioPlayer sound) {
