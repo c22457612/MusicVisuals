@@ -75,6 +75,22 @@ public class IntroVisual extends PApplet {
     long fadeStartTime = 0; // This will store the time when fading starts.
     long fadeDuration=6000;
 
+    float faceOpacity = 0;
+    float[] faceOpacities = new float[6]; // Opacity for each face
+    boolean fadeInActive = false;
+    int faceColorIndex = 0;
+    int[] colors = {color(255, 0, 0), color(0, 255, 0), color(0, 0, 255), color(255, 255, 0), color(0, 255, 255), color(255, 0, 255)};
+    float CubeSize = 100; // Initial size of the big cube
+    float offset=height/0.6f; // used for small cube offset
+    float bigCubeSpeed=0.1f;
+    float smallCubeSpeed=0.02f;
+    boolean shrinkActive = false; // Control whether the cube should shrink
+    float angle = 0; 
+    //used in rotation
+    float angleX;
+    float angleY;
+    float angleZ;
+
 
     public void settings() {
         size(800, 600, P3D);
@@ -107,102 +123,100 @@ public class IntroVisual extends PApplet {
 
     public void draw() {
         background(0); // Set background to black
-        
-        if (spinning) {
-            if (rotationSpeed < 0.05) {
-                rotationSpeed += 0.0001;
-            }
-            pyramidRotation += rotationSpeed; // Keep rotating the pyramids continuously
-            if (abs(pyramidXPosTop) < width / 3) {
-                pyramidXPosTop -= pyramidMoveSpeed;
-            } else {
-                pyramidsVisible = true;
-            }
-            if (abs(pyramidXPosBottom) < width / 3) {
-                pyramidXPosBottom += pyramidMoveSpeed;
-            } else {
-                pyramidsVisible = true;
-            }
-            currentRotationY += rotationSpeed;
-            if (transparentColour > 0) {
-                transparentColour -= 0.5;
-            }
-        }
-        
-        currentRotationY %= TWO_PI;
-        if (!startDrawingShapes){ //logic for intro
-            drawDiamond();
-            drawPyramids();
-            drawSoundWave();
 
-            if (soundToVisualize != null) {
-                fft.forward(soundToVisualize.mix);
-                drawRainbowWave();
-                circleVisible = false; // Hide the circle when the rainbow wave is drawn
-            } else {
-                // No sound is playing from the interactive sounds, check for first soundtrack finish
-                if (isFirstSoundtrackFinished && !isInteractiveSoundFinished) {
-                    isInteractiveSoundFinished = true;
-                    circleVisible = true; // Show circle since interactive sounds have finished
+        if (playIntro){
+            
+            currentRotationY %= TWO_PI;
+            if (!startDrawingShapes){ //logic for intro
+                drawDiamond();
+                drawPyramids();
+                drawSoundWave();
+                
+
+                if (soundToVisualize != null) {
+                    fft.forward(soundToVisualize.mix);
+                    drawRainbowWave();
+                    circleVisible = false; // Hide the circle when the rainbow wave is drawn
+                } else {
+                    // No sound is playing from the interactive sounds, check for first soundtrack finish
+                    if (isFirstSoundtrackFinished && !isInteractiveSoundFinished) {
+                        isInteractiveSoundFinished = true;
+                        circleVisible = true; // Show circle since interactive sounds have finished
+                    }
+                }
+
+                // Ensure circle visibility logic
+                if (!player.isPlaying() && hasStartedPlaying && !isFirstSoundtrackFinished) {
+                    isFirstSoundtrackFinished = true; // Mark that the first soundtrack has finished
+                    circleVisible = true; // Show circle since the soundtrack finished
+                }
+                if (circleFadeStartTime > 0 && millis() > circleFadeStartTime &&!startFading) {// initial fade in
+                    drawFadingCircleWithTiming();
+                }
+
+                // Draw the fading circle if visible
+                if (circleVisible && !startFading) {
+                    drawFadingCircleWithTiming();
+                }
+
+                if (spinning && player.position() > 9000) { // Check if 8 seconds have passed
+                    // Draw the neon text at the bottom center of the screen
+                    drawNeonTextWithFade("Press Enter:", width / 2, height - fontSize, color(0, 255, 255), player.position() - 9000);
+                }
+            }else if (startDrawingShapes){ //logic for other shapes
+                colorMode(HSB, 360, 100, 100);  // Set HSB color mode
+                pushMatrix();  // Save the current transformation matrix state
+                drawSoundWave();
+                drawPyramids();
+                if (!song.isPlaying()){ //paused logic
+                    
+                    drawSoundWave();
+                    drawPyramids();
+                    fill(173, 216, 230); //light blue
+                    text("Paused",width/2,height-fontSize);
                 }
             }
-
-            // Ensure circle visibility logic
-            if (!player.isPlaying() && hasStartedPlaying && !isFirstSoundtrackFinished) {
-                isFirstSoundtrackFinished = true; // Mark that the first soundtrack has finished
-                circleVisible = true; // Show circle since the soundtrack finished
-            }
-            if (circleFadeStartTime > 0 && millis() > circleFadeStartTime &&!startFading) {// initial fade in
-                drawFadingCircleWithTiming();
-            }
-
-            // Draw the fading circle if visible
-            if (circleVisible && !startFading) {
-                drawFadingCircleWithTiming();
-            }
-
-            if (spinning && player.position() > 9000) { // Check if 8 seconds have passed
-                // Draw the neon text at the bottom center of the screen
-                drawNeonTextWithFade("Press Enter:", width / 2, height - fontSize, color(0, 255, 255), player.position() - 9000);
-            }
-        }
+            
         
-        if (sound1.isPlaying()) {
-            soundToVisualize = sound1;
-        } else if (sound2.isPlaying()) {
-            soundToVisualize = sound2;
-        } else if (sound3.isPlaying()) {
-            soundToVisualize = sound3;
-        } else if (sound4.isPlaying()) {
-            soundToVisualize = sound4;
-        } else if (sound5.isPlaying()) {
-            soundToVisualize = sound5;
-        }else if (song.isPlaying()) {
-            soundToVisualize = song;
-        }
-
-
-        if (startFading) {
-            circleVisible=false;
-            long timeElapsed = millis() - fadeStartTime;
-            fadeAmount = map(timeElapsed, 0, 3000, 0, 255); // Fade over 3 seconds
-            fadeAmount = constrain(fadeAmount, 0, 255); // Ensure fadeAmount does not exceed 255
-            updateFading();
-            //println("fade amount"+fadeAmount); //debugging statement
-            
-            if (fadeAmount>=255){
-                startFading=false;
-                fadeAmount=0;// make black cover transparent again
+            if (sound1.isPlaying()) {
+                soundToVisualize = sound1;
+            } else if (sound2.isPlaying()) {
+                soundToVisualize = sound2;
+            } else if (sound3.isPlaying()) {
+                soundToVisualize = sound3;
+            } else if (sound4.isPlaying()) {
+                soundToVisualize = sound4;
+            } else if (sound5.isPlaying()) {
+                soundToVisualize = sound5;
+            }else if (song.isPlaying()) {
+                soundToVisualize = song;
             }
+    
+    
+            if (startFading) {
+                circleVisible=false;
+                long timeElapsed = millis() - fadeStartTime;
+                fadeAmount = map(timeElapsed, 0, 3000, 0, 255); // Fade over 3 seconds
+                fadeAmount = constrain(fadeAmount, 0, 255); // Ensure fadeAmount does not exceed 255
+                updateFading();
+                //println("fade amount"+fadeAmount); //debugging statement
+                
+                if (fadeAmount>=255){
+                    startFading=false;
+                    fadeAmount=0;// make black cover transparent again
+                }
+            }
+        
+            // Apply the fade effect by drawing a rectangle covering the entire screen
+            if (fadeAmount > 0) {
+                fill(0, fadeAmount);
+                rect(0, 0, width, height);
+            }
+        }else{ // prompt user to start intro
+            fill(180, 230, 230); //light blue
+            text("press space",width/2,height-fontSize);
+            drawDiamond();
         }
-
-        if (fadeAmount > 0) {
-            fill(0, fadeAmount);
-            rect(0, 0, width, height);
-        }
-            
-          
-       
     }
 
     public void drawDiamond() {
@@ -585,6 +599,135 @@ public class IntroVisual extends PApplet {
                 fadeAmount = map(millis() - fadeStartTime, 0, fadeDuration, 0, 255);
                 fadeAmount = constrain(fadeAmount, 0, 255);
             }
+        }
+
+
+        void drawCube(float side,float x,float y,float z,float cubeSpeed) {
+            float halfSide = side / 2;
+            //println("cube size:"+side+"cubespeed:"+cubeSpeed); //debugging statement
+    
+            // Perform FFT analysis on the current audio playing
+            fft.forward(song.mix);
+    
+            float bassSum = 0, midSum = 0, trebleSum = 0;
+            int bassCount = 0, midCount = 0, trebleCount = 0;
+    
+            // Divide the frequency spectrum into bass, mid, and treble
+            for (int i = 0; i < fft.specSize(); i++) {
+                float freq = fft.indexToFreq(i);
+                float amplitude = fft.getBand(i);
+    
+                if (freq < 150) {  // Bass: below 150 Hz
+                    bassSum += amplitude;
+                    bassCount++;
+                } else if (freq >= 150 && freq < 4000) {  // Mid: 150 Hz to 4 kHz
+                    midSum += amplitude;
+                    midCount++;
+                } else if (freq >= 4000) {  // Treble: above 4 kHz
+                    trebleSum += amplitude;
+                    trebleCount++;
+                }
+            }
+    
+            // Calculate average amplitudes for bass, mid, and treble
+            float bassAvg = (bassCount > 0) ? bassSum / bassCount : 0;
+            float midAvg = (midCount > 0) ? midSum / midCount : 0;
+            float trebleAvg = (trebleCount > 0) ? trebleSum / trebleCount : 0;
+    
+    
+            float totalAmplitude = 0;
+    
+            for (int i = 0; i < fft.specSize(); i++) {
+                totalAmplitude += fft.getBand(i);
+            }
+    
+            float hue = map(totalAmplitude, 0, 200, 280, 300);  // Ranges from blue to purple
+            hue = hue % 360;  // Ensure the hue wraps around correctly
+    
+            // Rotate based on the average amplitudes
+            angleX += map(bassAvg, 0, 10, 0, PI / 200);  // Scale these factors as needed
+            angleY += map(midAvg, 0, 10, 0, PI / 200);
+            angleZ += map(trebleAvg, 0, 10, 0, PI / 200);
+    
+    
+            float totalLoudness = 0; // Initialize total loudness
+    
+            // Sum all amplitudes to calculate total loudness
+            for (int i = 0; i < fft.specSize(); i++) {
+                totalLoudness += fft.getBand(i);
+            }
+    
+            float normalizedLoudness = map(totalLoudness, 0, 200, 1, 10); // Adjust range 0-200 to 1-10, 
+            normalizedLoudness = constrain(normalizedLoudness, 0, 3); // Ensure stroke weight doesn't get too high
+            pushMatrix();
+            translate(x,y,z);
+            rotateX(angleX*cubeSpeed);
+            rotateY(angleY*cubeSpeed);
+            rotateZ(angleZ*cubeSpeed);
+    
+            strokeWeight(normalizedLoudness); // Set the outline weight
+            if (song.isPlaying()){
+                strokeWeight(normalizedLoudness); // Set the outline weight
+                stroke(hue,100,100); // Set the outline color to white
+            }
+            else
+            {
+                strokeWeight(2); // thin outline
+                stroke(255);// white outline
+            }
+            if (side<=26f){// if cubes are very small we want to fill them
+                fill(270+normalizedLoudness, 40, 90);  // Light purple 
+                strokeWeight(2); // thin outline
+                stroke(255);// white outline
+            }else{
+                noFill(); // Do not fill the shapes
+            }
+                
+            
+            beginShape(QUADS);
+            for (int i = 0; i < 6; i++) {
+                switch (i) {
+                    case 0: // Front face
+                        vertex(-halfSide, -halfSide, halfSide);
+                        vertex(halfSide, -halfSide, halfSide);
+                        vertex(halfSide, halfSide, halfSide);
+                        vertex(-halfSide, halfSide, halfSide);
+                        break;
+                    case 1: // Back face
+                        vertex(halfSide, -halfSide, -halfSide);
+                        vertex(-halfSide, -halfSide, -halfSide);
+                        vertex(-halfSide, halfSide, -halfSide);
+                        vertex(halfSide, halfSide, -halfSide);
+                        break;
+                    // Add other faces similarly
+                    case 2: // Top face
+                        vertex(-halfSide, -halfSide, -halfSide);
+                        vertex(halfSide, -halfSide, -halfSide);
+                        vertex(halfSide, -halfSide, halfSide);
+                        vertex(-halfSide, -halfSide, halfSide);
+                        break;
+                    case 3: // Bottom face
+                        vertex(-halfSide, halfSide, halfSide);
+                        vertex(halfSide, halfSide, halfSide);
+                        vertex(halfSide, halfSide, -halfSide);
+                        vertex(-halfSide, halfSide, -halfSide);
+                        break;
+                    case 4: // Right face
+                        vertex(halfSide, -halfSide, halfSide);
+                        vertex(halfSide, -halfSide, -halfSide);
+                        vertex(halfSide, halfSide, -halfSide);
+                        vertex(halfSide, halfSide, halfSide);
+                        break;
+                    case 5: // Left face
+                        vertex(-halfSide, -halfSide, -halfSide);
+                        vertex(-halfSide, -halfSide, halfSide);
+                        vertex(-halfSide, halfSide, halfSide);
+                        vertex(-halfSide, halfSide, -halfSide);
+                        break;
+                }
+            }
+            endShape(CLOSE);
+            popMatrix();
         }
     
     public static void main(String[] args) {
