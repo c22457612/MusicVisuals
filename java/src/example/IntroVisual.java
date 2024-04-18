@@ -909,20 +909,65 @@ public class IntroVisual extends PApplet {
 
         void drawMovingSphere(float x, float y, float r) {
             pushMatrix(); // Save the current state of transformations
-            translate(x, y); // Move to the location where we want to draw our sphere
-            sphere(r); // Draw the sphere with the specified radius
-    
-            if (movingUp) {
-                sphereY -= movementSpeed; // Move the sphere up
-                if (sphereY < sphereRadius) { // If it reaches the top, reverse direction
-                    movingUp = false;
+            translate(x, y); // Use the dynamic `sphereY` for y-position
+        
+            if (song.isPlaying() || !playIntro) {
+                angle += 0.01; // Continuously rotate the sphere
+                rotateX(angle);
+        
+                // Analyze the spectrum into bass, mid, and treble
+                float bassAmplitude = 0, trebleAmplitude = 0;
+                int bassCount = 0, trebleCount = 0;
+                
+                for (int i = 0; i < fft.specSize(); i++) {
+                    float freq = fft.indexToFreq(i);
+                    float amplitude = fft.getBand(i);
+        
+                    // Define bass as frequencies below 150 Hz
+                    if (freq < 150) {
+                        bassAmplitude += amplitude;
+                        bassCount++;
+                    }
+                    // Define treble as frequencies above 4000 Hz
+                    else if (freq > 4000) {
+                        trebleAmplitude += amplitude;
+                        trebleCount++;
+                    }
                 }
+        
+                // Calculate average amplitudes
+                bassAmplitude = (bassCount > 0) ? bassAmplitude / bassCount : 0;
+                trebleAmplitude = (trebleCount > 0) ? trebleAmplitude / trebleCount : 0;
+        
+                // Adjust movement speed based on bass amplitude
+                movementSpeed = map(bassAmplitude, 0, 10, 1, 5);
+                movementSpeed = constrain(movementSpeed, 1, 5);
+        
+                // Setting HSB color mode
+                colorMode(HSB, 360, 100, 100);
+        
+                // Optional: Adjust color based on treble amplitude
+                float hue = map(trebleAmplitude, 0, 10, 0, 180); // Full range of hue
+                float saturation = map(bassAmplitude, 0, 10, 20, 100); // Saturation increases with bass
+                float brightness = 100; // Always full brightness for visibility
+        
+                // Adjust stroke width dynamically for a pulsing effect
+                float strokeWeightValue = map(trebleAmplitude, 0, 10, 0.5f, 15);
+                noFill();
+                strokeWeight(strokeWeightValue);
+                stroke(hue, saturation, brightness);
+        
+                // Draw the sphere with the constant radius
+                sphere(r);
             } else {
-                sphereY += movementSpeed; // Move the sphere down
-                if (sphereY > height - sphereRadius) { // If it reaches the bottom, reverse direction
-                    movingUp = true;
-                }
+                // Default color when music is paused
+                colorMode(RGB, 255); // Switch back to RGB for consistent color handling
+                fill(255, 0, 100, 100);
+                stroke(255);
+                strokeWeight(1);
+                sphere(r);
             }
+        
             popMatrix(); // Restore original state of transformations
         }
     
