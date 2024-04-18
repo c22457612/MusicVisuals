@@ -190,7 +190,7 @@ public class IntroVisual extends PApplet {
                 drawSoundWave();
                 drawCube(verySmallCubeSize, width / 1.14f, height / 2 , 0,smallCubeSpeed);// cube inside pyramids
                 drawCube(verySmallCubeSize, width /8.4f, height / 2 , 0,smallCubeSpeed);
-                drawMovingSphere(width / 1.14f, sphereY, sphereRadius);
+                //drawMovingSphere(width / 1.14f, sphereY, sphereRadius);
                 if (!song.isPlaying()){ //paused logic
                     drawCube(bigCubeSize,width/2,height/2,0,bigCubeSpeed);
                     drawCube(smallCubeSize, width / 2, height / 2 - offset, 0,smallCubeSpeed);  // Small cube above
@@ -602,6 +602,7 @@ public class IntroVisual extends PApplet {
             spinning = !spinning; // Toggle spinning state
             if(spinning){
                 player.play();
+                playIntro=true;
                 hasStartedPlaying = true;
                 isFirstSoundtrackFinished = false; // Reset this flag when the first soundtrack starts
                 circleOpacity = 0; // Reset opacity to allow fade-in effect
@@ -614,24 +615,63 @@ public class IntroVisual extends PApplet {
             if (!startDrawingShapes){
                 playSound(sound1);
             }
-            } else if (key == '2') {
+        } else if (key == '2') {
+            if (!startDrawingShapes){
                 playSound(sound2);
-            }else if(key=='3'){
+            }
+        }else if(key=='3'){
+            if (!startDrawingShapes){
                 playSound(sound3);
-            }else if(key=='4'){
+            }
+        }else if(key=='4'){
+            if (!startDrawingShapes){
                 playSound(sound4);
-            }else if(key==ENTER){
-                drawRainbowWave();
-                playSound(sound5);
-                startFading = true;
-                fadeStartTime = millis(); //will eventually trigger startDrawingShapes boolean
-                
-            }else if(key=='5'){
-                playSound(song);
-                startFading=false;
-                startDrawingShapes=true; //manually start
+            }
+        }else if(key==ENTER){
+            playIntro=true;
+            isFirstSoundtrackFinished=true;
+            drawRainbowWave();
+            playSound(sound5);
+            startFading = true;
+            fadeStartTime = millis(); //will eventually trigger startDrawingShapes boolean
+            
+        }else if(key=='5'){
+            playSound(song);
+            startFading=false;
+            startDrawingShapes=true; //manually start
+        }
+
+        if (startDrawingShapes){ // when we are using audio visualization for shapes, we can pause and resume
+            if (key == 'p' || key == 'P') {
+                if (song.isPlaying()) {
+                    song.pause();
+                } else {
+                    song.play();
+                }
+            }
+
+            if (keyCode == UP) {// controlling cube speeds
+                if (bigCubeSpeed>-1){
+                    bigCubeSpeed+=0.1;
+                }
+            } else if (keyCode == DOWN) {
+                if (bigCubeSpeed>0){
+                    bigCubeSpeed-=0.1;
+                }
+            } else if (keyCode == LEFT) {
+                if (smallCubeSpeed>0){
+                    smallCubeSpeed-=0.1;
+                }
+            } else if (keyCode == RIGHT) {
+                if (smallCubeSpeed>-1){
+                    smallCubeSpeed+=0.1;
+                }
             }
         }
+
+
+        // You can add more conditions for additional sounds here
+    }
 
         private void playSound(AudioPlayer sound) {
             if (sound == null) {
