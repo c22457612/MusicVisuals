@@ -377,10 +377,24 @@ public class IntroVisual extends PApplet {
         pushMatrix();
         translate(0, -pyramidSize, 0);
         rotateX(PI);
-        if (song.isPlaying())
+        if (modes[0])// colour scheme for mode 1
         {
             fill(totalAmplitude, 50, totalAmplitude, pyramidFillAlpha);
+        }else if(modes[1]){
+            //println(totalAmplitude); //debugging statement
+            if (totalAmplitude>1500){
+                fill(totalAmplitude/2, 50, totalAmplitude/4, pyramidFillAlpha);
+                stroke(0);
+            }else if(totalAmplitude>1800){
+                fill(totalAmplitude/6, 50, totalAmplitude/6, pyramidFillAlpha);
+                stroke(0);
+            }else{ 
+                fill(totalAmplitude/3, 50, totalAmplitude/3, pyramidFillAlpha);
+                stroke(0);
+            }
+            
         }
+
         
         drawPyramid(pyramidSize);
         popMatrix();
@@ -400,10 +414,6 @@ public class IntroVisual extends PApplet {
         // Draw the bottom pyramid (upright)
         pushMatrix();
         translate(0, pyramidSize, 0);
-        if (song.isPlaying())
-        {
-            fill(totalAmplitude, 50, totalAmplitude, pyramidFillAlpha);
-        }
         drawPyramid(pyramidSize);
         popMatrix();
     
