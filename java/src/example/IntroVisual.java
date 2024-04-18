@@ -53,6 +53,8 @@ public class IntroVisual extends PApplet {
     float pyramidCenterX = 208;
     float pyramidCenterY = height / 2;
 
+    float pyramidFillAlpha = 0; // Transparency for the pyramid fill
+
     // Determine the range of Y values to draw the squiggly line.
     float startY = pyramidCenterY - pyramidSize;
     float endY = pyramidCenterY + pyramidSize;
@@ -80,7 +82,9 @@ public class IntroVisual extends PApplet {
     boolean fadeInActive = false;
     int faceColorIndex = 0;
     int[] colors = {color(255, 0, 0), color(0, 255, 0), color(0, 0, 255), color(255, 255, 0), color(0, 255, 255), color(255, 0, 255)};
-    float CubeSize = 100; // Initial size of the big cube
+    float bigCubeSize = 100; // Initial size of the big cube
+    float smallCubeSize=50;
+    float verySmallCubeSize=25;
     float offset=height/0.6f; // used for small cube offset
     float bigCubeSpeed=0.1f;
     float smallCubeSpeed=0.02f;
@@ -171,10 +175,26 @@ public class IntroVisual extends PApplet {
             }else if (startDrawingShapes){ //logic for other shapes
                 colorMode(HSB, 360, 100, 100);  // Set HSB color mode
                 pushMatrix();  // Save the current transformation matrix state
-                drawSoundWave();
+                drawCube(bigCubeSize,width/2,height/2,0,bigCubeSpeed);
+                drawCube(smallCubeSize, width / 2, height / 2 - offset, 0,smallCubeSpeed);  // Small cube above
+                drawCube(smallCubeSize, width / 2.6f, height / 2 - offset, 0,smallCubeSpeed);  // Small cube above
+                drawCube(smallCubeSize, width / 2, height / 2 + offset, 0,smallCubeSpeed);  // Small cube below
+                drawCube(smallCubeSize, width / 2.6f, height / 2 + offset, 0,smallCubeSpeed); //small cube bottom left
+                drawCube(smallCubeSize, width / 2.6f, height / 2 , 0,smallCubeSpeed); //small cube middle left
+                drawCube(smallCubeSize, width / 1.65f, height / 2 - offset, 0,smallCubeSpeed); //small cube top right
+                drawCube(smallCubeSize, width / 1.65f, height / 2 , 0,smallCubeSpeed);// small cube middle
+                drawCube(smallCubeSize, width / 1.65f, height / 2+offset , 0,smallCubeSpeed);// small cube bottom right
                 drawPyramids();
+                colorMode(RGB, 255, 255, 255);  // Switch back to RGB color mode for drawing other elements
+                popMatrix(); 
+                drawSoundWave();
+                drawCube(verySmallCubeSize, width / 1.14f, height / 2 , 0,smallCubeSpeed);// cube inside pyramids
+                drawCube(verySmallCubeSize, width /8.4f, height / 2 , 0,smallCubeSpeed);
+                drawMovingSphere(width / 1.14f, sphereY, sphereRadius);
                 if (!song.isPlaying()){ //paused logic
-                    
+                    drawCube(bigCubeSize,width/2,height/2,0,bigCubeSpeed);
+                    drawCube(smallCubeSize, width / 2, height / 2 - offset, 0,smallCubeSpeed);  // Small cube above
+                    drawCube(smallCubeSize, width / 2, height / 2 + offset, 0,smallCubeSpeed);  // Small cube below
                     drawSoundWave();
                     drawPyramids();
                     fill(173, 216, 230); //light blue
@@ -277,6 +297,60 @@ public class IntroVisual extends PApplet {
     }
 
     public void drawPyramids() {
+
+        if (spinning){
+            if (rotationSpeed < 0.05) {
+                rotationSpeed += 0.0001;
+            }
+            pyramidRotation += rotationSpeed; // Keep rotating the pyramids continuously
+            if (abs(pyramidXPosTop) < width / 3) {
+                pyramidXPosTop -= pyramidMoveSpeed;
+            } else {
+                pyramidsVisible = true;
+            }
+            if (abs(pyramidXPosBottom) < width / 3) {
+                pyramidXPosBottom += pyramidMoveSpeed;
+            } else {
+                pyramidsVisible = true;
+            }
+            currentRotationY += rotationSpeed;
+            if (transparentColour > 0) {
+                transparentColour -= 0.5;
+            }
+        }
+
+        if (song.isPlaying()){ //rotate
+            if (rotationSpeed < 0.05) {
+                rotationSpeed += 0.0001;
+            }
+            pyramidRotation += rotationSpeed; // Keep rotating the pyramids continuously
+            if (abs(pyramidXPosTop) < width / 2) {
+                pyramidXPosTop -= pyramidMoveSpeed;
+            } else {
+                pyramidsVisible = true;
+            }
+            if (abs(pyramidXPosBottom) < width / 2) {
+                pyramidXPosBottom += pyramidMoveSpeed;
+            } else {
+                pyramidsVisible = true;
+            }
+            currentRotationY += rotationSpeed;
+            if (transparentColour > 0) {
+                transparentColour -= 1;
+            }
+            else{// else stay
+                pyramidsVisible=true;
+            }
+            pyramidFillAlpha += 2; // Increase alpha gradually
+            pyramidFillAlpha = constrain(pyramidFillAlpha, 0, 255); // Limit alpha to max 255
+        }
+
+        float totalAmplitude = 0;
+
+        for (int i = 0; i < fft.specSize(); i++) {
+            totalAmplitude += fft.getBand(i);
+        }
+
         // Top pyramid and its additional bottom pyramid
         pushMatrix();
         translate(width / 2 + pyramidXPosTop, height / 2, -200);
@@ -286,6 +360,11 @@ public class IntroVisual extends PApplet {
         pushMatrix();
         translate(0, -pyramidSize, 0);
         rotateX(PI);
+        if (song.isPlaying())
+        {
+            fill(totalAmplitude, 50, totalAmplitude, pyramidFillAlpha);
+        }
+        
         drawPyramid(pyramidSize);
         popMatrix();
     
@@ -304,6 +383,10 @@ public class IntroVisual extends PApplet {
         // Draw the bottom pyramid (upright)
         pushMatrix();
         translate(0, pyramidSize, 0);
+        if (song.isPlaying())
+        {
+            fill(totalAmplitude, 50, totalAmplitude, pyramidFillAlpha);
+        }
         drawPyramid(pyramidSize);
         popMatrix();
     
