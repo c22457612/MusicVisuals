@@ -108,6 +108,8 @@ public class IntroVisual extends PApplet {
     boolean[] modes = new boolean[NUM_MODES];
     int currentModeIndex = 0;  // Index of the currently active mode
 
+    boolean fillActivated=true;
+
 
     public void settings() {
         size(800, 600, P3D);
@@ -694,6 +696,10 @@ public class IntroVisual extends PApplet {
                     smallCubeSpeed+=0.1;
                 }
             }
+
+            if (keyCode=='f'|| keyCode=='F'){
+                fillActivated=!fillActivated;
+            }
         }
 
 
@@ -790,6 +796,7 @@ public class IntroVisual extends PApplet {
 
 
         void drawCube(float side,float x,float y,float z,float cubeSpeed) {
+        
             float halfSide = side / 2;
             //println("cube size:"+side+"cubespeed:"+cubeSpeed); //debugging statement
     
@@ -852,23 +859,28 @@ public class IntroVisual extends PApplet {
             rotateY(angleY*cubeSpeed);
             rotateZ(angleZ*cubeSpeed);
     
-            strokeWeight(normalizedLoudness); // Set the outline weight
-            if (song.isPlaying()){
+            if (modes[0]){
                 strokeWeight(normalizedLoudness); // Set the outline weight
-                stroke(hue,100,100); // Set the outline color to white
+                if (song.isPlaying()){
+                    strokeWeight(normalizedLoudness); // Set the outline weight
+                    stroke(hue,100,100); // Set the outline color to white
+                }
+                else
+                {
+                    strokeWeight(2); // thin outline
+                    stroke(255);// white outline
+                }
+                if (side<=26f || fillActivated){// if cubes are very small we want to fill them or if fill activated
+                    fill(hue,100,100);  
+                    strokeWeight(2); // thin outline
+                    stroke(255);// white outline
+                }else{
+                    noFill(); // Do not fill the shapes
+                }
+            }else if(modes[1]){
+                fill(hue,100,100);
             }
-            else
-            {
-                strokeWeight(2); // thin outline
-                stroke(255);// white outline
-            }
-            if (side<=26f){// if cubes are very small we want to fill them
-                fill(270+normalizedLoudness, 40, 90);  // Light purple 
-                strokeWeight(2); // thin outline
-                stroke(255);// white outline
-            }else{
-                noFill(); // Do not fill the shapes
-            }
+            
                 
             
             beginShape(QUADS);
