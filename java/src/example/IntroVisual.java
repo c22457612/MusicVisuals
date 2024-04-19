@@ -99,6 +99,7 @@ public class IntroVisual extends PApplet {
     float sphereRadius = 50; // Radius of the sphere
     float movementSpeed = 2; // Speed of vertical movement
     boolean movingUp = true; // Direction control flag
+    float smallSphereRadius=100f;
 
 
     //mouse clicked variables
@@ -154,6 +155,7 @@ public class IntroVisual extends PApplet {
             
             currentRotationY %= TWO_PI;
             if (!startDrawingShapes){ //logic for intro
+                 
                 drawDiamond();
                 drawPyramids();
                 drawSoundWave();
@@ -190,32 +192,62 @@ public class IntroVisual extends PApplet {
                     drawNeonTextWithFade("Press Enter:", width / 2, height - fontSize, color(0, 255, 255), player.position() - 9000);
                 }
             }else if (startDrawingShapes){ //logic for other shapes
-                colorMode(HSB, 360, 100, 100);  // Set HSB color mode
-                pushMatrix();  // Save the current transformation matrix state
-                drawCube(bigCubeSize,width/2,height/2,0,bigCubeSpeed);
-                drawCube(smallCubeSize, width / 2, height / 2 - offset, 0,smallCubeSpeed);  // Small cube above
-                drawCube(smallCubeSize, width / 2.6f, height / 2 - offset, 0,smallCubeSpeed);  // Small cube above
-                drawCube(smallCubeSize, width / 2, height / 2 + offset, 0,smallCubeSpeed);  // Small cube below
-                drawCube(smallCubeSize, width / 2.6f, height / 2 + offset, 0,smallCubeSpeed); //small cube bottom left
-                drawCube(smallCubeSize, width / 2.6f, height / 2 , 0,smallCubeSpeed); //small cube middle left
-                drawCube(smallCubeSize, width / 1.65f, height / 2 - offset, 0,smallCubeSpeed); //small cube top right
-                drawCube(smallCubeSize, width / 1.65f, height / 2 , 0,smallCubeSpeed);// small cube middle
-                drawCube(smallCubeSize, width / 1.65f, height / 2+offset , 0,smallCubeSpeed);// small cube bottom right
-                drawPyramids();
-                colorMode(RGB, 255, 255, 255);  // Switch back to RGB color mode for drawing other elements
-                popMatrix(); 
-                drawSoundWave();
-                drawCube(verySmallCubeSize, width / 1.14f, height / 2 , 0,smallCubeSpeed);// cube inside pyramids
-                drawCube(verySmallCubeSize, width /8.4f, height / 2 , 0,smallCubeSpeed);
-                //drawMovingSphere(width / 1.14f, sphereY, sphereRadius);
-                if (!song.isPlaying()){ //paused logic
+                if (modes[0]){
+                    colorMode(HSB, 360, 100, 100);  // Set HSB color mode
+                    pushMatrix();  // Save the current transformation matrix state
+                    drawMovingSphere(width /2, height/2, sphereRadius);
                     drawCube(bigCubeSize,width/2,height/2,0,bigCubeSpeed);
                     drawCube(smallCubeSize, width / 2, height / 2 - offset, 0,smallCubeSpeed);  // Small cube above
+                    drawCube(smallCubeSize, width / 2.6f, height / 2 - offset, 0,smallCubeSpeed);  // Small cube above
                     drawCube(smallCubeSize, width / 2, height / 2 + offset, 0,smallCubeSpeed);  // Small cube below
-                    drawSoundWave();
+                    drawCube(smallCubeSize, width / 2.6f, height / 2 + offset, 0,smallCubeSpeed); //small cube bottom left
+                    drawCube(smallCubeSize, width / 2.6f, height / 2 , 0,smallCubeSpeed); //small cube middle left
+                    drawCube(smallCubeSize, width / 1.65f, height / 2 - offset, 0,smallCubeSpeed); //small cube top right
+                    drawCube(smallCubeSize, width / 1.65f, height / 2 , 0,smallCubeSpeed);// small cube middle
+                    drawCube(smallCubeSize, width / 1.65f, height / 2+offset , 0,smallCubeSpeed);// small cube bottom right
+                    drawCube(smallCubeSize, width / 1.65f, height / 2+offset*1.75f , 0,smallCubeSpeed);// small cube further bottom right
+                    drawCube(smallCubeSize, width / 2.6f, height / 2+offset*1.75f , 0,smallCubeSpeed);// small cube further bottom left
+                    drawCube(smallCubeSize, width / 2, height / 2+offset*1.75f , 0,smallCubeSpeed);// small cube further bottom middle
+                    drawCube(smallCubeSize, width / 1.65f, height / 2-offset*1.75f , 0,smallCubeSpeed);// small cube further top right
+                    drawCube(smallCubeSize, width / 2f, height / 2-offset*1.75f , 0,smallCubeSpeed);// small cube further top middle
+                    drawCube(smallCubeSize, width / 2.6f, height / 2-offset*1.75f , 0,smallCubeSpeed);// small cube further top left
                     drawPyramids();
-                    fill(173, 216, 230); //light blue
-                    text("Paused",width/2,height-fontSize);
+                    
+                    colorMode(RGB, 255, 255, 255);  // Switch back to RGB color mode for drawing other elements
+                    popMatrix(); 
+                    drawSoundWave();
+                    drawCube(verySmallCubeSize, width / 1.14f, height / 2 , 0,smallCubeSpeed);// cube inside pyramids
+                    drawCube(verySmallCubeSize, width /8.4f, height / 2 , 0,smallCubeSpeed);
+                    if (!song.isPlaying()){ //paused logic
+                        drawCube(bigCubeSize,width/2,height/2,0,bigCubeSpeed);
+                        drawCube(smallCubeSize, width / 2, height / 2 - offset, 0,smallCubeSpeed);  // Small cube above
+                        drawCube(smallCubeSize, width / 2, height / 2 + offset, 0,smallCubeSpeed);  // Small cube below
+                        drawSoundWave();
+                        fill(173, 216, 230); //light blue
+                        text("Paused",width/2,height-fontSize);
+                    }
+                }else if(modes[1]){// swapped modes 
+                    colorMode(HSB, 360, 100, 100);  // Set HSB color mode
+                    pushMatrix();  // Save the current transformation matrix state
+                    noFill();
+                    drawMovingSphere(width /2, height/2, smallSphereRadius);
+                    drawPyramids();
+                    
+                    colorMode(RGB, 255, 255, 255);  // Switch back to RGB color mode for drawing other elements
+                    popMatrix(); 
+                    drawSoundWave();
+                    drawRainbowWave();
+                    drawCube(verySmallCubeSize, width / 1.14f, height / 2 , 0,smallCubeSpeed);// cube inside pyramids
+                    drawCube(verySmallCubeSize, width /8.4f, height / 2 , 0,smallCubeSpeed);
+                    drawCube(bigCubeSize,width/1.14f,height/4,0,bigCubeSpeed);
+                    if (!song.isPlaying()){ //paused logic
+                        drawCube(smallCubeSize, width / 2, height / 2 - offset, 0,smallCubeSpeed);  // Small cube above
+                        drawCube(smallCubeSize, width / 2, height / 2 + offset, 0,smallCubeSpeed);  // Small cube below
+                        drawSoundWave();
+                        fill(173, 216, 230); //light blue
+                        text("Paused",width/2,height-fontSize);
+                    }
+                    
                 }
             }
             
@@ -932,9 +964,15 @@ public class IntroVisual extends PApplet {
         void drawMovingSphere(float x, float y, float r) {
             pushMatrix(); // Save the current state of transformations
             translate(x, y); // Use the dynamic `sphereY` for y-position
-        
-            if (song.isPlaying() || !playIntro) {
+            
+            if (!startDrawingShapes){
                 angle += 0.01; // Continuously rotate the sphere
+            }else if(modes[0]&&startDrawingShapes){
+                angle+=0.001;
+            }
+    
+            if (song.isPlaying() || !playIntro) {
+                
                 rotateX(angle);
         
                 // Analyze the spectrum into bass, mid, and treble
