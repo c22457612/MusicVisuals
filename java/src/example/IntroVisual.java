@@ -18,6 +18,39 @@ public class IntroVisual extends PApplet {
     float[] smoothedBands;
     float waveHeight = 2; // Height of the soundwave
     
+
+    //diamond variables
+    boolean spinning = false; // Start without spinning
+    boolean stopping = false;
+    float currentRotationY = 0;
+    float targetRotationY = PI / 37; // Default upright position
+    float rotationIncrement = 0.01f;
+    float rotationSpeed = 0.01f;
+    float stoppingSpeed = 0.005f;
+    float transparentColour = 255f; // Start fully opaque
+    
+    // Pyramid variables
+    float pyramidSize = 90; // half the size of the diamond
+    float pyramidXPosTop = 0;
+    float pyramidXPosBottom = 0;
+    float pyramidRotation = 0;
+    float pyramidMoveSpeed = 1;
+    boolean pyramidsVisible=false;
+    // Pyramid movement variables
+    float pyramidTopTargetY;
+    float pyramidBottomTargetY;
+    boolean movePyramidTopUp = false;
+    boolean movePyramidBottomDown = false;
+
+    float pyramidFillAlpha = 0; // Transparency for the pyramid fill
+
+    float pyramidCenterX = 208;
+    float pyramidCenterY = height / 2;
+
+    // Determine the range of Y values to draw the squiggly line.
+    float startY = pyramidCenterY - pyramidSize;
+    float endY = pyramidCenterY + pyramidSize;
+    
     float[] prevAmplitudes;
 
     boolean hasStartedPlaying = false;
@@ -32,51 +65,37 @@ public class IntroVisual extends PApplet {
     boolean rainbowWaveVisible = false;
     ArrayList<PVector> wavePoints = new ArrayList<PVector>();
 
-    //diamond variables
-    boolean spinning = false; // Start without spinning
-    boolean stopping = false;
-    float currentRotationY = 0;
-    float targetRotationY = PI / 37; // Default upright position
-    float rotationIncrement = 0.01f;
-    float rotationSpeed = 0.01f;
-    float stoppingSpeed = 0.005f;
-    float transparentColour = 255f; // Start fully opaque
+    //rainbow wave variables
+    float centerX = width * 0.5f;
+    float centerY = height * 0.5f;
+    float baseRadius = 110; // Base radius of the wave
+    float maxWaveAmplitude = 150; // Max additional amplitude, adjusted for smoother wave
+    float smoothingFactor = 0.2f; // Increase for smoother transitions
+    float maxFFTAmplitude = 0; // We'll calculate this each frame
+    float rainbowWaveRotationAngle=0;
 
-    // Pyramid variables
-    float pyramidSize = 90; // half the size of the diamond
-    float pyramidXPosTop = 0;
-    float pyramidXPosBottom = 0;
-    float pyramidRotation = 0;
-    float pyramidMoveSpeed = 1;
-    boolean pyramidsVisible=false;
-
-    float pyramidCenterX = 208;
-    float pyramidCenterY = height / 2;
-
-    float pyramidFillAlpha = 0; // Transparency for the pyramid fill
-
-    // Determine the range of Y values to draw the squiggly line.
-    float startY = pyramidCenterY - pyramidSize;
-    float endY = pyramidCenterY + pyramidSize;
-    
-
-    boolean circleVisible = false; //circle visualizer variables
+    boolean circleVisible = false;
     float circleOpacity = 0;
-    float circleMaxRadius = 110; 
+    float circleMaxRadius = 110; // Adjust this to your desired size
     long circleFadeStartTime = -1;
 
     PFont font;
     int fontSize = 48; // Adjust size as needed
 
-    boolean playIntro=true; 
-    boolean startDrawingShapes=false;
-    AudioPlayer soundToVisualize = null;
-
-    boolean startFading = false; // This flag will start the fading process.
     float fadeAmount = 0; // This controls the opacity of the black overlay.
+    boolean startFading = false; // This flag will start the fading process.
     long fadeStartTime = 0; // This will store the time when fading starts.
     long fadeDuration=6000;
 
+    boolean playIntro=false;
+    boolean startDrawingShapes=false;
+    AudioPlayer soundToVisualize = null;
+
+    int colour1 = 150;
+    int colour2 = 255;
+    int colour3 = 170;
+
+    
     float faceOpacity = 0;
     float[] faceOpacities = new float[6]; // Opacity for each face
     boolean fadeInActive = false;
@@ -96,13 +115,12 @@ public class IntroVisual extends PApplet {
     float angleZ;
 
     float sphereY=height/2;         // Current y-position of the sphere
-    float sphereRadius = 50; // Radius of the sphere
+    float sphereRadius = 5000; // Radius of the sphere
     float movementSpeed = 2; // Speed of vertical movement
     boolean movingUp = true; // Direction control flag
+    float sphereOffset=height/0.7f;// slightly more than pyramid offset so sphere hits top of pyramid
     float smallSphereRadius=100f;
 
-
-    //mouse clicked variables
     ArrayList<PVector> smallCubePositions = new ArrayList<PVector>();
     boolean cubeClicked=false;
     final int NUM_MODES = 3;  // Change this based on the number of modes you have
@@ -110,10 +128,20 @@ public class IntroVisual extends PApplet {
     int currentModeIndex = 0;  // Index of the currently active mode
 
     boolean fillActivated=true;
+    boolean extremeColour=false;
+    
 
+
+    public static void main(String[] args) {
+        PApplet.main("example.playIntro");
+    }
 
     public void settings() {
-        size(800, 600, P3D);
+        //size(800, 600, P3D); // this caused mouse clicking issues
+        
+        fullScreen(P3D); // this fixed mouse clicking issues
+    
+        
     }
 
     public void setup() {
@@ -125,6 +153,9 @@ public class IntroVisual extends PApplet {
         sound4 = minim.loadFile("data/8bitSound4.mp3", 2048);
         sound5 = minim.loadFile("data/8bitSound5.mp3", 2048);// continue to audio visualizer maybe constraint so can only be pressed once
         song = minim.loadFile("data/Radiohead.mp3", 2048);
+        
+        pyramidTopTargetY = height * 0.1f; // Move near the top of the window
+        pyramidBottomTargetY = height * 0.9f; // Move near the bottom of the window
 
     
         fft = new FFT(sound1.bufferSize(), sound1.sampleRate());
@@ -294,6 +325,16 @@ public class IntroVisual extends PApplet {
             drawMovingSphere(width /2, height/2, sphereRadius);
         }
     }
+    
+    
+
+    public void stop() {
+        player.close();
+        minim.stop();
+        super.stop();
+    }
+    
+    
 
     public void drawDiamond() {
         pushMatrix();
@@ -347,8 +388,8 @@ public class IntroVisual extends PApplet {
         popMatrix();
     }
 
+    
     public void drawPyramids() {
-
         if (spinning){
             if (rotationSpeed < 0.05) {
                 rotationSpeed += 0.0001;
@@ -411,9 +452,25 @@ public class IntroVisual extends PApplet {
         pushMatrix();
         translate(0, -pyramidSize, 0);
         rotateX(PI);
-        if (modes[0])// colour scheme for mode 1
+        if (playIntro &&!startDrawingShapes){
+            fill(totalAmplitude, 50, totalAmplitude, transparentColour);
+            //println("in intro"); //debugging statement
+        }
+        if (modes[0] &&startDrawingShapes)// colour scheme for mode 1
         {
-            fill(totalAmplitude, 50, totalAmplitude, pyramidFillAlpha);
+            //println("in visualizer");
+            if (extremeColour){
+                float hue = map(totalAmplitude, 0, 2000, 40, 180);  // Ranges from all colours aggresively
+                hue = hue % 360;  // Ensure the hue wraps around correctly
+                fill(hue,100,100);
+                //println("extreme colours");
+            }else if (!extremeColour){
+                float hue = map(totalAmplitude, 0, 2000, 240, 360);  // Ranges from purple to pink aggresively
+                hue = hue % 360;  // Ensure the hue wraps around correctly
+                fill(hue,100,100);
+                //println("not extreme colours");
+            }
+            
         }else if(modes[1]){
             //println(totalAmplitude); //debugging statement
             if (totalAmplitude>1500){
@@ -459,7 +516,13 @@ public class IntroVisual extends PApplet {
         }
         popMatrix();
     }
-
+    
+    
+    public void drawAdditionalPyramid(float size, boolean isTop) {
+        translate(0, isTop ? size * 2 : -size * 2, 0); // Adjust position based on whether it's top or bottom pyramid
+        drawPyramid(size); // Uses the same drawPyramid method for the new pyramid
+    }
+    
     public void drawPyramid(float size) {
         beginShape(TRIANGLES);
         if (pyramidsVisible) {
@@ -499,6 +562,15 @@ public class IntroVisual extends PApplet {
         {
             fft.forward(song.mix);
             waveLength=height/2;
+        }
+
+        if (modes[0] && startDrawingShapes){
+            strokeWeight(15);
+        }
+
+        if (extremeColour){
+            colorMode(HSB, 360, 100, 100);  // Set HSB color mode
+            strokeWeight(28); // increase soundwaves naturally
         }
         
         //top left pyramid
@@ -562,49 +634,75 @@ public class IntroVisual extends PApplet {
         }
     }
 
+    // Assuming 'rotationAngle' is a global float variable initialized to 0.0
+
     public void drawRainbowWave() {
-        float centerX = width * 0.5f;
-        float centerY = height * 0.5f;
-        float baseRadius = 110; // Base radius of the wave
-        float maxWaveAmplitude = 150; // Max additional amplitude, adjusted for smoother wave
+        colorMode(HSB, 360, 100, 100);
+        // Recalculate angleStep based on the current fft specSize
         float angleStep = TWO_PI / fft.specSize();
     
-        float smoothingFactor = 0.2f; // Increase for smoother transitions
-        float maxFFTAmplitude = 0; // We'll calculate this each frame
-    
-        // Find the maximum FFT amplitude for normalization
+        // Calculate maximum FFT amplitude for normalization
         for (int i = 0; i < fft.specSize(); i++) {
             maxFFTAmplitude = max(maxFFTAmplitude, fft.getBand(i));
         }
     
-        if (maxFFTAmplitude == 0) maxFFTAmplitude = 1; // Prevent division by zero
+        // Ensure there's no divide by zero issue
+        if (maxFFTAmplitude == 0) {
+            maxFFTAmplitude = 1;
+        }
     
-        beginShape();
+        // Increment the rotation angle, adjust the speed as necessary
+        rainbowWaveRotationAngle += 0.01;
+    
+        // Start matrix transformation
+        pushMatrix();
+        // Translate to the center of the screen
+        translate(width/2, height/2);
+        // Rotate the whole wave by the current rotation angle
+        if (modes[1]){
+            
+            rotate(rainbowWaveRotationAngle);
+        }
         noFill();
-        strokeWeight(2); // Stroke thickness
+        strokeWeight(3);
+        beginShape();
     
         for (int i = 0; i < fft.specSize(); i++) {
             float amplitude = fft.getBand(i);
-    
-            // Smooth the amplitude over time
+            // Smooth the transition of amplitude values
             prevAmplitudes[i] = lerp(prevAmplitudes[i], amplitude, smoothingFactor);
-    
-            // Normalize the smoothed amplitude
+            // Normalize and scale the amplitude
             float normalizedAmplitude = map(prevAmplitudes[i], 0, maxFFTAmplitude, 0, maxWaveAmplitude);
     
-            // Calculate the coordinates
-            float x = centerX + (baseRadius + normalizedAmplitude) * cos(i * angleStep);
-            float y = centerY + (baseRadius + normalizedAmplitude) * sin(i * angleStep);
+            // Calculate wave points
+            float x = (baseRadius + normalizedAmplitude) * cos(i * angleStep);
+            float y = (baseRadius + normalizedAmplitude) * sin(i * angleStep);
     
-            // Dynamic color based on frameCount, similar to the circle's stroke color
+            // Dynamic coloring based on position
             int colorValue = (int) (128 + 128 * sin(i * 0.1f + frameCount * 0.02f));
             stroke(color(255 - colorValue, colorValue, 255));
     
-            vertex(x, y); // Place the vertex for the wave
+            vertex(x, y);
         }
     
         endShape(CLOSE);
+        popMatrix(); // Restore matrix state
     }
+    
+
+        
+        public void drawFadingCircleWithTiming() {
+            if (circleOpacity < 255) {
+                circleOpacity += 5; // Control the speed of the fade-in effect
+            }
+        
+            // Draw the circle with the current opacity
+            int colorValue = (int) (128 + 128 * sin(frameCount * 0.05f));
+            noFill(); // Do not fill the circle
+            stroke(color(255 - colorValue, colorValue, 255), circleOpacity); // Set the stroke color and opacity
+            strokeWeight(2); // Set the stroke width
+            ellipse(width / 2, height / 2, circleMaxRadius * 2, circleMaxRadius * 2); // Draw the circle centered
+        }
 
     public void drawFadingCircle() {
         if (circleOpacity < 255) {
@@ -616,48 +714,8 @@ public class IntroVisual extends PApplet {
         strokeWeight(2);
         ellipse(width / 2, height / 2, circleMaxRadius * 2, circleMaxRadius * 2);
     }
-
-    public void drawFadingCircleWithTiming() {
-        if (circleOpacity < 255) {
-            circleOpacity += 5; // Control the speed of the fade-in effect
-        }
-    
-        // Draw the circle with the current opacity
-        int colorValue = (int) (128 + 128 * sin(frameCount * 0.05f));
-        noFill(); // Do not fill the circle
-        stroke(color(255 - colorValue, colorValue, 255), circleOpacity); // Set the stroke color and opacity
-        strokeWeight(2); // Set the stroke width
-        ellipse(width / 2, height / 2, circleMaxRadius * 2, circleMaxRadius * 2); // Draw the circle centered
-    }
-
-    void drawNeonTextWithFade(String text, float x, float y, int glowColor, float time) {
-        // Calculate fade in based on time
-        float fade = map(time, 0, 2000, 0, 255); // fade in over 2 seconds
-        fade = constrain(fade, 0, 255); // Make sure fade doesn't go beyond 255
-    
-        // Set the text size for the solid text on top
-        textSize(fontSize);
-    
-        // Draw the glowing text with fewer layers for a simpler look
-        fill(glowColor, fade); // Use fade for alpha
-        for (int i = 3; i > 0; i--) { // Only 3 layers of glow for simplicity
-            text(text, x, y + i); // Slight offset for the glow layers
-        }
-    
-        // Draw the solid text on top
-        fill(255, fade); // Use fade for alpha
-        text(text, x, y); // Draw the text at the original position
-    }
-    
-
-    public void stop() {
-        player.close();
-        minim.stop();
-        super.stop();
-    }
     
     
-
     public void keyPressed() {
         if (key == ' ') {
             spinning = !spinning; // Toggle spinning state
@@ -706,6 +764,8 @@ public class IntroVisual extends PApplet {
             if (key == 'p' || key == 'P') {
                 if (song.isPlaying()) {
                     song.pause();
+                    movePyramidTopUp = false;
+                    movePyramidBottomDown = false;
                 } else {
                     song.play();
                 }
@@ -731,6 +791,13 @@ public class IntroVisual extends PApplet {
 
             if (keyCode=='f'|| keyCode=='F'){
                 fillActivated=!fillActivated;
+            }
+            if (keyCode=='e'|| keyCode=='E'){
+                if (extremeColour==true){
+                    extremeColour=false;
+                }else if(extremeColour==false){
+                    extremeColour=true;
+                }
             }
         }
 
@@ -769,271 +836,318 @@ public class IntroVisual extends PApplet {
         currentModeIndex = (currentModeIndex + 1) % NUM_MODES;  // Move to the next mode, wrapping around if necessary
         modes[currentModeIndex] = true;  // Activate the new mode
     }
+    
 
-        private void playSound(AudioPlayer sound) {
-            if (sound == null) {
-                println("Error: Attempted to play a null sound.");
-                return;
-            }
+    public void updateFading() {
+        if (startFading && millis() - fadeStartTime > fadeDuration) {
+            startFading = false; // Stop fading after 6 seconds
+            startDrawingShapes=true;
+            playSound(song);
+        }
+
+        if (startFading) {
+            // Perform fading logic here
+            fadeAmount = map(millis() - fadeStartTime, 0, fadeDuration, 0, 255);
+            fadeAmount = constrain(fadeAmount, 0, 255);
+        }
+    }
+
+    private void playSound(AudioPlayer sound) {
+        if (sound == null) {
+            println("Error: Attempted to play a null sound.");
+            return;
+        }
+    
+        // Stop all sounds and prepare to play the selected one.
+        if (sound1.isPlaying()) {
+            sound1.pause();
+            sound1.rewind();
+        }
+        if (sound2.isPlaying()) {
+            sound2.pause();
+            sound2.rewind();
+        }
+        if (sound3.isPlaying()) {
+            sound3.pause();
+            sound3.rewind();
+        }
+        if (sound4.isPlaying()) {
+            sound4.pause();
+            sound4.rewind();
+        }
+        if (sound5.isPlaying()) {
+            sound5.pause();
+            sound5.rewind();
+        }
+        if (song.isPlaying()) {
+            song.pause();
+            song.rewind();
+        }
         
-            // Stop all sounds and prepare to play the selected one.
-            if (sound1.isPlaying()) {
-                sound1.pause();
-                sound1.rewind();
+    
+        // Play the selected sound.
+        sound.play();
+        isInteractiveSoundFinished = false; // Set to false when any interactive sound starts
+    
+        // Reinitialize FFT with the current sound's buffer size and sample rate
+        fft = new FFT(sound.bufferSize(), sound.sampleRate());
+        fft.logAverages(10, 1);
+    }
+
+    void drawNeonTextWithFade(String text, float x, float y, int glowColor, float time) {
+        // Calculate fade in based on time
+        float fade = map(time, 0, 2000, 0, 255); // fade in over 2 seconds
+        fade = constrain(fade, 0, 255); // Make sure fade doesn't go beyond 255
+    
+        // Set the text size for the solid text on top
+        textSize(fontSize);
+    
+        // Draw the glowing text with fewer layers for a simpler look
+        fill(glowColor, fade); // Use fade for alpha
+        for (int i = 3; i > 0; i--) { // Only 3 layers of glow for simplicity
+            text(text, x, y + i); // Slight offset for the glow layers
+        }
+    
+        // Draw the solid text on top
+        fill(255, fade); // Use fade for alpha
+        text(text, x, y); // Draw the text at the original position
+    }
+
+    void drawCube(float side,float x,float y,float z,float cubeSpeed) {
+        
+        float halfSide = side / 2;
+        //println("cube size:"+side+"cubespeed:"+cubeSpeed); //debugging statement
+
+        // Perform FFT analysis on the current audio playing
+        fft.forward(song.mix);
+
+        float bassSum = 0, midSum = 0, trebleSum = 0;
+        int bassCount = 0, midCount = 0, trebleCount = 0;
+
+        // Divide the frequency spectrum into bass, mid, and treble
+        for (int i = 0; i < fft.specSize(); i++) {
+            float freq = fft.indexToFreq(i);
+            float amplitude = fft.getBand(i);
+
+            if (freq < 150) {  // Bass: below 150 Hz
+                bassSum += amplitude;
+                bassCount++;
+            } else if (freq >= 150 && freq < 4000) {  // Mid: 150 Hz to 4 kHz
+                midSum += amplitude;
+                midCount++;
+            } else if (freq >= 4000) {  // Treble: above 4 kHz
+                trebleSum += amplitude;
+                trebleCount++;
             }
-            if (sound2.isPlaying()) {
-                sound2.pause();
-                sound2.rewind();
+        }
+
+        // Calculate average amplitudes for bass, mid, and treble
+        float bassAvg = (bassCount > 0) ? bassSum / bassCount : 0;
+        float midAvg = (midCount > 0) ? midSum / midCount : 0;
+        float trebleAvg = (trebleCount > 0) ? trebleSum / trebleCount : 0;
+
+
+        float totalAmplitude = 0;
+
+        for (int i = 0; i < fft.specSize(); i++) {
+            totalAmplitude += fft.getBand(i);
+        }
+
+        float hue = map(totalAmplitude, 0, 3000, 180, 360);  // Ranges from blue to purple to pink mostly
+        if (extremeColour){
+            hue = map(totalAmplitude, 0, 200, 0, 360);  // Ranges from all colours aggresively
+            hue = hue % 360;  // Ensure the hue wraps around correctly
+        }
+        
+
+        // Rotate based on the average amplitudes
+        angleX += map(bassAvg, 0, 10, 0, PI / 200);  // Scale these factors as needed
+        angleY += map(midAvg, 0, 10, 0, PI / 200);
+        angleZ += map(trebleAvg, 0, 10, 0, PI / 200);
+
+
+        float totalLoudness = 0; // Initialize total loudness
+
+        // Sum all amplitudes to calculate total loudness
+        for (int i = 0; i < fft.specSize(); i++) {
+            totalLoudness += fft.getBand(i);
+        }
+
+        float normalizedLoudness = map(totalLoudness, 0, 200, 1, 10); // Adjust range 0-200 to 1-10, 
+        normalizedLoudness = constrain(normalizedLoudness, 0, 3); // Ensure stroke weight doesn't get too high
+        pushMatrix();
+        translate(x,y,z);
+        rotateX(angleX*cubeSpeed);
+        rotateY(angleY*cubeSpeed);
+        rotateZ(angleZ*cubeSpeed);
+
+        if (modes[0]){
+            strokeWeight(normalizedLoudness); // Set the outline weight
+            if (song.isPlaying()){
+                strokeWeight(normalizedLoudness); // Set the outline weight
+                stroke(hue,100,100); 
             }
-            if (sound3.isPlaying()) {
-                sound3.pause();
-                sound3.rewind();
+            else
+            {
+                strokeWeight(2); // thin outline
+                stroke(255);// white outline
             }
-            if (sound4.isPlaying()) {
-                sound4.pause();
-                sound4.rewind();
+            if (side<=26f || fillActivated){// if cubes are very small we want to fill them or if fill activated
+                fill(hue,100,100);  
+                strokeWeight(2); // thin outline
+                stroke(255);// white outline
+            }else{
+                noFill(); // Do not fill the shapes
             }
-            if (sound5.isPlaying()) {
-                sound5.pause();
-                sound5.rewind();
-            }
-            if (song.isPlaying()) {
-                song.pause();
-                song.rewind();
-            }
+        }else if(modes[1]){
+            fill(hue,100,100);
+        }
+        
             
         
-            // Play the selected sound.
-            sound.play();
-            isInteractiveSoundFinished = false; // Set to false when any interactive sound starts
+        beginShape(QUADS);
+        for (int i = 0; i < 6; i++) {
+            switch (i) {
+                case 0: // Front face
+                    vertex(-halfSide, -halfSide, halfSide);
+                    vertex(halfSide, -halfSide, halfSide);
+                    vertex(halfSide, halfSide, halfSide);
+                    vertex(-halfSide, halfSide, halfSide);
+                    break;
+                case 1: // Back face
+                    vertex(halfSide, -halfSide, -halfSide);
+                    vertex(-halfSide, -halfSide, -halfSide);
+                    vertex(-halfSide, halfSide, -halfSide);
+                    vertex(halfSide, halfSide, -halfSide);
+                    break;
+                // Add other faces similarly
+                case 2: // Top face
+                    vertex(-halfSide, -halfSide, -halfSide);
+                    vertex(halfSide, -halfSide, -halfSide);
+                    vertex(halfSide, -halfSide, halfSide);
+                    vertex(-halfSide, -halfSide, halfSide);
+                    break;
+                case 3: // Bottom face
+                    vertex(-halfSide, halfSide, halfSide);
+                    vertex(halfSide, halfSide, halfSide);
+                    vertex(halfSide, halfSide, -halfSide);
+                    vertex(-halfSide, halfSide, -halfSide);
+                    break;
+                case 4: // Right face
+                    vertex(halfSide, -halfSide, halfSide);
+                    vertex(halfSide, -halfSide, -halfSide);
+                    vertex(halfSide, halfSide, -halfSide);
+                    vertex(halfSide, halfSide, halfSide);
+                    break;
+                case 5: // Left face
+                    vertex(-halfSide, -halfSide, -halfSide);
+                    vertex(-halfSide, -halfSide, halfSide);
+                    vertex(-halfSide, halfSide, halfSide);
+                    vertex(-halfSide, halfSide, -halfSide);
+                    break;
+            }
+        }
+        endShape(CLOSE);
+        popMatrix();
+    }
+
+    void drawMovingSphere(float x, float y, float r) {
+        pushMatrix(); // Save the current state of transformations
+        translate(x, y); // Use the dynamic `sphereY` for y-position
         
-            // Reinitialize FFT with the current sound's buffer size and sample rate
-            fft = new FFT(sound.bufferSize(), sound.sampleRate());
-            fft.logAverages(10, 1);
+        if (!startDrawingShapes){
+            angle += 0.01; // Continuously rotate the sphere
+        }else if(modes[0]&&startDrawingShapes){
+            angle+=0.001;
         }
 
-        public void updateFading() {
-            if (startFading && millis() - fadeStartTime > fadeDuration) {
-                startFading = false; // Stop fading after 6 seconds
-                startDrawingShapes=true;
-                playSound(song);
-            }
+        if (song.isPlaying() || !playIntro) {
+            
+            rotateX(angle);
     
-            if (startFading) {
-                // Perform fading logic here
-                fadeAmount = map(millis() - fadeStartTime, 0, fadeDuration, 0, 255);
-                fadeAmount = constrain(fadeAmount, 0, 255);
-            }
-        }
-
-
-        void drawCube(float side,float x,float y,float z,float cubeSpeed) {
-        
-            float halfSide = side / 2;
-            //println("cube size:"+side+"cubespeed:"+cubeSpeed); //debugging statement
-    
-            // Perform FFT analysis on the current audio playing
-            fft.forward(song.mix);
-    
-            float bassSum = 0, midSum = 0, trebleSum = 0;
-            int bassCount = 0, midCount = 0, trebleCount = 0;
-    
-            // Divide the frequency spectrum into bass, mid, and treble
+            // Analyze the spectrum into bass, mid, and treble
+            float bassAmplitude = 0, trebleAmplitude = 0;
+            int bassCount = 0, trebleCount = 0;
+            
             for (int i = 0; i < fft.specSize(); i++) {
                 float freq = fft.indexToFreq(i);
                 float amplitude = fft.getBand(i);
     
-                if (freq < 150) {  // Bass: below 150 Hz
-                    bassSum += amplitude;
+                // Define bass as frequencies below 150 Hz
+                if (freq < 150) {
+                    bassAmplitude += amplitude;
                     bassCount++;
-                } else if (freq >= 150 && freq < 4000) {  // Mid: 150 Hz to 4 kHz
-                    midSum += amplitude;
-                    midCount++;
-                } else if (freq >= 4000) {  // Treble: above 4 kHz
-                    trebleSum += amplitude;
+                }
+                // Define treble as frequencies above 4000 Hz
+                else if (freq > 4000) {
+                    trebleAmplitude += amplitude;
                     trebleCount++;
                 }
             }
     
-            // Calculate average amplitudes for bass, mid, and treble
-            float bassAvg = (bassCount > 0) ? bassSum / bassCount : 0;
-            float midAvg = (midCount > 0) ? midSum / midCount : 0;
-            float trebleAvg = (trebleCount > 0) ? trebleSum / trebleCount : 0;
+            // Calculate average amplitudes
+            bassAmplitude = (bassCount > 0) ? bassAmplitude / bassCount : 0;
+            trebleAmplitude = (trebleCount > 0) ? trebleAmplitude / trebleCount : 0;
     
+            // Adjust movement speed based on bass amplitude
+            movementSpeed = map(bassAmplitude, 0, 10, 1, 5);
+            movementSpeed = constrain(movementSpeed, 1, 5);
     
+            // Setting HSB color mode
+            colorMode(HSB, 360, 100, 100);
+    
+            // Optional: Adjust color based on treble amplitude
+            float hue = map(trebleAmplitude, 0, 2000, 0, 360); // Half range of hue
+            float saturation = map(bassAmplitude, 0, 10, 20, 100); // Saturation increases with bass
+            float brightness = 100; // Always full brightness for visibility
+    
+
             float totalAmplitude = 0;
-    
-            for (int i = 0; i < fft.specSize(); i++) {
+
+            for (int i = 0; i < fft.specSize(); i++) { // needs to be added for extreme colours to work
                 totalAmplitude += fft.getBand(i);
             }
-    
-            float hue = map(totalAmplitude, 0, 200, 280, 300);  // Ranges from blue to purple
-            hue = hue % 360;  // Ensure the hue wraps around correctly
-    
-            // Rotate based on the average amplitudes
-            angleX += map(bassAvg, 0, 10, 0, PI / 200);  // Scale these factors as needed
-            angleY += map(midAvg, 0, 10, 0, PI / 200);
-            angleZ += map(trebleAvg, 0, 10, 0, PI / 200);
-    
-    
-            float totalLoudness = 0; // Initialize total loudness
-    
-            // Sum all amplitudes to calculate total loudness
-            for (int i = 0; i < fft.specSize(); i++) {
-                totalLoudness += fft.getBand(i);
-            }
-    
-            float normalizedLoudness = map(totalLoudness, 0, 200, 1, 10); // Adjust range 0-200 to 1-10, 
-            normalizedLoudness = constrain(normalizedLoudness, 0, 3); // Ensure stroke weight doesn't get too high
-            pushMatrix();
-            translate(x,y,z);
-            rotateX(angleX*cubeSpeed);
-            rotateY(angleY*cubeSpeed);
-            rotateZ(angleZ*cubeSpeed);
-    
-            if (modes[0]){
-                strokeWeight(normalizedLoudness); // Set the outline weight
-                if (song.isPlaying()){
-                    strokeWeight(normalizedLoudness); // Set the outline weight
-                    stroke(hue,100,100); // Set the outline color to white
-                }
-                else
-                {
-                    strokeWeight(2); // thin outline
-                    stroke(255);// white outline
-                }
-                if (side<=26f || fillActivated){// if cubes are very small we want to fill them or if fill activated
-                    fill(hue,100,100);  
-                    strokeWeight(2); // thin outline
-                    stroke(255);// white outline
-                }else{
-                    noFill(); // Do not fill the shapes
-                }
-            }else if(modes[1]){
-                fill(hue,100,100);
-            }
-            
-                
-            
-            beginShape(QUADS);
-            for (int i = 0; i < 6; i++) {
-                switch (i) {
-                    case 0: // Front face
-                        vertex(-halfSide, -halfSide, halfSide);
-                        vertex(halfSide, -halfSide, halfSide);
-                        vertex(halfSide, halfSide, halfSide);
-                        vertex(-halfSide, halfSide, halfSide);
-                        break;
-                    case 1: // Back face
-                        vertex(halfSide, -halfSide, -halfSide);
-                        vertex(-halfSide, -halfSide, -halfSide);
-                        vertex(-halfSide, halfSide, -halfSide);
-                        vertex(halfSide, halfSide, -halfSide);
-                        break;
-                    // Add other faces similarly
-                    case 2: // Top face
-                        vertex(-halfSide, -halfSide, -halfSide);
-                        vertex(halfSide, -halfSide, -halfSide);
-                        vertex(halfSide, -halfSide, halfSide);
-                        vertex(-halfSide, -halfSide, halfSide);
-                        break;
-                    case 3: // Bottom face
-                        vertex(-halfSide, halfSide, halfSide);
-                        vertex(halfSide, halfSide, halfSide);
-                        vertex(halfSide, halfSide, -halfSide);
-                        vertex(-halfSide, halfSide, -halfSide);
-                        break;
-                    case 4: // Right face
-                        vertex(halfSide, -halfSide, halfSide);
-                        vertex(halfSide, -halfSide, -halfSide);
-                        vertex(halfSide, halfSide, -halfSide);
-                        vertex(halfSide, halfSide, halfSide);
-                        break;
-                    case 5: // Left face
-                        vertex(-halfSide, -halfSide, -halfSide);
-                        vertex(-halfSide, -halfSide, halfSide);
-                        vertex(-halfSide, halfSide, halfSide);
-                        vertex(-halfSide, halfSide, -halfSide);
-                        break;
-                }
-            }
-            endShape(CLOSE);
-            popMatrix();
-        }
 
-        void drawMovingSphere(float x, float y, float r) {
-            pushMatrix(); // Save the current state of transformations
-            translate(x, y); // Use the dynamic `sphereY` for y-position
+            // Adjust stroke width dynamically for a pulsing effect
+            float strokeWeightValue = map(trebleAmplitude, 0, 10, 0.5f, 15);
+            noFill();
+            strokeWeight(strokeWeightValue);
+            if (extremeColour){
+                hue = map(totalAmplitude, 0, 2000, 240, 360);  // Ranges from half colour wheel
+                hue = hue % 360;  // Ensure the hue wraps around correctly
+                stroke(hue,100,100);
+            }else{
+                hue = map(totalAmplitude, 0, 2000, 0, 80);  // Ranges from other half colour wheel
+                hue = hue % 360;  // Ensure the hue wraps around correctly
+                stroke(hue,100,100);
+                println("not extreme colours");
+            }
             
-            if (!startDrawingShapes){
-                angle += 0.01; // Continuously rotate the sphere
-            }else if(modes[0]&&startDrawingShapes){
-                angle+=0.001;
-            }
     
-            if (song.isPlaying() || !playIntro) {
-                
-                rotateX(angle);
-        
-                // Analyze the spectrum into bass, mid, and treble
-                float bassAmplitude = 0, trebleAmplitude = 0;
-                int bassCount = 0, trebleCount = 0;
-                
-                for (int i = 0; i < fft.specSize(); i++) {
-                    float freq = fft.indexToFreq(i);
-                    float amplitude = fft.getBand(i);
-        
-                    // Define bass as frequencies below 150 Hz
-                    if (freq < 150) {
-                        bassAmplitude += amplitude;
-                        bassCount++;
-                    }
-                    // Define treble as frequencies above 4000 Hz
-                    else if (freq > 4000) {
-                        trebleAmplitude += amplitude;
-                        trebleCount++;
-                    }
-                }
-        
-                // Calculate average amplitudes
-                bassAmplitude = (bassCount > 0) ? bassAmplitude / bassCount : 0;
-                trebleAmplitude = (trebleCount > 0) ? trebleAmplitude / trebleCount : 0;
-        
-                // Adjust movement speed based on bass amplitude
-                movementSpeed = map(bassAmplitude, 0, 10, 1, 5);
-                movementSpeed = constrain(movementSpeed, 1, 5);
-        
-                // Setting HSB color mode
-                colorMode(HSB, 360, 100, 100);
-        
-                // Optional: Adjust color based on treble amplitude
-                float hue = map(trebleAmplitude, 0, 10, 0, 180); // Full range of hue
-                float saturation = map(bassAmplitude, 0, 10, 20, 100); // Saturation increases with bass
-                float brightness = 100; // Always full brightness for visibility
-        
-                // Adjust stroke width dynamically for a pulsing effect
-                float strokeWeightValue = map(trebleAmplitude, 0, 10, 0.5f, 15);
-                noFill();
-                strokeWeight(strokeWeightValue);
-                stroke(hue, saturation, brightness);
-        
-                // Draw the sphere with the constant radius
-                sphere(r);
-            } else {
-                // Default color when music is paused
-                colorMode(RGB, 255); // Switch back to RGB for consistent color handling
-                fill(255, 0, 100, 100);
-                stroke(255);
-                strokeWeight(1);
-                sphere(r);
-            }
-        
-            popMatrix(); // Restore original state of transformations
+            // Draw the sphere with the constant radius
+            sphere(r);
+        } else {
+            // Default color when music is paused
+            colorMode(RGB, 255); // Switch back to RGB for consistent color handling
+            //fill(255, 0, 100, 100);
+            noFill();
+            stroke(255);
+            strokeWeight(1);
+            sphere(r);
         }
     
-    public static void main(String[] args) {
-        PApplet.main("example.IntroVisual");
+        popMatrix(); // Restore original state of transformations
     }
     
+    
+    
+    
+    
+    
+    
+    
+
+    
+
 
 }
