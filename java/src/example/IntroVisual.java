@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import ddf.minim.*;
 import ddf.minim.analysis.FFT;
 
-public class playIntro extends PApplet {
+public class IntroVisual extends PApplet {
     Minim minim;
     AudioPlayer player;
     FFT fft;
