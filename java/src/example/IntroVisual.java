@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import ddf.minim.*;
 import ddf.minim.analysis.FFT;
 
-public class IntroVisual extends PApplet {
+public class playIntro extends PApplet {
     Minim minim;
     AudioPlayer player;
     FFT fft;
@@ -129,7 +129,8 @@ public class IntroVisual extends PApplet {
 
     boolean fillActivated=true;
     boolean extremeColour=false;
-    
+    boolean displayDiamond = true;  // True for diamond, false for cube
+
 
 
     public static void main(String[] args) {
@@ -227,7 +228,15 @@ public class IntroVisual extends PApplet {
                     colorMode(HSB, 360, 100, 100);  // Set HSB color mode
                     pushMatrix();  // Save the current transformation matrix state
                     drawMovingSphere(width /2, height/2, sphereRadius);
-                    drawCube(bigCubeSize,width/2,height/2,0,bigCubeSpeed);
+
+                    if (displayDiamond){
+                        drawDiamond();
+                    }
+                    else {
+                        drawCube(bigCubeSize,width/2,height/2,0,bigCubeSpeed);
+                    }
+
+
                     drawCube(smallCubeSize, width / 2, height / 2 - offset, 0,smallCubeSpeed);  // Small cube above
                     drawCube(smallCubeSize, width / 2.6f, height / 2 - offset, 0,smallCubeSpeed);  // Small cube above
                     drawCube(smallCubeSize, width / 2, height / 2 + offset, 0,smallCubeSpeed);  // Small cube below
@@ -806,23 +815,24 @@ public class IntroVisual extends PApplet {
     }
 
     public void mouseClicked() {
-        for (PVector cubePos : smallCubePositions) {
-            // Convert 3D position to screen coordinates
+        for (int i = 0; i < smallCubePositions.size(); i++) {
+            PVector cubePos = smallCubePositions.get(i);
             float screenX = screenX(cubePos.x, cubePos.y, cubePos.z);
             float screenY = screenY(cubePos.x, cubePos.y, cubePos.z);
-            
-            // Check if the mouse click is within a certain radius of the cube's screen position
             float distance = dist(mouseX, mouseY, screenX, screenY);
-            if (distance < 20) { // Adjust sensitivity as needed
+            
+            if (distance < 20) {
                 println("Clicked on cube at " + cubePos);
-                handleCubeClick(cubePos);
-            }
-            else
-            {
-                cubeClicked=false;
+                if (i == 0) {  // Assuming index 0 is the left cube
+                    displayDiamond = true;
+                } else if (i == 1) {  // Assuming index 1 is the right cube
+                    displayDiamond = false;
+                }
+                break;
             }
         }
     }
+    
     
     public void handleCubeClick(PVector cubePosition) {
         // Handle the event when a cube is clicked
@@ -833,7 +843,7 @@ public class IntroVisual extends PApplet {
 
     void cycleModes() {
         modes[currentModeIndex] = false;  // Deactivate the current mode
-        currentModeIndex = (currentModeIndex + 1) % NUM_MODES;  // Move to the next mode, wrapping around if necessary
+        //currentModeIndex = (currentModeIndex + 1) % NUM_MODES;  // Move to the next mode, wrapping around if necessary
         modes[currentModeIndex] = true;  // Activate the new mode
     }
     
@@ -1120,7 +1130,7 @@ public class IntroVisual extends PApplet {
                 hue = map(totalAmplitude, 0, 2000, 0, 80);  // Ranges from other half colour wheel
                 hue = hue % 360;  // Ensure the hue wraps around correctly
                 stroke(hue,100,100);
-                println("not extreme colours");
+                //println("not extreme colours");
             }
             
     
