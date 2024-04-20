@@ -129,7 +129,7 @@ public class IntroVisual extends PApplet {
 
     boolean fillActivated=true;
     boolean extremeColour=false;
-    boolean displayDiamond = true;  // True for diamond, false for cube
+    boolean displayDiamond = false;  // True for diamond, false for cube
 
 
 
@@ -351,9 +351,31 @@ public class IntroVisual extends PApplet {
         rotateX(currentRotationY);
         rotateY(currentRotationY);
         
+        float totalAmplitude = 0;
+
+        for (int i = 0; i < fft.specSize(); i++) {
+            totalAmplitude += fft.getBand(i);
+        }
+        
         stroke((frameCount % 255), 255, 255);
         strokeWeight(2);
-        fill(255, 0, 0, transparentColour); // Use current transparency level
+        if (!startDrawingShapes){
+            fill(340, 100, 100, transparentColour);
+        }else if(startDrawingShapes){
+            if (extremeColour){
+                float hue = map(totalAmplitude, 0, 2000, 0, 360);  // custom hue for diamond
+                hue=hue%360;
+                fill(hue,100,100);
+            }else{
+                float hue = map(totalAmplitude, 0, 2000, 300, 360);  // custom hue for diamond
+                fill(hue,100,100);
+                stroke(255);//white outline
+            }
+            
+        }
+        
+        
+        
         
         float size = 180;
         float mid = size / 2;
@@ -463,9 +485,10 @@ public class IntroVisual extends PApplet {
         rotateX(PI);
         if (playIntro &&!startDrawingShapes){
             fill(totalAmplitude, 50, totalAmplitude, transparentColour);
+            println(transparentColour);
             //println("in intro"); //debugging statement
         }
-        if (modes[0] &&startDrawingShapes)// colour scheme for mode 1
+        if (modes[0] &&startDrawingShapes)// colour scheme for mode 0
         {
             //println("in visualizer");
             if (extremeColour){
@@ -824,9 +847,9 @@ public class IntroVisual extends PApplet {
             if (distance < 20) {
                 println("Clicked on cube at " + cubePos);
                 if (i == 0) {  // Assuming index 0 is the left cube
-                    displayDiamond = true;
-                } else if (i == 1) {  // Assuming index 1 is the right cube
                     displayDiamond = false;
+                } else if (i == 1) {  // Assuming index 1 is the right cube
+                    displayDiamond = true;
                 }
                 break;
             }
@@ -1122,17 +1145,24 @@ public class IntroVisual extends PApplet {
             float strokeWeightValue = map(trebleAmplitude, 0, 10, 0.5f, 15);
             noFill();
             strokeWeight(strokeWeightValue);
-            if (extremeColour){
-                hue = map(totalAmplitude, 0, 2000, 240, 360);  // Ranges from half colour wheel
-                hue = hue % 360;  // Ensure the hue wraps around correctly
-                stroke(hue,100,100);
+            if (modes[0]&& startDrawingShapes){
+                if (extremeColour){
+                    hue = map(totalAmplitude, 0, 2000, 240, 360);  // Ranges from half colour wheel
+                    hue = hue % 360;  // Ensure the hue wraps around correctly
+                    stroke(hue,100,100);
+                }else if (!extremeColour){
+                    hue = map(totalAmplitude, 0, 2000, 0, 80);  // Ranges from other half colour wheel
+                    hue = hue % 360;  // Ensure the hue wraps around correctly
+                    stroke(hue,100,100);
+                    //println("not extreme colours");
+                }
             }else{
-                hue = map(totalAmplitude, 0, 2000, 0, 80);  // Ranges from other half colour wheel
+                hue = map(totalAmplitude, 0, 2000, 300, 360);  // Ranges from half colour wheel
                 hue = hue % 360;  // Ensure the hue wraps around correctly
                 stroke(hue,100,100);
-                //println("not extreme colours");
             }
-            
+
+                
     
             // Draw the sphere with the constant radius
             sphere(r);
