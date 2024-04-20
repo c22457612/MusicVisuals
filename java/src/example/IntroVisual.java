@@ -68,15 +68,15 @@ public class IntroVisual extends PApplet {
     //rainbow wave variables
     float centerX = width * 0.5f;
     float centerY = height * 0.5f;
-    float baseRadius = 110; // Base radius of the wave
-    float maxWaveAmplitude = 150; // Max additional amplitude, adjusted for smoother wave
+    float baseRadius = 140; // Base radius of the wave
+    float maxWaveAmplitude = 10000; // Max additional amplitude, adjusted for smoother wave
     float smoothingFactor = 0.2f; // Increase for smoother transitions
     float maxFFTAmplitude = 0; // We'll calculate this each frame
     float rainbowWaveRotationAngle=0;
 
     boolean circleVisible = false;
     float circleOpacity = 0;
-    float circleMaxRadius = 110; // Adjust this to your desired size
+    float circleMaxRadius = 140; // Adjust this to your desired size
     long circleFadeStartTime = -1;
 
     PFont font;
@@ -670,7 +670,7 @@ public class IntroVisual extends PApplet {
         }
 
         // bottom left pyramid
-        float bottomWaveAmplitudeScale = 0.02f; // Adjust this to make the bottom waves less reactive 
+        float bottomWaveAmplitudeScale = 0.1f; // Adjust this to make the bottom waves less reactive 
 
         for (float y = height; y >= height - waveLength; y -= 0.1) {
             int index = (int) map(height - y, 0, height, 0, fft.avgSize() - 1);
@@ -723,8 +723,7 @@ public class IntroVisual extends PApplet {
         // Translate to the center of the screen
         translate(width/2, height/2);
         // Rotate the whole wave by the current rotation angle
-        if (modes[1]){
-            
+        if (modes[0]){
             rotate(rainbowWaveRotationAngle);
         }
         noFill();
