@@ -260,7 +260,11 @@ public class IntroVisual extends PApplet {
                     drawCube(verySmallCubeSize, width / 1.14f, height / 2 , 0,smallCubeSpeed);// cube inside pyramids
                     drawCube(verySmallCubeSize, width /8.4f, height / 2 , 0,smallCubeSpeed);
                     if (!song.isPlaying()){ //paused logic
-                        drawCube(bigCubeSize,width/2,height/2,0,bigCubeSpeed);
+                        if (displayDiamond){
+                            drawDiamond();
+                        }else{
+                            drawCube(bigCubeSize,width/2,height/2,0,bigCubeSpeed);
+                        }
                         drawCube(smallCubeSize, width / 2, height / 2 - offset, 0,smallCubeSpeed);  // Small cube above
                         drawCube(smallCubeSize, width / 2, height / 2 + offset, 0,smallCubeSpeed);  // Small cube below
                         drawSoundWave();
@@ -350,20 +354,27 @@ public class IntroVisual extends PApplet {
         pushMatrix();
         translate(width / 2, height / 2, -400);
         
-        if (xRotateDiamond){
-            if (extremeColour){
-                rotateX(currentRotationY*2);
-            }else{
-                rotateX(currentRotationY);
-            } 
+
+        if (startDrawingShapes){
+            if (xRotateDiamond){
+                if (extremeColour){
+                    rotateX(currentRotationY*2);
+                }else{
+                    rotateX(currentRotationY);
+                } 
+            }
+            if (yRotateDiamond){
+                if (extremeColour){
+                    rotateY(currentRotationY*2);
+                }else{
+                    rotateY(currentRotationY);
+                } 
+            }
+        }else{
+            rotateX(currentRotationY);
+            rotateY(currentRotationY);
         }
-        if (yRotateDiamond){
-            if (extremeColour){
-                rotateY(currentRotationY*2);
-            }else{
-                rotateY(currentRotationY);
-            } 
-        }
+        
         
         
         float totalAmplitude = 0;
@@ -378,13 +389,21 @@ public class IntroVisual extends PApplet {
             fill(340, 100, 100, transparentColour);
         }else if(startDrawingShapes){
             if (extremeColour){
-                float hue = map(totalAmplitude, 0, 2000, 0, 360);  // custom hue for diamond
-                hue=hue%360;
-                fill(hue,100,100);
+                if (fillActivated){
+                    float hue = map(totalAmplitude, 0, 2000, 0, 360);  // custom hue for diamond
+                    hue=hue%360;
+                    fill(hue,100,100);
+                }else{
+                    noFill();
+                }
+                
             }else{
-                float hue = map(totalAmplitude, 0, 2000, 300, 360);  // custom hue for diamond
-                fill(hue,100,100);
-                stroke(255);//white outline
+                if (fillActivated){
+                    float hue = map(totalAmplitude, 0, 2000, 300, 360);  // custom hue for diamond
+                    fill(hue,100,100);
+                    stroke(255);//white outline
+                }
+                
             }
             
         }
@@ -599,14 +618,14 @@ public class IntroVisual extends PApplet {
 
         float waveFrequency = 0.5f; // Controls the frequency of the sine wave
         float maxAmplitude = 1f; //double the frequency
-        float waveLength = height/2.8f;// length to properly touch the left pyramid top
+        float waveLength = height/2.75f;// length to properly touch the pyramids
 
         if (!startDrawingShapes){
             fft.forward(player.mix);
         }else
         {
             fft.forward(song.mix);
-            waveLength=height/2;
+            waveLength=height/2.1f;
         }
 
         if (modes[0] && startDrawingShapes){
@@ -624,7 +643,7 @@ public class IntroVisual extends PApplet {
             float amplitude = fft.getAvg(index) * waveHeight; // Scale the amplitude based on FFT average
             // Use the x value as the input to the sin function to create a horizontal wave
             float x = sin((height - y) * waveFrequency + frameCount * 0.05f) * amplitude * maxAmplitude;
-            x += width/4f; // line up with pyramid properly for full screen
+            x += width/4.1f; // line up with pyramid properly for full screen
         
             // Change the color over time based on the amplitude
             int colorValue = (int) map(amplitude, 0, maxAmplitude, 0, 255);
@@ -640,7 +659,7 @@ public class IntroVisual extends PApplet {
             float amplitude = fft.getAvg(index) * waveHeight; // Scale the amplitude based on FFT average
             // Use the x value as the input to the sin function to create a horizontal wave
             float x = sin((height - y) * waveFrequency + frameCount * 0.05f) * amplitude * maxAmplitude;
-            x += width/1.331f; // line up with pyramid full screen
+            x += width/1.323f; // line up with pyramid full screen
         
             // Change the color over time based on the amplitude
             int colorValue = (int) map(amplitude, 0, maxAmplitude, 0, 255);
@@ -657,7 +676,7 @@ public class IntroVisual extends PApplet {
             int index = (int) map(height - y, 0, height, 0, fft.avgSize() - 1);
             float amplitude = fft.getAvg(index) * waveHeight * bottomWaveAmplitudeScale; // Apply the scale here
             float x = sin(((height - y) * waveFrequency - frameCount * 0.2f)) * amplitude * maxAmplitude; 
-            x += width/4;
+            x += width/4.1f;
 
             int colorValue = (int) map(amplitude, 0, maxAmplitude, 0, 255);
             stroke(color(255 - colorValue, colorValue, 255));
@@ -670,7 +689,7 @@ public class IntroVisual extends PApplet {
             int index = (int) map(height - y, 0, height, 0, fft.avgSize() - 1);
             float amplitude = fft.getAvg(index) * waveHeight * bottomWaveAmplitudeScale; // Apply the scale here
             float x = sin(((height - y) * waveFrequency - frameCount * 0.2f)) * amplitude * maxAmplitude; 
-            x += width/1.331f;
+            x += width/1.323f;
 
             int colorValue = (int) map(amplitude, 0, maxAmplitude, 0, 255);
             stroke(color(255 - colorValue, colorValue, 255));
