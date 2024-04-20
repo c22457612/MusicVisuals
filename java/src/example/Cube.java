@@ -1,205 +1,170 @@
 package example;
 
-import ddf.minim.Minim;
-
-import java.util.ArrayList;
-
+import processing.core.PApplet;
+import processing.core.PConstants;
 import ddf.minim.AudioPlayer;
 import ddf.minim.analysis.FFT;
-import processing.core.PApplet;
-import processing.core.PVector;
 
-public class Cube extends PApplet {
-
-    Minim minim;
-    AudioPlayer song;
+public class Cube {
+    PApplet parent; // The PApplet object we will render to
+    float side;
+    float x, y, z;
+    float cubeSpeed;
     FFT fft;
+    AudioPlayer song;
+    float angleX,angleY,angleZ;
+    // Additional properties
 
-    int colour1 = 150;
-    int colour2 = 255;
-    int colour3 = 170;
-
-    
-    float faceOpacity = 0;
-    float[] faceOpacities = new float[6]; // Opacity for each face
-    boolean fadeInActive = false;
-    int faceColorIndex = 0;
-    int[] colors = {color(255, 0, 0), color(0, 255, 0), color(0, 0, 255), color(255, 255, 0), color(0, 255, 255), color(255, 0, 255)};
-    float cubeSize = 150; // Initial size of the cube
-    boolean shrinkActive = false; // Control whether the cube should shrink
-
-
-    ArrayList<FloatingCube> floatingCubes = new ArrayList<FloatingCube>();
-
-
-    public void settings() {
-        size(800, 600, P3D);
+    public Cube(PApplet parent, float side, float x, float y, float z, float cubeSpeed, FFT fft, AudioPlayer song) {
+        this.parent = parent;
+        this.side = side;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.cubeSpeed = cubeSpeed;
+        this.fft = fft;
+        this.song = song;
+        this.angleX=0;
+        this.angleY=0;
+        this.angleZ=0;
+        // Initialize other properties
     }
 
-    public void setup() {
-        minim = new Minim(this);
-        song = minim.loadFile("Radiohead.mp3", 512);
-        song.play();
-        fft = new FFT(song.bufferSize(), song.sampleRate());
-        textSize(16);
-    }
-    
-    public void draw() {
-        background(0);
-        lights();
-        
-        fft.forward(song.mix);
-        translate(width / 2, height / 2, 0);
-        rotateX(frameCount * 0.01f);
-        rotateY(frameCount * 0.01f);
-        
-        if (fadeInActive && faceOpacity < 255) {
-            faceOpacity += 2;
-        }
-    
-        if (shrinkActive && cubeSize > 10) { // Ensure the cube does not disappear entirely
-            cubeSize -= 0.5; // Gradually decrease the cube size
-        }
-    
-        drawCube(cubeSize); // Pass the dynamic size to the drawing function
+    public void draw(boolean extremeColour, boolean fillActivated, boolean[] modes,float angleX) {
 
-        for (FloatingCube fc : floatingCubes) {
-            fc.update();
-            fc.display();
-        }
-    }
-    
-    
-    public void keyPressed() {
-        if (key == '1') {
-            fadeInActive = !fadeInActive;
-            faceColorIndex = (faceColorIndex + 1) % colors.length;
-            shrinkActive = !shrinkActive; // Toggle the shrinking effect
-        }
-        if (key == '2') { 
-            // Add a new cube at the center with a random size and color
-            addCube(new PVector(width/2, height/2, 0), random(30, 100), color(random(255), random(255), random(255)));
-        }
-    }
-    
-
-    void drawCube(float side) {
         float halfSide = side / 2;
-        
-        // Amplify the FFT values for more noticeable color changes
-        float bass = fft.getBand(0) * 20;  // Using linear scale for simplicity
-        float mid = fft.getBand(fft.specSize() / 2) * 20;
-        float treble = fft.getBand(fft.specSize() - 1) * 20;
-        
-        // Calculate total loudness for stroke weight
-        float totalLoudness = bass + mid + treble;
-        strokeWeight(map(totalLoudness, 0, 1000, 1, 10)); // Adjust these ranges based on actual loudness levels
-    
-        // Dynamic color based on FFT data, modulated by current selected color index for vibrancy
-        int r = (int) map(bass, 0, 100, red(colors[faceColorIndex]), 255);
-        int g = (int) map(mid, 0, 100, green(colors[faceColorIndex]), 255);
-        int b = (int) map(treble, 0, 100, blue(colors[faceColorIndex]), 255);
-        stroke(r, g, b); // Set the outline color based on the audio
-    
-        if (fadeInActive) {
-            for (int i = 0; i < faceOpacities.length; i++) {
-                if (faceOpacities[i] < 255) {
-                    faceOpacities[i] += 2; // Increase opacity
-                } else {
-                    faceOpacities[i] = 0; // Reset when max is reached
-                }
+        //println("cube size:"+side+"cubespeed:"+cubeSpeed); //debugging statement
+
+        // Perform FFT analysis on the current audio playing
+        fft.forward(song.mix);
+
+        float bassSum = 0, midSum = 0, trebleSum = 0;
+        int bassCount = 0, midCount = 0, trebleCount = 0;
+
+        // Divide the frequency spectrum into bass, mid, and treble
+        for (int i = 0; i < fft.specSize(); i++) {
+            float freq = fft.indexToFreq(i);
+            float amplitude = fft.getBand(i);
+
+            if (freq < 150) {  // Bass: below 150 Hz
+                bassSum += amplitude;
+                bassCount++;
+            } else if (freq >= 150 && freq < 4000) {  // Mid: 150 Hz to 4 kHz
+                midSum += amplitude;
+                midCount++;
+            } else if (freq >= 4000) {  // Treble: above 4 kHz
+                trebleSum += amplitude;
+                trebleCount++;
             }
         }
+
+        // Calculate average amplitudes for bass, mid, and treble
+        float bassAvg = (bassCount > 0) ? bassSum / bassCount : 0;
+        float midAvg = (midCount > 0) ? midSum / midCount : 0;
+        float trebleAvg = (trebleCount > 0) ? trebleSum / trebleCount : 0;
+
+
+        float totalAmplitude = 0;
+
+        for (int i = 0; i < fft.specSize(); i++) {
+            totalAmplitude += fft.getBand(i);
+        }
+
+        float hue = PApplet.map(totalAmplitude, 0, 3000, 180, 360);  // Ranges from blue to purple to pink mostly
+        if (extremeColour){
+            hue = PApplet.map(totalAmplitude, 0, 200, 0, 360);  // Ranges from all colours aggresively
+            hue = hue % 360;  // Ensure the hue wraps around correctly
+        }
         
-        beginShape(QUADS);
+
+        // Rotate based on the average amplitudes
+        angleX += PApplet.map(bassAvg, 0, 10, 0, PConstants.PI / 200);  // Scale these factors as needed
+        angleY += PApplet.map(midAvg, 0, 10, 0, PConstants.PI / 200);
+        angleZ += PApplet.map(trebleAvg, 0, 10, 0, PConstants.PI / 200);
+
+
+        float totalLoudness = 0; // Initialize total loudness
+
+        // Sum all amplitudes to calculate total loudness
+        for (int i = 0; i < fft.specSize(); i++) {
+            totalLoudness += fft.getBand(i);
+        }
+
+        float normalizedLoudness = PApplet.map(totalLoudness, 0, 200, 1, 10); // Adjust range 0-200 to 1-10, 
+        normalizedLoudness = PApplet.constrain(normalizedLoudness, 0, 3); // Ensure stroke weight doesn't get too high
+        parent.pushMatrix();
+        parent.translate(x,y,z);
+        parent.rotateX(angleX*cubeSpeed);
+        parent.rotateY(angleY*cubeSpeed);
+        parent.rotateZ(angleZ*cubeSpeed);
+
+        if (modes[0]){
+            parent.strokeWeight(normalizedLoudness); // Set the outline weight
+            if (song.isPlaying()){
+                parent.strokeWeight(normalizedLoudness); // Set the outline weight
+                parent.stroke(hue,100,100); 
+            }
+            else
+            {
+                parent.strokeWeight(2); // thin outline
+                parent.stroke(255);// white outline
+            }
+            if (side<=26f || fillActivated){// if cubes are very small we want to fill them or if fill activated
+                parent.fill(hue,100,100);  
+                parent.strokeWeight(2); // thin outline
+                parent.stroke(255);// white outline
+            }else{
+                parent.noFill(); // Do not fill the shapes
+            }
+        }else if(modes[1]){
+            parent.fill(hue,100,100);
+        }
         
-        // Draw each face with separate color and opacity
+            
+        
+        parent.beginShape(PConstants.QUADS);
         for (int i = 0; i < 6; i++) {
-            fill(colors[i], faceOpacities[i]);
             switch (i) {
                 case 0: // Front face
-                    vertex(-halfSide, -halfSide, halfSide);
-                    vertex(halfSide, -halfSide, halfSide);
-                    vertex(halfSide, halfSide, halfSide);
-                    vertex(-halfSide, halfSide, halfSide);
+                    parent.vertex(-halfSide, -halfSide, halfSide);
+                    parent.vertex(halfSide, -halfSide, halfSide);
+                    parent.vertex(halfSide, halfSide, halfSide);
+                    parent.vertex(-halfSide, halfSide, halfSide);
                     break;
                 case 1: // Back face
-                    vertex(halfSide, -halfSide, -halfSide);
-                    vertex(-halfSide, -halfSide, -halfSide);
-                    vertex(-halfSide, halfSide, -halfSide);
-                    vertex(halfSide, halfSide, -halfSide);
+                    parent.vertex(halfSide, -halfSide, -halfSide);
+                    parent.vertex(-halfSide, -halfSide, -halfSide);
+                    parent.vertex(-halfSide, halfSide, -halfSide);
+                    parent.vertex(halfSide, halfSide, -halfSide);
                     break;
+                // Add other faces similarly
                 case 2: // Top face
-                    vertex(-halfSide, -halfSide, -halfSide);
-                    vertex(halfSide, -halfSide, -halfSide);
-                    vertex(halfSide, -halfSide, halfSide);
-                    vertex(-halfSide, -halfSide, halfSide);
+                    parent.vertex(-halfSide, -halfSide, -halfSide);
+                    parent.vertex(halfSide, -halfSide, -halfSide);
+                    parent.vertex(halfSide, -halfSide, halfSide);
+                    parent.vertex(-halfSide, -halfSide, halfSide);
                     break;
                 case 3: // Bottom face
-                    vertex(-halfSide, halfSide, halfSide);
-                    vertex(halfSide, halfSide, halfSide);
-                    vertex(halfSide, halfSide, -halfSide);
-                    vertex(-halfSide, halfSide, -halfSide);
+                    parent.vertex(-halfSide, halfSide, halfSide);
+                    parent.vertex(halfSide, halfSide, halfSide);
+                    parent.vertex(halfSide, halfSide, -halfSide);
+                    parent.vertex(-halfSide, halfSide, -halfSide);
                     break;
                 case 4: // Right face
-                    vertex(halfSide, -halfSide, halfSide);
-                    vertex(halfSide, -halfSide, -halfSide);
-                    vertex(halfSide, halfSide, -halfSide);
-                    vertex(halfSide, halfSide, halfSide);
+                    parent.vertex(halfSide, -halfSide, halfSide);
+                    parent.vertex(halfSide, -halfSide, -halfSide);
+                    parent.vertex(halfSide, halfSide, -halfSide);
+                    parent.vertex(halfSide, halfSide, halfSide);
                     break;
                 case 5: // Left face
-                    vertex(-halfSide, -halfSide, -halfSide);
-                    vertex(-halfSide, -halfSide, halfSide);
-                    vertex(-halfSide, halfSide, halfSide);
-                    vertex(-halfSide, halfSide, -halfSide);
+                    parent.vertex(-halfSide, -halfSide, -halfSide);
+                    parent.vertex(-halfSide, -halfSide, halfSide);
+                    parent.vertex(-halfSide, halfSide, halfSide);
+                    parent.vertex(-halfSide, halfSide, -halfSide);
                     break;
             }
         }
-        
-        endShape(CLOSE); // Finish defining the shape and close it
+        parent.endShape(PConstants.CLOSE);
+        parent.popMatrix();
     }
-    
-    
-    public void addCube(PVector position, float size, int color) {
-        floatingCubes.add(new FloatingCube(position, size, color));
-    }
-    
-
-    public static void main(String[] args) {
-        PApplet.main("example.Cube");
-    }
-
-
-    class FloatingCube {
-        PVector position;
-        float size;
-        int color;
-    
-        FloatingCube(PVector position, float size, int color) {
-            this.position = position;
-            this.size = size;
-            this.color = color;
-        }
-    
-        void display() {
-            pushMatrix(); // Save the current state of the matrix
-            translate(position.x, position.y, position.z);
-            noFill(); // Or use fill(color) if you want a solid cube
-            stroke(color);
-            box(size); // Draw a cube
-            popMatrix(); // Restore the matrix state
-        }
-    
-        void update() {
-            position.x += random(-1, 1);
-            position.y += random(-1, 1);
-            position.z += random(-1, 1);
-
-            position.x = constrain(position.x, 0, width);
-            position.y = constrain(position.y, 0, height);
-            position.z = constrain(position.z, -500, 500); 
-        }
-    }
-    
-    
 }
