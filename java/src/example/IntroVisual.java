@@ -130,7 +130,8 @@ public class IntroVisual extends PApplet {
     boolean fillActivated=true;
     boolean extremeColour=false;
     boolean displayDiamond = false;  // True for diamond, false for cube
-
+    boolean xRotateDiamond=false;
+    boolean yRotateDiamond=false;
 
 
     public static void main(String[] args) {
@@ -348,8 +349,22 @@ public class IntroVisual extends PApplet {
     public void drawDiamond() {
         pushMatrix();
         translate(width / 2, height / 2, -400);
-        rotateX(currentRotationY);
-        rotateY(currentRotationY);
+        
+        if (xRotateDiamond){
+            if (extremeColour){
+                rotateX(currentRotationY*2);
+            }else{
+                rotateX(currentRotationY);
+            } 
+        }
+        if (yRotateDiamond){
+            if (extremeColour){
+                rotateY(currentRotationY*2);
+            }else{
+                rotateY(currentRotationY);
+            } 
+        }
+        
         
         float totalAmplitude = 0;
 
@@ -374,15 +389,12 @@ public class IntroVisual extends PApplet {
             
         }
         
-        
-        
-        
         float size = 180;
         float mid = size / 2;
         
         // Draw the diamond
         beginShape(TRIANGLES);
-        vertex(0, -size, 0);// top pyramid 1
+        vertex(0, -size, 0);// top pyramid 1   
         vertex(-mid, 0, -mid);
         vertex(mid, 0, -mid);
 
@@ -466,6 +478,7 @@ public class IntroVisual extends PApplet {
             }
             pyramidFillAlpha += 2; // Increase alpha gradually
             pyramidFillAlpha = constrain(pyramidFillAlpha, 0, 255); // Limit alpha to max 255
+            
         }
 
         float totalAmplitude = 0;
@@ -806,18 +819,22 @@ public class IntroVisual extends PApplet {
             if (keyCode == UP) {// controlling cube speeds
                 if (bigCubeSpeed>-1){
                     bigCubeSpeed+=0.1;
+                    xRotateDiamond=true;
                 }
             } else if (keyCode == DOWN) {
                 if (bigCubeSpeed>0){
                     bigCubeSpeed-=0.1;
+                    xRotateDiamond=false;
                 }
             } else if (keyCode == LEFT) {
                 if (smallCubeSpeed>0){
                     smallCubeSpeed-=0.1;
+                    yRotateDiamond=false;
                 }
             } else if (keyCode == RIGHT) {
                 if (smallCubeSpeed>-1){
                     smallCubeSpeed+=0.1;
+                    yRotateDiamond=true;
                 }
             }
 
@@ -1147,9 +1164,10 @@ public class IntroVisual extends PApplet {
             strokeWeight(strokeWeightValue);
             if (modes[0]&& startDrawingShapes){
                 if (extremeColour){
-                    hue = map(totalAmplitude, 0, 2000, 240, 360);  // Ranges from half colour wheel
+                    hue = map(totalAmplitude, 0, 2000, 0, 360);  // Ranges from half colour wheel
                     hue = hue % 360;  // Ensure the hue wraps around correctly
                     stroke(hue,100,100);
+                    r=r/5; //widen view for more aggresive effect
                 }else if (!extremeColour){
                     hue = map(totalAmplitude, 0, 2000, 0, 80);  // Ranges from other half colour wheel
                     hue = hue % 360;  // Ensure the hue wraps around correctly
