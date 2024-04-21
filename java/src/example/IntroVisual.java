@@ -16,7 +16,7 @@ public class IntroVisual extends PApplet {
     int bands;
     float[] bandWidth;
     float[] smoothedBands;
-    float waveHeight = 2; // Height of the soundwave
+    float waveHeight = 3; // Height of the soundwave
     
 
     //diamond variables
@@ -69,7 +69,7 @@ public class IntroVisual extends PApplet {
     float centerX = width * 0.5f;
     float centerY = height * 0.5f;
     float baseRadius = 140; // Base radius of the wave
-    float maxWaveAmplitude = 10000; // Max additional amplitude, adjusted for smoother wave
+    float maxWaveAmplitude = 5000; // Max additional amplitude, adjusted for smoother wave
     float smoothingFactor = 0.2f; // Increase for smoother transitions
     float maxFFTAmplitude = 0; // We'll calculate this each frame
     float rainbowWaveRotationAngle=0;
@@ -133,12 +133,25 @@ public class IntroVisual extends PApplet {
     boolean xRotateDiamond=false;
     boolean yRotateDiamond=false;
 
-    Cube cube;
-    ArrayList<Cube> smallCubes;
+    Cube bigCube;
+    Cube smallCubeAbove;
+    Cube smallCubeAboveLeft;
+    Cube smallCubeAboveRight;
+    Cube smallCubeMiddleLeft;
+    Cube smallCubeMiddleRight;
+    Cube smallCubeBottom;
+    Cube smallCubeBottomLeft;
+    Cube smallCubeBottomRight;
+    Cube smallCubeFurtherAbove;
+    Cube smallCubeFurtherAboveLeft;
+    Cube smallCubeFurtherAboveRight;
+    Cube smallCubeFurtherBottom;
+    Cube smallCubeFurtherBottomLeft;
+    Cube smallCubeFurtherBottomRight;
 
 
     public static void main(String[] args) {
-        PApplet.main("example.playIntro");
+        PApplet.main("example.IntroVisual");
     }
 
     public void settings() {
@@ -182,26 +195,25 @@ public class IntroVisual extends PApplet {
             modes[i] = false;
         }
         modes[currentModeIndex] = true;  // Activate the first mode initially
-        cube = new Cube(this, bigCubeSize, width / 2, height / 2, 0, bigCubeSpeed, fft, song);
-        smallCubes = new ArrayList<Cube>();
-        smallCubes.add(new Cube(this, smallCubeSize, width / 2, height / 2 - offset, 0, smallCubeSpeed, fft, song)); // Small cube above
-        smallCubes.add(new Cube(this, smallCubeSize, width / 2.6f, height / 2 - offset, 0, smallCubeSpeed, fft, song)); // Small cube above left
-        smallCubes.add(new Cube(this, smallCubeSize, width / 2, height / 2 + offset, 0, smallCubeSpeed, fft, song)); // Small cube below
-        smallCubes.add(new Cube(this, smallCubeSize, width / 2.6f, height / 2 + offset, 0, smallCubeSpeed, fft, song)); // Small cube bottom left
-        smallCubes.add(new Cube(this, smallCubeSize, width / 2.6f, height / 2, 0, smallCubeSpeed, fft, song)); // Small cube middle left
-        smallCubes.add(new Cube(this, smallCubeSize, width / 1.65f, height / 2 - offset, 0, smallCubeSpeed, fft, song)); // Small cube top right
-        smallCubes.add(new Cube(this, smallCubeSize, width / 1.65f, height / 2, 0, smallCubeSpeed, fft, song)); // Small cube middle right
-        smallCubes.add(new Cube(this, smallCubeSize, width / 1.65f, height / 2 + offset, 0, smallCubeSpeed, fft, song)); // Small cube bottom right
-        smallCubes.add(new Cube(this, smallCubeSize, width / 1.65f, height / 2 + offset * 1.75f, 0, smallCubeSpeed, fft, song)); // Small cube further bottom right
-        smallCubes.add(new Cube(this, smallCubeSize, width / 2.6f, height / 2 + offset * 1.75f, 0, smallCubeSpeed, fft, song)); // Small cube further bottom left
-        smallCubes.add(new Cube(this, smallCubeSize, width / 2, height / 2 + offset * 1.75f, 0, smallCubeSpeed, fft, song)); // Small cube further bottom middle
-        smallCubes.add(new Cube(this, smallCubeSize, width / 1.65f, height / 2 - offset * 1.75f, 0, smallCubeSpeed, fft, song)); // Small cube further top right
-        smallCubes.add(new Cube(this, smallCubeSize, width / 2f, height / 2 - offset * 1.75f, 0, smallCubeSpeed, fft, song)); // Small cube further top middle
-        smallCubes.add(new Cube(this, smallCubeSize, width / 2.6f, height / 2 - offset * 1.75f, 0, smallCubeSpeed, fft, song)); // Small cube further top left
-        // Add new Cube instances for the cubes inside the pyramids
-        smallCubes.add(new Cube(this, verySmallCubeSize, width / 1.14f, height / 2, 0, smallCubeSpeed, fft, song)); // Cube inside right pyramid
-        smallCubes.add(new Cube(this, verySmallCubeSize, width / 8.4f, height / 2, 0, smallCubeSpeed, fft, song)); // Cube inside left pyramid
-        }
+        
+
+        //big cube initialization
+        bigCube = new Cube(this, bigCubeSize, width/2, height/2, 0, bigCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeAbove = new Cube(this, smallCubeSize, width / 2, height / 2 - offset, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeAboveLeft = new Cube(this, smallCubeSize, width / 2.6f, height / 2 - offset, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeAboveRight = new Cube(this, smallCubeSize, width / 1.65f, height / 2 - offset, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeMiddleLeft = new Cube(this, smallCubeSize, width / 2.6f, height / 2, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeMiddleRight=new Cube(this, smallCubeSize, width / 1.65f, height / 2 , 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeBottomLeft=new Cube(this, smallCubeSize, width / 2.6f, height / 2 + offset, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeBottom =new Cube(this, smallCubeSize, width /2, height / 2+offset, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeBottomRight =new Cube(this, smallCubeSize, width / 1.65f, height / 2 + offset, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeFurtherAbove =new Cube(this, smallCubeSize, width / 2, height / 2 - offset*1.75f, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeFurtherAboveLeft =new Cube(this, smallCubeSize, width / 2.6f, height / 2 - offset*1.75f, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeFurtherAboveRight = new Cube(this, smallCubeSize, width / 1.65f, height / 2 -offset*1.75f, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeFurtherBottom =new Cube(this, smallCubeSize, width /2, height / 2+offset*1.75f, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeFurtherBottomLeft =new Cube(this, smallCubeSize, width / 2.6f, height / 2 +offset*1.75f, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeFurtherBottomRight =new Cube(this, smallCubeSize, width / 1.65f, height / 2 +offset*1.75f, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+    }
 
     public void draw() {
         background(0); // Set background to black
@@ -256,22 +268,45 @@ public class IntroVisual extends PApplet {
                         drawDiamond();
                     }
                     else {
-                        cube.draw(extremeColour, fillActivated, modes, angleX);
+                        bigCube.drawCube();
                     }
 
-
-                    for (Cube smallCube : smallCubes) {
-                        smallCube.draw(extremeColour, fillActivated, modes, angleX);
-                    }
+                    smallCubeAbove.drawCube();
+                    smallCubeAboveLeft.drawCube();
+                    smallCubeAboveRight.drawCube();
+                    smallCubeMiddleLeft.drawCube();
+                    smallCubeMiddleRight.drawCube();
+                    smallCubeBottomLeft.drawCube();
+                    smallCubeBottom.drawCube();
+                    smallCubeBottomRight.drawCube();
+                    smallCubeFurtherAbove.drawCube();
+                    smallCubeFurtherAboveLeft.drawCube();
+                    smallCubeFurtherAboveRight.drawCube();
+                    smallCubeFurtherBottom.drawCube();
+                    smallCubeFurtherBottomLeft.drawCube();
+                    smallCubeFurtherBottomRight.drawCube();
+                    /*drawCube(smallCubeSize, width / 2, height / 2 - offset, 0,smallCubeSpeed);  // Small cube above
+                    drawCube(smallCubeSize, width / 2.6f, height / 2 - offset, 0,smallCubeSpeed);  // Small cube above
+                    drawCube(smallCubeSize, width / 2, height / 2 + offset, 0,smallCubeSpeed);  // Small cube below
+                    drawCube(smallCubeSize, width / 2.6f, height / 2 + offset, 0,smallCubeSpeed); //small cube bottom left
+                    drawCube(smallCubeSize, width / 2.6f, height / 2 , 0,smallCubeSpeed); //small cube middle left
+                    drawCube(smallCubeSize, width / 1.65f, height / 2 - offset, 0,smallCubeSpeed); //small cube top right
+                    drawCube(smallCubeSize, width / 1.65f, height / 2 , 0,smallCubeSpeed);// small cube middle
+                    drawCube(smallCubeSize, width / 1.65f, height / 2+offset , 0,smallCubeSpeed);// small cube bottom right
+                    drawCube(smallCubeSize, width / 1.65f, height / 2+offset*1.75f , 0,smallCubeSpeed);// small cube further bottom right
+                    drawCube(smallCubeSize, width / 2.6f, height / 2+offset*1.75f , 0,smallCubeSpeed);// small cube further bottom left
+                    drawCube(smallCubeSize, width / 2, height / 2+offset*1.75f , 0,smallCubeSpeed);// small cube further bottom middle
+                    drawCube(smallCubeSize, width / 1.65f, height / 2-offset*1.75f , 0,smallCubeSpeed);// small cube further top right
+                    drawCube(smallCubeSize, width / 2f, height / 2-offset*1.75f , 0,smallCubeSpeed);// small cube further top middle
+                    drawCube(smallCubeSize, width / 2.6f, height / 2-offset*1.75f , 0,smallCubeSpeed);// small cube further top left
+                    */
                     drawPyramids();
                     
                     colorMode(RGB, 255, 255, 255);  // Switch back to RGB color mode for drawing other elements
                     popMatrix(); 
                     drawSoundWave();
-                    for (Cube smallCube : smallCubes) {
-                        smallCube.draw(extremeColour, fillActivated, modes, angleX); //cubes inside pyramids
-                    }
-                    
+                    drawCube(verySmallCubeSize, width / 1.14f, height / 2 , 0,smallCubeSpeed);// cube inside pyramids
+                    drawCube(verySmallCubeSize, width /8.4f, height / 2 , 0,smallCubeSpeed);
                     if (!song.isPlaying()){ //paused logic
                         if (displayDiamond){
                             drawDiamond();
@@ -466,6 +501,7 @@ public class IntroVisual extends PApplet {
     
     public void drawPyramids() {
         if (spinning){
+            //println(transparentColour);
             if (rotationSpeed < 0.05) {
                 rotationSpeed += 0.0001;
             }
@@ -530,7 +566,7 @@ public class IntroVisual extends PApplet {
         rotateX(PI);
         if (playIntro &&!startDrawingShapes){
             fill(totalAmplitude, 50, totalAmplitude, transparentColour);
-            println(transparentColour);
+            //println(transparentColour);
             //println("in intro"); //debugging statement
         }
         if (modes[0] &&startDrawingShapes)// colour scheme for mode 0
@@ -767,18 +803,18 @@ public class IntroVisual extends PApplet {
     
 
         
-        public void drawFadingCircleWithTiming() {
-            if (circleOpacity < 255) {
-                circleOpacity += 5; // Control the speed of the fade-in effect
-            }
-        
-            // Draw the circle with the current opacity
-            int colorValue = (int) (128 + 128 * sin(frameCount * 0.05f));
-            noFill(); // Do not fill the circle
-            stroke(color(255 - colorValue, colorValue, 255), circleOpacity); // Set the stroke color and opacity
-            strokeWeight(2); // Set the stroke width
-            ellipse(width / 2, height / 2, circleMaxRadius * 2, circleMaxRadius * 2); // Draw the circle centered
+    public void drawFadingCircleWithTiming() {
+        if (circleOpacity < 255) {
+            circleOpacity += 5; // Control the speed of the fade-in effect
         }
+    
+        // Draw the circle with the current opacity
+        int colorValue = (int) (128 + 128 * sin(frameCount * 0.05f));
+        noFill(); // Do not fill the circle
+        stroke(color(255 - colorValue, colorValue, 255), circleOpacity); // Set the stroke color and opacity
+        strokeWeight(2); // Set the stroke width
+        ellipse(width / 2, height / 2, circleMaxRadius * 2, circleMaxRadius * 2); // Draw the circle centered
+    }
 
     public void drawFadingCircle() {
         if (circleOpacity < 255) {
@@ -849,12 +885,12 @@ public class IntroVisual extends PApplet {
 
             if (keyCode == UP) {// controlling cube speeds
                 if (bigCubeSpeed>-1){
-                    bigCubeSpeed+=0.1;
+                    bigCube.setCubeSpeedUp();
                     xRotateDiamond=true;
                 }
             } else if (keyCode == DOWN) {
                 if (bigCubeSpeed>0){
-                    bigCubeSpeed-=0.1;
+                    bigCube.setCubeSpeedDown();
                     xRotateDiamond=false;
                 }
             } else if (keyCode == LEFT) {
@@ -871,13 +907,40 @@ public class IntroVisual extends PApplet {
 
             if (keyCode=='f'|| keyCode=='F'){
                 fillActivated=!fillActivated;
+                bigCube.setFillActivated(fillActivated);
+                smallCubeAbove.setFillActivated(fillActivated);
+                smallCubeAboveLeft.setFillActivated(fillActivated);
+                smallCubeAboveRight.setFillActivated(fillActivated);
+                smallCubeMiddleLeft.setFillActivated(fillActivated);
+                smallCubeMiddleRight.setFillActivated(fillActivated);
+                smallCubeBottom.setFillActivated(fillActivated);
+                smallCubeBottomLeft.setFillActivated(fillActivated);
+                smallCubeBottomRight.setFillActivated(fillActivated);
+                smallCubeFurtherAbove.setFillActivated(fillActivated);
+                smallCubeFurtherAboveLeft.setFillActivated(fillActivated);
+                smallCubeFurtherAboveRight.setFillActivated(fillActivated);
+                smallCubeFurtherBottom.setFillActivated(fillActivated);
+                smallCubeFurtherBottomLeft.setFillActivated(fillActivated);
+                smallCubeFurtherBottomRight.setFillActivated(fillActivated);
             }
             if (keyCode=='e'|| keyCode=='E'){
-                if (extremeColour==true){
-                    extremeColour=false;
-                }else if(extremeColour==false){
-                    extremeColour=true;
-                }
+                extremeColour = !extremeColour;
+                println("extremeColour toggled to: " + extremeColour);
+                bigCube.setExtremeColour(extremeColour);
+                smallCubeAbove.setExtremeColour(extremeColour);
+                smallCubeAboveLeft.setExtremeColour(extremeColour);
+                smallCubeAboveRight.setExtremeColour(extremeColour);
+                smallCubeMiddleLeft.setExtremeColour(extremeColour);
+                smallCubeMiddleRight.setExtremeColour(extremeColour);
+                smallCubeBottom.setExtremeColour(extremeColour);
+                smallCubeBottomLeft.setExtremeColour(extremeColour);
+                smallCubeBottomRight.setExtremeColour(extremeColour);
+                smallCubeFurtherAbove.setExtremeColour(extremeColour);
+                smallCubeFurtherAboveLeft.setExtremeColour(extremeColour);
+                smallCubeFurtherAboveRight.setExtremeColour(extremeColour);
+                smallCubeFurtherBottom.setExtremeColour(extremeColour);
+                smallCubeFurtherBottomLeft.setExtremeColour(extremeColour);
+                smallCubeFurtherBottomRight.setExtremeColour(extremeColour);
             }
         }
 
