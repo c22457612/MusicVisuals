@@ -47,18 +47,27 @@ public class Eye extends Drawable {
 
         updateRadius();
         mv.colorMode(mv.RGB);
+
         // Draw arcs
-        mv.stroke(255, 255, 255, opacity);
+        mv.noStroke();
         mv.fill(255, 255, 255, opacity);
         drawEyeSocket(cx - eyeSocketWidth / 2, cx + eyeSocketWidth / 2, arcRadius, -1); // Up
         drawEyeSocket(cx - eyeSocketWidth / 2, cx + eyeSocketWidth / 2, arcRadius, 1); // Down
 
         ampPer = mv.map(mv.getSmoothedAmplitude(), minAmp, maxAmp, 0, 100);
-        float red = mv.map(ampPer, 0, 100, 0, 255);
+        float red = mv.map(ampPer, 0, 100, 0, 255) * 1.3f;
+        mv.strokeWeight(1);
         mv.stroke(red, 0, 255 - red, opacity);
         mv.fill(red, 0, 255 - red, opacity);
         drawEyeBall(cx - eyeBallWidth / 2, cx + eyeBallWidth / 2, arcRadius, -1); // Up
         drawEyeBall(cx - eyeBallWidth / 2, cx + eyeBallWidth / 2, arcRadius, 1); // Down
+
+        // Draw arcs
+        mv.strokeWeight(3);
+        mv.stroke(200, 50, 50, opacity);
+        mv.noFill();
+        drawEyeSocket(cx - eyeSocketWidth / 2, cx + eyeSocketWidth / 2, arcRadius, -1); // Up
+        drawEyeSocket(cx - eyeSocketWidth / 2, cx + eyeSocketWidth / 2, arcRadius, 1); // Down
 
     }
 

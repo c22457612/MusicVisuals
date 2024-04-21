@@ -14,8 +14,8 @@ public class PolygonEyeScreen extends Drawable {
     List<Polygon> myPolygons = new ArrayList<Polygon>(); // List of polygons
     float cx; // Center of screen (x)
     float cy; // Center of screen (y)
-    int numPolygons = 25; // Num of polygons
-    int polygonJump = 60; // Space between 2 consecutive polygons
+    int numPolygons = 9; // Num of polygons
+    int polygonJump = 92; // Space between 2 consecutive polygons5
 
     // Constructor
     public PolygonEyeScreen(ScreenIndex _sIndex, MyVisual _mv) {
@@ -31,7 +31,7 @@ public class PolygonEyeScreen extends Drawable {
 
         // Fill polygons' list
         for (int i = 0; i < numPolygons; i++) {
-            Polygon myPolygon = new Polygon(mv, cx, cy, 200 + polygonJump * i, 600 + polygonJump * i, 0, 0.4f, 3, 30, i,
+            Polygon myPolygon = new Polygon(mv, cx, cy, 100 + polygonJump * i, 300 + polygonJump * i, 0, 0.4f, 3, 30, i,
                     numPolygons);
             myPolygons.add(myPolygon);
         }
@@ -41,13 +41,15 @@ public class PolygonEyeScreen extends Drawable {
     // Render function
     public void render() {
 
+        centerEye.drawEye();
+
         // Display each polygon
         for (int i = numPolygons - 1; i >= 0; i--) {
             myPolygons.get(i).drawPolygon();
         }
 
         // Display the 3 eyes
-        centerEye.drawEye();
+
         leftEye.drawEye();
         rightEye.drawEye();
 
