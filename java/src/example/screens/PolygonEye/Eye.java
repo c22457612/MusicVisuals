@@ -43,7 +43,7 @@ public class Eye extends Drawable {
     }
 
     // Draw eye
-    public void drawEye() {
+    public void render() {
 
         updateRadius();
         mv.colorMode(mv.RGB);

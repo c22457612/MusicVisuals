@@ -47,7 +47,7 @@ public class Polygon extends Drawable {
     }
 
     // Polygon with variable num of sides
-    public void drawPolygon() {
+    public void render() {
 
         // Get num of sides of polygon based on avg amplitude
         numSides = (int) mv.map(mv.getSmoothedAmplitude(), minAmp, maxAmp, minSides, maxSides);

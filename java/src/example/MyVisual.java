@@ -1,6 +1,5 @@
 package example;
 
-import example.screens.*;
 import example.screens.PolygonEye.PolygonEyeScreen;
 import ie.tudublin.*;
 

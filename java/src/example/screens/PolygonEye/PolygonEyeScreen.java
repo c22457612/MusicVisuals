@@ -1,8 +1,6 @@
 package example.screens.PolygonEye;
 
-import example.MyVisual;
-import example.ScreenIndex;
-import example.Drawable;
+import example.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,17 +39,17 @@ public class PolygonEyeScreen extends Drawable {
     // Render function
     public void render() {
 
-        centerEye.drawEye();
+        centerEye.render();
 
         // Display each polygon
         for (int i = numPolygons - 1; i >= 0; i--) {
-            myPolygons.get(i).drawPolygon();
+            myPolygons.get(i).render();
         }
 
         // Display the 3 eyes
 
-        leftEye.drawEye();
-        rightEye.drawEye();
+        leftEye.render();
+        rightEye.render();
 
     }
 
