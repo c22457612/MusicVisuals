@@ -30,10 +30,11 @@ public class Pyramids {
     boolean extremeColour;
     boolean pyramidsVisible;
     boolean spinning;
+    boolean fillActivated;
 
 
     // Constructor
-    public Pyramids(PApplet parent, FFT fft,boolean spinning,float rotationSpeed,float pyramidRotation,float pyramidXPosTop,float pyramidXPosBottom,float pyramidMoveSpeed,boolean pyramidsVisible,float currentRotationY,AudioPlayer song,float pyramidFillAlpha,float pyramidSize,boolean playIntro,boolean startDrawingShapes,boolean[] modes,boolean extremeColour,float transparentColour) {
+    public Pyramids(PApplet parent, FFT fft,boolean spinning,float rotationSpeed,float pyramidRotation,float pyramidXPosTop,float pyramidXPosBottom,float pyramidMoveSpeed,boolean pyramidsVisible,float currentRotationY,AudioPlayer song,float pyramidFillAlpha,float pyramidSize,boolean playIntro,boolean startDrawingShapes,boolean[] modes,boolean extremeColour,float transparentColour,boolean fillActivated) {
         this.parent = parent;
         this.fft = fft;
         this.spinning=spinning;
@@ -126,7 +127,7 @@ public class Pyramids {
         }
         if (this.modes[0] &&this.startDrawingShapes)// colour scheme for mode 0
         {
-            //println("in visualizer");
+            PApplet.println("in visualizer");
             if (this.extremeColour){
                 float hue = PApplet.map(totalAmplitude, 0, 2000, 40, 180);  // Ranges from all colours aggresively
                 hue = hue % 360;  // Ensure the hue wraps around correctly
@@ -188,7 +189,7 @@ public class Pyramids {
     public void drawPyramid(float size) {
         PApplet.println("in draw pyramid method");
         parent.beginShape(PConstants.TRIANGLES);
-        PApplet.println(size);
+        //PApplet.println(size);
         if (this.pyramidsVisible) {
             parent.strokeWeight(2); // Outlines visible
         } else {
@@ -227,5 +228,13 @@ public class Pyramids {
 
     public void setPyramidsVisible(boolean pyramidsVisible){
         this.pyramidsVisible=pyramidsVisible;
+    }
+
+    public void setExtremeColour(boolean extremeColour){
+        this.extremeColour=extremeColour;
+    }
+
+    public void setfillActivated(boolean fillActivated){
+        this.fillActivated=fillActivated;
     }
 }
