@@ -30,7 +30,7 @@ public class MyVisual extends Visual {
 
         // Call loadAudio to load an audio file to process
         String path = "C:\\Users\\luisp\\Desktop\\tud\\Year 2\\OOP\\2\\MusicVisuals\\java\\data\\";
-        String fileName = "pushup.mp3";
+        String fileName = "heroplanet.mp3";
         loadAudio(path + fileName);
 
         // Call this instead to read audio from the microphone
