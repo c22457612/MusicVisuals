@@ -1,11 +1,17 @@
 package example;
 
+import example.screens.*;
+import example.screens.PolygonEye.PolygonEyeScreen;
 import ie.tudublin.*;
 
 public class MyVisual extends Visual {
+    ScreenIndex sIndex; // Screen index
+    Drawable[] screens; // Screens' array
+
+    int NUM_SCREENS = 10;
+
     // WaveForm wf;
-    PolygonEye v1;
-    AudioBandsVisual abv;
+    PolygonEyeScreen v1;
 
     public void settings() {
         size(1800, 900);
@@ -31,14 +37,29 @@ public class MyVisual extends Visual {
 
         // startListening();
 
-        // wf = new WaveForm(this);
-        v1 = new PolygonEye(this);
+        // Screen index object
+        sIndex = new ScreenIndex(0);
+
+        // Array of screens
+        screens = new Drawable[NUM_SCREENS];
+
+        screens[0] = new PolygonEyeScreen(sIndex, this);
     }
 
     public void keyPressed() {
         if (key == ' ') {
             getAudioPlayer().cue(0);
             getAudioPlayer().play();
+        } else if (key == CODED) { // Key is a special key
+            if (keyCode == RIGHT) {
+                // Code to execute when the right arrow is pressed
+                sIndex.value += 1;
+                sIndex.value %= NUM_SCREENS;
+            } else if (keyCode == LEFT) {
+                // Code to execute when the right arrow is pressed
+                sIndex.value -= 1;
+                sIndex.value %= NUM_SCREENS;
+            }
         }
 
     }
@@ -56,7 +77,7 @@ public class MyVisual extends Visual {
 
         // Call this is you want to get the average amplitude
         calculateAverageAmplitude();
-        v1.render();
-        // abv.render();
+
+        screens[sIndex.value].render();
     }
 }
