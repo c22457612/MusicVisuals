@@ -6,16 +6,19 @@ import ddf.minim.AudioPlayer;
 import ddf.minim.analysis.FFT;
 
 public class Cube {
-    PApplet parent; // The PApplet object we will render to
-    float side;
-    float x, y, z;
-    float cubeSpeed;
-    FFT fft;
-    AudioPlayer song;
-    float angleX,angleY,angleZ;
-    // Additional properties
+    private PApplet parent; // Reference to PApplet (Processing sketch)
+    private float x, y, z; // Position of the cube
+    private float side; // Length of each side of the cube
+    private float cubeSpeed; // Rotation speed of the cube
+    private FFT fft; // FFT object to analyze the audio
+    private AudioPlayer song; // The song being played
+    private float angleX, angleY, angleZ; // Rotation angles for the cube
+    private boolean extremeColour;
+    private boolean[] modes;
+    private boolean fillActivated;
 
-    public Cube(PApplet parent, float side, float x, float y, float z, float cubeSpeed, FFT fft, AudioPlayer song) {
+    // Constructor
+    public Cube(PApplet parent, float side, float x, float y, float z, float cubeSpeed, FFT fft, AudioPlayer song, boolean extremeColour,boolean modes[],boolean fillActivated) {
         this.parent = parent;
         this.side = side;
         this.x = x;
@@ -24,19 +27,22 @@ public class Cube {
         this.cubeSpeed = cubeSpeed;
         this.fft = fft;
         this.song = song;
-        this.angleX=0;
-        this.angleY=0;
-        this.angleZ=0;
-        // Initialize other properties
+        this.angleX = 0;
+        this.angleY = 0;
+        this.angleZ = 0;
+        this.extremeColour=extremeColour;
+        this.modes=modes;
+        this.fillActivated=fillActivated;
     }
 
-    public void draw(boolean extremeColour, boolean fillActivated, boolean[] modes,float angleX) {
-
-        float halfSide = side / 2;
+    // Draw method for the cube
+    void drawCube(){
+        
+        float halfSide = this.side / 2;
         //println("cube size:"+side+"cubespeed:"+cubeSpeed); //debugging statement
 
         // Perform FFT analysis on the current audio playing
-        fft.forward(song.mix);
+        this.fft.forward(this.song.mix);
 
         float bassSum = 0, midSum = 0, trebleSum = 0;
         int bassCount = 0, midCount = 0, trebleCount = 0;
@@ -71,16 +77,19 @@ public class Cube {
         }
 
         float hue = PApplet.map(totalAmplitude, 0, 3000, 180, 360);  // Ranges from blue to purple to pink mostly
-        if (extremeColour){
+        if (this.extremeColour){
             hue = PApplet.map(totalAmplitude, 0, 200, 0, 360);  // Ranges from all colours aggresively
             hue = hue % 360;  // Ensure the hue wraps around correctly
+            PApplet.println(this.extremeColour);
+        }else{
+            PApplet.println(this.extremeColour);
         }
         
 
         // Rotate based on the average amplitudes
-        angleX += PApplet.map(bassAvg, 0, 10, 0, PConstants.PI / 200);  // Scale these factors as needed
-        angleY += PApplet.map(midAvg, 0, 10, 0, PConstants.PI / 200);
-        angleZ += PApplet.map(trebleAvg, 0, 10, 0, PConstants.PI / 200);
+        this.angleX += PApplet.map(bassAvg, 0, 10, 0, PConstants.PI / 200);  // Scale these factors as needed
+        this.angleY += PApplet.map(midAvg, 0, 10, 0, PConstants.PI / 200);
+        this.angleZ += PApplet.map(trebleAvg, 0, 10, 0, PConstants.PI / 200);
 
 
         float totalLoudness = 0; // Initialize total loudness
@@ -92,11 +101,11 @@ public class Cube {
 
         float normalizedLoudness = PApplet.map(totalLoudness, 0, 200, 1, 10); // Adjust range 0-200 to 1-10, 
         normalizedLoudness = PApplet.constrain(normalizedLoudness, 0, 3); // Ensure stroke weight doesn't get too high
-        parent.pushMatrix();
-        parent.translate(x,y,z);
-        parent.rotateX(angleX*cubeSpeed);
-        parent.rotateY(angleY*cubeSpeed);
-        parent.rotateZ(angleZ*cubeSpeed);
+        this.parent.pushMatrix();
+        this.parent.translate(this.x,this.y,this.z);
+        this.parent.rotateX(this.angleX*this.cubeSpeed);
+        this.parent.rotateY(this.angleY*this.cubeSpeed);
+        this.parent.rotateZ(this.angleZ*this.cubeSpeed);
 
         if (modes[0]){
             parent.strokeWeight(normalizedLoudness); // Set the outline weight
@@ -109,7 +118,7 @@ public class Cube {
                 parent.strokeWeight(2); // thin outline
                 parent.stroke(255);// white outline
             }
-            if (side<=26f || fillActivated){// if cubes are very small we want to fill them or if fill activated
+            if (this.fillActivated){// if cubes are very small we want to fill them or if fill activated
                 parent.fill(hue,100,100);  
                 parent.strokeWeight(2); // thin outline
                 parent.stroke(255);// white outline
@@ -165,6 +174,23 @@ public class Cube {
             }
         }
         parent.endShape(PConstants.CLOSE);
-        parent.popMatrix();
+        this.parent.popMatrix();
+    }
+
+    public void setFillActivated(boolean fill) {
+        this.fillActivated = fill;
+        PApplet.println("Cube fillActivated set to: " + this.fillActivated); // Debugging output
+    }
+
+    public void setExtremeColour(boolean extremeColour){
+        this.extremeColour=extremeColour;
+    }
+
+    public void setCubeSpeedUp(){
+        this.cubeSpeed+=0.1;
+    }
+
+    public void setCubeSpeedDown(){
+        this.cubeSpeed-=0.1;
     }
 }
