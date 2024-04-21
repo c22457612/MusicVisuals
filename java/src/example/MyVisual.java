@@ -3,11 +3,12 @@ package example;
 import ie.tudublin.*;
 
 public class MyVisual extends Visual {
-    WaveForm wf;
+    // WaveForm wf;
+    PolygonEye v1;
     AudioBandsVisual abv;
 
     public void settings() {
-        size(1024, 500);
+        size(1800, 900);
 
         // Use this to make fullscreen
         // fullScreen();
@@ -19,14 +20,19 @@ public class MyVisual extends Visual {
     public void setup() {
         startMinim();
 
+        colorMode(HSB);
+
         // Call loadAudio to load an audio file to process
-        // loadAudio("heroplanet.mp3");
+        String path = "C:\\Users\\luisp\\Desktop\\tud\\Year 2\\OOP\\2\\MusicVisuals\\java\\data\\";
+        String fileName = "heroplanet.mp3";
+        loadAudio(path + fileName);
 
         // Call this instead to read audio from the microphone
-        startListening();
 
-        wf = new WaveForm(this);
-        abv = new AudioBandsVisual(this);
+        // startListening();
+
+        // wf = new WaveForm(this);
+        v1 = new PolygonEye(this);
     }
 
     public void keyPressed() {
@@ -34,6 +40,7 @@ public class MyVisual extends Visual {
             getAudioPlayer().cue(0);
             getAudioPlayer().play();
         }
+
     }
 
     public void draw() {
@@ -49,7 +56,7 @@ public class MyVisual extends Visual {
 
         // Call this is you want to get the average amplitude
         calculateAverageAmplitude();
-        wf.render();
-        abv.render();
+        v1.render();
+        // abv.render();
     }
 }
