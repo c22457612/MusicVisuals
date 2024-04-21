@@ -152,6 +152,7 @@ public class IntroVisual extends PApplet {
     Cube verySmallCubeRight;
 
     Diamond diamond;
+    Pyramids pyramids;
 
 
     public static void main(String[] args) {
@@ -221,7 +222,7 @@ public class IntroVisual extends PApplet {
         verySmallCubeRight=new Cube(this, verySmallCubeSize, width / 8.4f, height / 2, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
 
         diamond = new Diamond(this, fft, currentRotationY, extremeColour, fillActivated, transparentColour, startDrawingShapes, xRotateDiamond, yRotateDiamond,playIntro);
-
+        pyramids = new Pyramids(this,fft,spinning,rotationSpeed,pyramidRotation,pyramidXPosTop,pyramidXPosBottom,pyramidMoveSpeed,pyramidsVisible,currentRotationY,song,pyramidFillAlpha,pyramidSize,playIntro,startDrawingShapes,modes,extremeColour,transparentColour);
     }
 
     public void draw() {
@@ -231,10 +232,11 @@ public class IntroVisual extends PApplet {
             
             currentRotationY %= TWO_PI;
             if (!startDrawingShapes){ //logic for intro
-                 
+                println("not started drawing shapes");
                 //drawDiamond();
                 diamond.drawDiamond();
-                drawPyramids();
+                //drawPyramids();
+                pyramids.drawPyramids();
                 drawSoundWave();
                 
 
@@ -361,116 +363,11 @@ public class IntroVisual extends PApplet {
         }
     }
     
-    
-
     public void stop() {
         player.close();
         minim.stop();
         super.stop();
     }
-    
-    
-
-    public void drawDiamond() {
-        pushMatrix();
-        translate(width / 2, height / 2, -400);
-        
-
-        if (startDrawingShapes){
-            if (xRotateDiamond){
-                if (extremeColour){
-                    rotateX(currentRotationY*2);
-                }else{
-                    rotateX(currentRotationY);
-                } 
-            }
-            if (yRotateDiamond){
-                if (extremeColour){
-                    rotateY(currentRotationY*2);
-                }else{
-                    rotateY(currentRotationY);
-                } 
-            }
-        }else{
-            rotateX(currentRotationY);
-            rotateY(currentRotationY);
-        }
-        
-        
-        
-        float totalAmplitude = 0;
-
-        for (int i = 0; i < fft.specSize(); i++) {
-            totalAmplitude += fft.getBand(i);
-        }
-        
-        stroke((frameCount % 255), 255, 255);
-        strokeWeight(2);
-        if (!startDrawingShapes){
-            fill(340, 100, 100, transparentColour);
-        }else if(startDrawingShapes){
-            if (extremeColour){
-                if (fillActivated){
-                    float hue = map(totalAmplitude, 0, 2000, 0, 360);  // custom hue for diamond
-                    hue=hue%360;
-                    fill(hue,100,100);
-                }else{
-                    noFill();
-                }
-                
-            }else{
-                if (fillActivated){
-                    float hue = map(totalAmplitude, 0, 2000, 300, 360);  // custom hue for diamond
-                    fill(hue,100,100);
-                    stroke(255);//white outline
-                }
-                
-            }
-            
-        }
-        
-        float size = 180;
-        float mid = size / 2;
-        
-        // Draw the diamond
-        beginShape(TRIANGLES);
-        vertex(0, -size, 0);// top pyramid 1   
-        vertex(-mid, 0, -mid);
-        vertex(mid, 0, -mid);
-
-        vertex(0, -size, 0); //top pyramid 2
-        vertex(mid, 0, -mid);
-        vertex(mid, 0, mid);
-
-        vertex(0, -size, 0); // top pyramid 3
-        vertex(mid, 0, mid);
-        vertex(-mid, 0, mid);
-
-        vertex(0, -size, 0); //top pyramid 4
-        vertex(-mid, 0, mid);
-        vertex(-mid, 0, -mid);
-
-        vertex(0, size, 0); //bottom pyramid 1
-        vertex(-mid, 0, -mid);
-        vertex(mid, 0, -mid);
-
-        vertex(0, size, 0); //bottom pyramid 2
-        vertex(mid, 0, -mid);
-        vertex(mid, 0, mid);
-
-        vertex(0, size, 0);//bottom pyramid 3
-        vertex(mid, 0, mid);
-        vertex(-mid, 0, mid);
-
-        vertex(0, size, 0);//bottom pyramid 4
-        vertex(-mid, 0, mid);
-        vertex(-mid, 0, -mid);
-
-        endShape(CLOSE);
-        
-        popMatrix();
-    }
-
     
     public void drawPyramids() {
         if (spinning){
@@ -809,6 +706,8 @@ public class IntroVisual extends PApplet {
                 player.play();
                 playIntro=true;
                 diamond.setPlayIntro(playIntro);
+                pyramids.setSpinning(spinning);
+                pyramids.setPlayIntro(playIntro); // this will allow pyramids to work in intro
                 hasStartedPlaying = true;
                 isFirstSoundtrackFinished = false; // Reset this flag when the first soundtrack starts
                 circleOpacity = 0; // Reset opacity to allow fade-in effect
@@ -916,7 +815,8 @@ public class IntroVisual extends PApplet {
 
             if (keyCode=='f'|| keyCode=='F'){
                 fillActivated=!fillActivated;
-                bigCube.setFillActivated(fillActivated);
+                //bigCube.setFillActivated(fillActivated);
+                //diamond.setFillActivated(fillActivated);
                 smallCubeAbove.setFillActivated(fillActivated);
                 smallCubeAboveLeft.setFillActivated(fillActivated);
                 smallCubeAboveRight.setFillActivated(fillActivated);
@@ -933,7 +833,14 @@ public class IntroVisual extends PApplet {
                 smallCubeFurtherBottomRight.setFillActivated(fillActivated);
                 verySmallCubeLeft.setFillActivated(fillActivated);
                 verySmallCubeRight.setFillActivated(fillActivated);
+
             }
+            if (keyCode=='m'|| keyCode=='M'){ // middle or main objects on screen control
+                fillActivated=!fillActivated;
+                bigCube.setFillActivated(fillActivated);
+                diamond.setFillActivated(fillActivated);
+            }
+
             if (keyCode=='e'|| keyCode=='E'){
                 extremeColour = !extremeColour;
                 println("extremeColour toggled to: " + extremeColour);
