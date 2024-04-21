@@ -133,6 +133,9 @@ public class IntroVisual extends PApplet {
     boolean xRotateDiamond=false;
     boolean yRotateDiamond=false;
 
+    Cube cube;
+    ArrayList<Cube> smallCubes;
+
 
     public static void main(String[] args) {
         PApplet.main("example.playIntro");
@@ -179,7 +182,26 @@ public class IntroVisual extends PApplet {
             modes[i] = false;
         }
         modes[currentModeIndex] = true;  // Activate the first mode initially
-    }
+        cube = new Cube(this, bigCubeSize, width / 2, height / 2, 0, bigCubeSpeed, fft, song);
+        smallCubes = new ArrayList<Cube>();
+        smallCubes.add(new Cube(this, smallCubeSize, width / 2, height / 2 - offset, 0, smallCubeSpeed, fft, song)); // Small cube above
+        smallCubes.add(new Cube(this, smallCubeSize, width / 2.6f, height / 2 - offset, 0, smallCubeSpeed, fft, song)); // Small cube above left
+        smallCubes.add(new Cube(this, smallCubeSize, width / 2, height / 2 + offset, 0, smallCubeSpeed, fft, song)); // Small cube below
+        smallCubes.add(new Cube(this, smallCubeSize, width / 2.6f, height / 2 + offset, 0, smallCubeSpeed, fft, song)); // Small cube bottom left
+        smallCubes.add(new Cube(this, smallCubeSize, width / 2.6f, height / 2, 0, smallCubeSpeed, fft, song)); // Small cube middle left
+        smallCubes.add(new Cube(this, smallCubeSize, width / 1.65f, height / 2 - offset, 0, smallCubeSpeed, fft, song)); // Small cube top right
+        smallCubes.add(new Cube(this, smallCubeSize, width / 1.65f, height / 2, 0, smallCubeSpeed, fft, song)); // Small cube middle right
+        smallCubes.add(new Cube(this, smallCubeSize, width / 1.65f, height / 2 + offset, 0, smallCubeSpeed, fft, song)); // Small cube bottom right
+        smallCubes.add(new Cube(this, smallCubeSize, width / 1.65f, height / 2 + offset * 1.75f, 0, smallCubeSpeed, fft, song)); // Small cube further bottom right
+        smallCubes.add(new Cube(this, smallCubeSize, width / 2.6f, height / 2 + offset * 1.75f, 0, smallCubeSpeed, fft, song)); // Small cube further bottom left
+        smallCubes.add(new Cube(this, smallCubeSize, width / 2, height / 2 + offset * 1.75f, 0, smallCubeSpeed, fft, song)); // Small cube further bottom middle
+        smallCubes.add(new Cube(this, smallCubeSize, width / 1.65f, height / 2 - offset * 1.75f, 0, smallCubeSpeed, fft, song)); // Small cube further top right
+        smallCubes.add(new Cube(this, smallCubeSize, width / 2f, height / 2 - offset * 1.75f, 0, smallCubeSpeed, fft, song)); // Small cube further top middle
+        smallCubes.add(new Cube(this, smallCubeSize, width / 2.6f, height / 2 - offset * 1.75f, 0, smallCubeSpeed, fft, song)); // Small cube further top left
+        // Add new Cube instances for the cubes inside the pyramids
+        smallCubes.add(new Cube(this, verySmallCubeSize, width / 1.14f, height / 2, 0, smallCubeSpeed, fft, song)); // Cube inside right pyramid
+        smallCubes.add(new Cube(this, verySmallCubeSize, width / 8.4f, height / 2, 0, smallCubeSpeed, fft, song)); // Cube inside left pyramid
+        }
 
     public void draw() {
         background(0); // Set background to black
@@ -234,31 +256,22 @@ public class IntroVisual extends PApplet {
                         drawDiamond();
                     }
                     else {
-                        drawCube(bigCubeSize,width/2,height/2,0,bigCubeSpeed);
+                        cube.draw(extremeColour, fillActivated, modes, angleX);
                     }
 
 
-                    drawCube(smallCubeSize, width / 2, height / 2 - offset, 0,smallCubeSpeed);  // Small cube above
-                    drawCube(smallCubeSize, width / 2.6f, height / 2 - offset, 0,smallCubeSpeed);  // Small cube above
-                    drawCube(smallCubeSize, width / 2, height / 2 + offset, 0,smallCubeSpeed);  // Small cube below
-                    drawCube(smallCubeSize, width / 2.6f, height / 2 + offset, 0,smallCubeSpeed); //small cube bottom left
-                    drawCube(smallCubeSize, width / 2.6f, height / 2 , 0,smallCubeSpeed); //small cube middle left
-                    drawCube(smallCubeSize, width / 1.65f, height / 2 - offset, 0,smallCubeSpeed); //small cube top right
-                    drawCube(smallCubeSize, width / 1.65f, height / 2 , 0,smallCubeSpeed);// small cube middle
-                    drawCube(smallCubeSize, width / 1.65f, height / 2+offset , 0,smallCubeSpeed);// small cube bottom right
-                    drawCube(smallCubeSize, width / 1.65f, height / 2+offset*1.75f , 0,smallCubeSpeed);// small cube further bottom right
-                    drawCube(smallCubeSize, width / 2.6f, height / 2+offset*1.75f , 0,smallCubeSpeed);// small cube further bottom left
-                    drawCube(smallCubeSize, width / 2, height / 2+offset*1.75f , 0,smallCubeSpeed);// small cube further bottom middle
-                    drawCube(smallCubeSize, width / 1.65f, height / 2-offset*1.75f , 0,smallCubeSpeed);// small cube further top right
-                    drawCube(smallCubeSize, width / 2f, height / 2-offset*1.75f , 0,smallCubeSpeed);// small cube further top middle
-                    drawCube(smallCubeSize, width / 2.6f, height / 2-offset*1.75f , 0,smallCubeSpeed);// small cube further top left
+                    for (Cube smallCube : smallCubes) {
+                        smallCube.draw(extremeColour, fillActivated, modes, angleX);
+                    }
                     drawPyramids();
                     
                     colorMode(RGB, 255, 255, 255);  // Switch back to RGB color mode for drawing other elements
                     popMatrix(); 
                     drawSoundWave();
-                    drawCube(verySmallCubeSize, width / 1.14f, height / 2 , 0,smallCubeSpeed);// cube inside pyramids
-                    drawCube(verySmallCubeSize, width /8.4f, height / 2 , 0,smallCubeSpeed);
+                    for (Cube smallCube : smallCubes) {
+                        smallCube.draw(extremeColour, fillActivated, modes, angleX); //cubes inside pyramids
+                    }
+                    
                     if (!song.isPlaying()){ //paused logic
                         if (displayDiamond){
                             drawDiamond();
