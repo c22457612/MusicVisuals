@@ -148,6 +148,8 @@ public class IntroVisual extends PApplet {
     Cube smallCubeFurtherBottom;
     Cube smallCubeFurtherBottomLeft;
     Cube smallCubeFurtherBottomRight;
+    Cube verySmallCubeLeft;
+    Cube verySmallCubeRight;
 
 
     public static void main(String[] args) {
@@ -213,6 +215,8 @@ public class IntroVisual extends PApplet {
         smallCubeFurtherBottom =new Cube(this, smallCubeSize, width /2, height / 2+offset*1.75f, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
         smallCubeFurtherBottomLeft =new Cube(this, smallCubeSize, width / 2.6f, height / 2 +offset*1.75f, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
         smallCubeFurtherBottomRight =new Cube(this, smallCubeSize, width / 1.65f, height / 2 +offset*1.75f, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        verySmallCubeLeft=new Cube(this, verySmallCubeSize, width / 1.14f, height / 2, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        verySmallCubeRight=new Cube(this, verySmallCubeSize, width / 8.4f, height / 2, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
     }
 
     public void draw() {
@@ -285,28 +289,13 @@ public class IntroVisual extends PApplet {
                     smallCubeFurtherBottom.drawCube();
                     smallCubeFurtherBottomLeft.drawCube();
                     smallCubeFurtherBottomRight.drawCube();
-                    /*drawCube(smallCubeSize, width / 2, height / 2 - offset, 0,smallCubeSpeed);  // Small cube above
-                    drawCube(smallCubeSize, width / 2.6f, height / 2 - offset, 0,smallCubeSpeed);  // Small cube above
-                    drawCube(smallCubeSize, width / 2, height / 2 + offset, 0,smallCubeSpeed);  // Small cube below
-                    drawCube(smallCubeSize, width / 2.6f, height / 2 + offset, 0,smallCubeSpeed); //small cube bottom left
-                    drawCube(smallCubeSize, width / 2.6f, height / 2 , 0,smallCubeSpeed); //small cube middle left
-                    drawCube(smallCubeSize, width / 1.65f, height / 2 - offset, 0,smallCubeSpeed); //small cube top right
-                    drawCube(smallCubeSize, width / 1.65f, height / 2 , 0,smallCubeSpeed);// small cube middle
-                    drawCube(smallCubeSize, width / 1.65f, height / 2+offset , 0,smallCubeSpeed);// small cube bottom right
-                    drawCube(smallCubeSize, width / 1.65f, height / 2+offset*1.75f , 0,smallCubeSpeed);// small cube further bottom right
-                    drawCube(smallCubeSize, width / 2.6f, height / 2+offset*1.75f , 0,smallCubeSpeed);// small cube further bottom left
-                    drawCube(smallCubeSize, width / 2, height / 2+offset*1.75f , 0,smallCubeSpeed);// small cube further bottom middle
-                    drawCube(smallCubeSize, width / 1.65f, height / 2-offset*1.75f , 0,smallCubeSpeed);// small cube further top right
-                    drawCube(smallCubeSize, width / 2f, height / 2-offset*1.75f , 0,smallCubeSpeed);// small cube further top middle
-                    drawCube(smallCubeSize, width / 2.6f, height / 2-offset*1.75f , 0,smallCubeSpeed);// small cube further top left
-                    */
                     drawPyramids();
                     
                     colorMode(RGB, 255, 255, 255);  // Switch back to RGB color mode for drawing other elements
                     popMatrix(); 
                     drawSoundWave();
-                    drawCube(verySmallCubeSize, width / 1.14f, height / 2 , 0,smallCubeSpeed);// cube inside pyramids
-                    drawCube(verySmallCubeSize, width /8.4f, height / 2 , 0,smallCubeSpeed);
+                    verySmallCubeLeft.drawCube();
+                    verySmallCubeRight.drawCube();
                     if (!song.isPlaying()){ //paused logic
                         if (displayDiamond){
                             drawDiamond();
@@ -686,6 +675,7 @@ public class IntroVisual extends PApplet {
             strokeWeight(28); // increase soundwaves naturally
         }
         
+        
         //top left pyramid
         for (float y = 0; y <=waveLength ; y+=0.1) { //top left pyramid
             int index = (int) map(y, height, 0, 0, fft.avgSize() - 1);
@@ -895,12 +885,42 @@ public class IntroVisual extends PApplet {
                 }
             } else if (keyCode == LEFT) {
                 if (smallCubeSpeed>0){
-                    smallCubeSpeed-=0.1;
+                    smallCubeAbove.setCubeSpeedDown();
+                    smallCubeAboveLeft.setCubeSpeedDown();
+                    smallCubeAboveRight.setCubeSpeedDown();
+                    smallCubeMiddleLeft.setCubeSpeedDown();
+                    smallCubeMiddleRight.setCubeSpeedDown();
+                    smallCubeBottom.setCubeSpeedDown();
+                    smallCubeBottomLeft.setCubeSpeedDown();
+                    smallCubeBottomRight.setCubeSpeedDown();
+                    smallCubeFurtherAbove.setCubeSpeedDown();
+                    smallCubeFurtherAboveLeft.setCubeSpeedDown();
+                    smallCubeFurtherAboveRight.setCubeSpeedDown();
+                    smallCubeFurtherBottom.setCubeSpeedDown();
+                    smallCubeFurtherBottomLeft.setCubeSpeedDown();
+                    smallCubeFurtherBottomRight.setCubeSpeedDown();
+                    verySmallCubeLeft.setCubeSpeedDown();
+                    verySmallCubeRight.setCubeSpeedDown();
                     yRotateDiamond=false;
                 }
             } else if (keyCode == RIGHT) {
                 if (smallCubeSpeed>-1){
-                    smallCubeSpeed+=0.1;
+                    smallCubeAbove.setCubeSpeedUp();
+                    smallCubeAboveLeft.setCubeSpeedUp();
+                    smallCubeAboveRight.setCubeSpeedUp();
+                    smallCubeMiddleLeft.setCubeSpeedUp();
+                    smallCubeMiddleRight.setCubeSpeedUp();
+                    smallCubeBottom.setCubeSpeedUp();
+                    smallCubeBottomLeft.setCubeSpeedUp();
+                    smallCubeBottomRight.setCubeSpeedUp();
+                    smallCubeFurtherAbove.setCubeSpeedUp();
+                    smallCubeFurtherAboveLeft.setCubeSpeedUp();
+                    smallCubeFurtherAboveRight.setCubeSpeedUp();
+                    smallCubeFurtherBottom.setCubeSpeedUp();
+                    smallCubeFurtherBottomLeft.setCubeSpeedUp();
+                    smallCubeFurtherBottomRight.setCubeSpeedUp();
+                    verySmallCubeLeft.setCubeSpeedUp();
+                    verySmallCubeRight.setCubeSpeedUp();
                     yRotateDiamond=true;
                 }
             }
@@ -922,6 +942,8 @@ public class IntroVisual extends PApplet {
                 smallCubeFurtherBottom.setFillActivated(fillActivated);
                 smallCubeFurtherBottomLeft.setFillActivated(fillActivated);
                 smallCubeFurtherBottomRight.setFillActivated(fillActivated);
+                verySmallCubeLeft.setFillActivated(fillActivated);
+                verySmallCubeRight.setFillActivated(fillActivated);
             }
             if (keyCode=='e'|| keyCode=='E'){
                 extremeColour = !extremeColour;
@@ -941,6 +963,8 @@ public class IntroVisual extends PApplet {
                 smallCubeFurtherBottom.setExtremeColour(extremeColour);
                 smallCubeFurtherBottomLeft.setExtremeColour(extremeColour);
                 smallCubeFurtherBottomRight.setExtremeColour(extremeColour);
+                verySmallCubeLeft.setExtremeColour(extremeColour);
+                verySmallCubeRight.setExtremeColour(extremeColour);
             }
         }
 
@@ -1254,7 +1278,12 @@ public class IntroVisual extends PApplet {
 
             // Adjust stroke width dynamically for a pulsing effect
             float strokeWeightValue = map(trebleAmplitude, 0, 10, 0.5f, 15);
-            noFill();
+            if (!fillActivated){
+                fill(255);
+            }else{
+                noFill(); 
+            }
+            
             strokeWeight(strokeWeightValue);
             if (modes[0]&& startDrawingShapes){
                 if (extremeColour){
