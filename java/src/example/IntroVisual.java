@@ -222,7 +222,7 @@ public class IntroVisual extends PApplet {
         verySmallCubeRight=new Cube(this, verySmallCubeSize, width / 8.4f, height / 2, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
 
         diamond = new Diamond(this, fft, currentRotationY, extremeColour, fillActivated, transparentColour, startDrawingShapes, xRotateDiamond, yRotateDiamond,playIntro);
-        pyramids = new Pyramids(this,fft,spinning,rotationSpeed,pyramidRotation,pyramidXPosTop,pyramidXPosBottom,pyramidMoveSpeed,pyramidsVisible,currentRotationY,song,pyramidFillAlpha,pyramidSize,playIntro,startDrawingShapes,modes,extremeColour,transparentColour);
+        pyramids = new Pyramids(this,fft,spinning,rotationSpeed,pyramidRotation,pyramidXPosTop,pyramidXPosBottom,pyramidMoveSpeed,pyramidsVisible,currentRotationY,song,pyramidFillAlpha,pyramidSize,playIntro,startDrawingShapes,modes,extremeColour,transparentColour,fillActivated);
     }
 
     public void draw() {
@@ -232,7 +232,7 @@ public class IntroVisual extends PApplet {
             
             currentRotationY %= TWO_PI;
             if (!startDrawingShapes){ //logic for intro
-                println("not started drawing shapes");
+                //println("not started drawing shapes");
                 //drawDiamond();
                 diamond.drawDiamond();
                 //drawPyramids();
@@ -299,7 +299,8 @@ public class IntroVisual extends PApplet {
                     smallCubeFurtherBottom.drawCube();
                     smallCubeFurtherBottomLeft.drawCube();
                     smallCubeFurtherBottomRight.drawCube();
-                    drawPyramids();
+                    pyramids.setDrawingShapes(startDrawingShapes);
+                    pyramids.drawPyramids();
                     
                     colorMode(RGB, 255, 255, 255);  // Switch back to RGB color mode for drawing other elements
                     popMatrix(); 
@@ -833,6 +834,7 @@ public class IntroVisual extends PApplet {
                 smallCubeFurtherBottomRight.setFillActivated(fillActivated);
                 verySmallCubeLeft.setFillActivated(fillActivated);
                 verySmallCubeRight.setFillActivated(fillActivated);
+                pyramids.setfillActivated(fillActivated);
 
             }
             if (keyCode=='m'|| keyCode=='M'){ // middle or main objects on screen control
@@ -861,6 +863,7 @@ public class IntroVisual extends PApplet {
                 smallCubeFurtherBottomRight.setExtremeColour(extremeColour);
                 verySmallCubeLeft.setExtremeColour(extremeColour);
                 verySmallCubeRight.setExtremeColour(extremeColour);
+                pyramids.setExtremeColour(extremeColour);
             }
         }
 
