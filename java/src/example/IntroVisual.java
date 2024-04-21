@@ -151,6 +151,8 @@ public class IntroVisual extends PApplet {
     Cube verySmallCubeLeft;
     Cube verySmallCubeRight;
 
+    Diamond diamond;
+
 
     public static void main(String[] args) {
         PApplet.main("example.IntroVisual");
@@ -217,6 +219,9 @@ public class IntroVisual extends PApplet {
         smallCubeFurtherBottomRight =new Cube(this, smallCubeSize, width / 1.65f, height / 2 +offset*1.75f, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
         verySmallCubeLeft=new Cube(this, verySmallCubeSize, width / 1.14f, height / 2, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
         verySmallCubeRight=new Cube(this, verySmallCubeSize, width / 8.4f, height / 2, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+
+        diamond = new Diamond(this, fft, currentRotationY, extremeColour, fillActivated, transparentColour, startDrawingShapes, xRotateDiamond, yRotateDiamond,playIntro);
+
     }
 
     public void draw() {
@@ -227,7 +232,8 @@ public class IntroVisual extends PApplet {
             currentRotationY %= TWO_PI;
             if (!startDrawingShapes){ //logic for intro
                  
-                drawDiamond();
+                //drawDiamond();
+                diamond.drawDiamond();
                 drawPyramids();
                 drawSoundWave();
                 
@@ -269,7 +275,9 @@ public class IntroVisual extends PApplet {
                     drawMovingSphere(width /2, height/2, sphereRadius);
 
                     if (displayDiamond){
-                        drawDiamond();
+                        diamond.setDrawingShapes(startDrawingShapes);
+                        diamond.setExtremeColour(extremeColour);
+                        diamond.drawDiamond();
                     }
                     else {
                         bigCube.drawCube();
@@ -298,42 +306,18 @@ public class IntroVisual extends PApplet {
                     verySmallCubeRight.drawCube();
                     if (!song.isPlaying()){ //paused logic
                         if (displayDiamond){
-                            drawDiamond();
+                            diamond.drawDiamond();
                         }else{
-                            drawCube(bigCubeSize,width/2,height/2,0,bigCubeSpeed);
+                            bigCube.drawCube();
+                            //drawCube(bigCubeSize,width/2,height/2,0,bigCubeSpeed);
                         }
-                        drawCube(smallCubeSize, width / 2, height / 2 - offset, 0,smallCubeSpeed);  // Small cube above
-                        drawCube(smallCubeSize, width / 2, height / 2 + offset, 0,smallCubeSpeed);  // Small cube below
                         drawSoundWave();
                         fill(173, 216, 230); //light blue
                         text("Paused",width/2,height-fontSize);
                     }
-                }else if(modes[1]){// swapped modes 
-                    colorMode(HSB, 360, 100, 100);  // Set HSB color mode
-                    pushMatrix();  // Save the current transformation matrix state
-                    noFill();
-                    drawMovingSphere(width /2, height/2, smallSphereRadius);
-                    drawPyramids();
-                    
-                    colorMode(RGB, 255, 255, 255);  // Switch back to RGB color mode for drawing other elements
-                    popMatrix(); 
-                    drawSoundWave();
-                    drawRainbowWave();
-                    drawCube(verySmallCubeSize, width / 1.14f, height / 2 , 0,smallCubeSpeed);// cube inside pyramids
-                    drawCube(verySmallCubeSize, width /8.4f, height / 2 , 0,smallCubeSpeed);
-                    drawCube(bigCubeSize,width/1.14f,height/4,0,bigCubeSpeed);
-                    if (!song.isPlaying()){ //paused logic
-                        drawCube(smallCubeSize, width / 2, height / 2 - offset, 0,smallCubeSpeed);  // Small cube above
-                        drawCube(smallCubeSize, width / 2, height / 2 + offset, 0,smallCubeSpeed);  // Small cube below
-                        drawSoundWave();
-                        fill(173, 216, 230); //light blue
-                        text("Paused",width/2,height-fontSize);
-                    }
-                    
                 }
             }
             
-        
             if (sound1.isPlaying()) {
                 soundToVisualize = sound1;
             } else if (sound2.isPlaying()) {
@@ -371,7 +355,7 @@ public class IntroVisual extends PApplet {
         }else{ // prompt user to start intro
             fill(180, 230, 230); //light blue
             text("press space",width/2,height-fontSize);
-            drawDiamond();
+            diamond.drawDiamond();
             noFill();
             drawMovingSphere(width /2, height/2, sphereRadius);
         }
@@ -824,6 +808,7 @@ public class IntroVisual extends PApplet {
             if(spinning){
                 player.play();
                 playIntro=true;
+                diamond.setPlayIntro(playIntro);
                 hasStartedPlaying = true;
                 isFirstSoundtrackFinished = false; // Reset this flag when the first soundtrack starts
                 circleOpacity = 0; // Reset opacity to allow fade-in effect
@@ -877,11 +862,13 @@ public class IntroVisual extends PApplet {
                 if (bigCubeSpeed>-1){
                     bigCube.setCubeSpeedUp();
                     xRotateDiamond=true;
+                    diamond.setxRotateDiamond(xRotateDiamond);
                 }
             } else if (keyCode == DOWN) {
                 if (bigCubeSpeed>0){
                     bigCube.setCubeSpeedDown();
                     xRotateDiamond=false;
+                    diamond.setxRotateDiamond(xRotateDiamond);
                 }
             } else if (keyCode == LEFT) {
                 if (smallCubeSpeed>0){
@@ -902,6 +889,7 @@ public class IntroVisual extends PApplet {
                     verySmallCubeLeft.setCubeSpeedDown();
                     verySmallCubeRight.setCubeSpeedDown();
                     yRotateDiamond=false;
+                    diamond.setyRotateDiamond(yRotateDiamond);
                 }
             } else if (keyCode == RIGHT) {
                 if (smallCubeSpeed>-1){
@@ -922,6 +910,7 @@ public class IntroVisual extends PApplet {
                     verySmallCubeLeft.setCubeSpeedUp();
                     verySmallCubeRight.setCubeSpeedUp();
                     yRotateDiamond=true;
+                    diamond.setyRotateDiamond(yRotateDiamond);
                 }
             }
 
@@ -1081,143 +1070,6 @@ public class IntroVisual extends PApplet {
         text(text, x, y); // Draw the text at the original position
     }
 
-    void drawCube(float side,float x,float y,float z,float cubeSpeed) {
-        
-        float halfSide = side / 2;
-        //println("cube size:"+side+"cubespeed:"+cubeSpeed); //debugging statement
-
-        // Perform FFT analysis on the current audio playing
-        fft.forward(song.mix);
-
-        float bassSum = 0, midSum = 0, trebleSum = 0;
-        int bassCount = 0, midCount = 0, trebleCount = 0;
-
-        // Divide the frequency spectrum into bass, mid, and treble
-        for (int i = 0; i < fft.specSize(); i++) {
-            float freq = fft.indexToFreq(i);
-            float amplitude = fft.getBand(i);
-
-            if (freq < 150) {  // Bass: below 150 Hz
-                bassSum += amplitude;
-                bassCount++;
-            } else if (freq >= 150 && freq < 4000) {  // Mid: 150 Hz to 4 kHz
-                midSum += amplitude;
-                midCount++;
-            } else if (freq >= 4000) {  // Treble: above 4 kHz
-                trebleSum += amplitude;
-                trebleCount++;
-            }
-        }
-
-        // Calculate average amplitudes for bass, mid, and treble
-        float bassAvg = (bassCount > 0) ? bassSum / bassCount : 0;
-        float midAvg = (midCount > 0) ? midSum / midCount : 0;
-        float trebleAvg = (trebleCount > 0) ? trebleSum / trebleCount : 0;
-
-
-        float totalAmplitude = 0;
-
-        for (int i = 0; i < fft.specSize(); i++) {
-            totalAmplitude += fft.getBand(i);
-        }
-
-        float hue = map(totalAmplitude, 0, 3000, 180, 360);  // Ranges from blue to purple to pink mostly
-        if (extremeColour){
-            hue = map(totalAmplitude, 0, 200, 0, 360);  // Ranges from all colours aggresively
-            hue = hue % 360;  // Ensure the hue wraps around correctly
-        }
-        
-
-        // Rotate based on the average amplitudes
-        angleX += map(bassAvg, 0, 10, 0, PI / 200);  // Scale these factors as needed
-        angleY += map(midAvg, 0, 10, 0, PI / 200);
-        angleZ += map(trebleAvg, 0, 10, 0, PI / 200);
-
-
-        float totalLoudness = 0; // Initialize total loudness
-
-        // Sum all amplitudes to calculate total loudness
-        for (int i = 0; i < fft.specSize(); i++) {
-            totalLoudness += fft.getBand(i);
-        }
-
-        float normalizedLoudness = map(totalLoudness, 0, 200, 1, 10); // Adjust range 0-200 to 1-10, 
-        normalizedLoudness = constrain(normalizedLoudness, 0, 3); // Ensure stroke weight doesn't get too high
-        pushMatrix();
-        translate(x,y,z);
-        rotateX(angleX*cubeSpeed);
-        rotateY(angleY*cubeSpeed);
-        rotateZ(angleZ*cubeSpeed);
-
-        if (modes[0]){
-            strokeWeight(normalizedLoudness); // Set the outline weight
-            if (song.isPlaying()){
-                strokeWeight(normalizedLoudness); // Set the outline weight
-                stroke(hue,100,100); 
-            }
-            else
-            {
-                strokeWeight(2); // thin outline
-                stroke(255);// white outline
-            }
-            if (side<=26f || fillActivated){// if cubes are very small we want to fill them or if fill activated
-                fill(hue,100,100);  
-                strokeWeight(2); // thin outline
-                stroke(255);// white outline
-            }else{
-                noFill(); // Do not fill the shapes
-            }
-        }else if(modes[1]){
-            fill(hue,100,100);
-        }
-        
-            
-        
-        beginShape(QUADS);
-        for (int i = 0; i < 6; i++) {
-            switch (i) {
-                case 0: // Front face
-                    vertex(-halfSide, -halfSide, halfSide);
-                    vertex(halfSide, -halfSide, halfSide);
-                    vertex(halfSide, halfSide, halfSide);
-                    vertex(-halfSide, halfSide, halfSide);
-                    break;
-                case 1: // Back face
-                    vertex(halfSide, -halfSide, -halfSide);
-                    vertex(-halfSide, -halfSide, -halfSide);
-                    vertex(-halfSide, halfSide, -halfSide);
-                    vertex(halfSide, halfSide, -halfSide);
-                    break;
-                // Add other faces similarly
-                case 2: // Top face
-                    vertex(-halfSide, -halfSide, -halfSide);
-                    vertex(halfSide, -halfSide, -halfSide);
-                    vertex(halfSide, -halfSide, halfSide);
-                    vertex(-halfSide, -halfSide, halfSide);
-                    break;
-                case 3: // Bottom face
-                    vertex(-halfSide, halfSide, halfSide);
-                    vertex(halfSide, halfSide, halfSide);
-                    vertex(halfSide, halfSide, -halfSide);
-                    vertex(-halfSide, halfSide, -halfSide);
-                    break;
-                case 4: // Right face
-                    vertex(halfSide, -halfSide, halfSide);
-                    vertex(halfSide, -halfSide, -halfSide);
-                    vertex(halfSide, halfSide, -halfSide);
-                    vertex(halfSide, halfSide, halfSide);
-                    break;
-                case 5: // Left face
-                    vertex(-halfSide, -halfSide, -halfSide);
-                    vertex(-halfSide, -halfSide, halfSide);
-                    vertex(-halfSide, halfSide, halfSide);
-                    vertex(-halfSide, halfSide, -halfSide);
-                    break;
-            }
-        }
-        endShape(CLOSE);
-        popMatrix();
-    }
 
     void drawMovingSphere(float x, float y, float r) {
         pushMatrix(); // Save the current state of transformations
@@ -1318,6 +1170,10 @@ public class IntroVisual extends PApplet {
         }
     
         popMatrix(); // Restore original state of transformations
+    }
+
+    public void getTransparentColour(float transparentColour){
+        diamond.transparentColour=transparentColour;
     }
     
     
