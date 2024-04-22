@@ -153,6 +153,7 @@ public class IntroVisual extends PApplet {
 
     Diamond diamond;
     Pyramids pyramids;
+    Sphere sphere;
 
 
     public static void main(String[] args) {
@@ -223,6 +224,7 @@ public class IntroVisual extends PApplet {
 
         diamond = new Diamond(this, fft, currentRotationY, extremeColour, fillActivated, transparentColour, startDrawingShapes, xRotateDiamond, yRotateDiamond,playIntro);
         pyramids = new Pyramids(this,fft,spinning,rotationSpeed,pyramidRotation,pyramidXPosTop,pyramidXPosBottom,pyramidMoveSpeed,pyramidsVisible,currentRotationY,song,pyramidFillAlpha,pyramidSize,playIntro,startDrawingShapes,modes,extremeColour,transparentColour,fillActivated);
+        sphere= new Sphere(this,fft,song,playIntro,startDrawingShapes,modes,fillActivated,extremeColour,sphereRadius,movementSpeed);
     }
 
     public void draw() {
@@ -274,7 +276,9 @@ public class IntroVisual extends PApplet {
                 if (modes[0]){
                     colorMode(HSB, 360, 100, 100);  // Set HSB color mode
                     pushMatrix();  // Save the current transformation matrix state
-                    drawMovingSphere(width /2, height/2, sphereRadius);
+                    //drawMovingSphere(width /2, height/2, sphereRadius);
+                    sphere.setStartDrawingShapes(startDrawingShapes);
+                    sphere.drawMovingSphere(width/2,height/2,sphereRadius);
 
                     if (displayDiamond){
                         diamond.setDrawingShapes(startDrawingShapes);
@@ -360,7 +364,8 @@ public class IntroVisual extends PApplet {
             text("press space",width/2,height-fontSize);
             diamond.drawDiamond();
             noFill();
-            drawMovingSphere(width /2, height/2, sphereRadius);
+            //drawMovingSphere(width /2, height/2, sphereRadius);
+            sphere.drawMovingSphere(width/2,height/2,sphereRadius);
         }
     }
     
@@ -368,168 +373,6 @@ public class IntroVisual extends PApplet {
         player.close();
         minim.stop();
         super.stop();
-    }
-    
-    public void drawPyramids() {
-        if (spinning){
-            //println(transparentColour);
-            if (rotationSpeed < 0.05) {
-                rotationSpeed += 0.0001;
-            }
-            pyramidRotation += rotationSpeed; // Keep rotating the pyramids continuously
-            if (abs(pyramidXPosTop) < width / 3) {
-                pyramidXPosTop -= pyramidMoveSpeed;
-            } else {
-                pyramidsVisible = true;
-            }
-            if (abs(pyramidXPosBottom) < width / 3) {
-                pyramidXPosBottom += pyramidMoveSpeed;
-            } else {
-                pyramidsVisible = true;
-            }
-            currentRotationY += rotationSpeed;
-            if (transparentColour > 0) {
-                transparentColour -= 0.5;
-            }
-        }
-
-        if (song.isPlaying()){ //rotate
-            if (rotationSpeed < 0.05) {
-                rotationSpeed += 0.0001;
-            }
-            pyramidRotation += rotationSpeed; // Keep rotating the pyramids continuously
-            if (abs(pyramidXPosTop) < width / 2) {
-                pyramidXPosTop -= pyramidMoveSpeed;
-            } else {
-                pyramidsVisible = true;
-            }
-            if (abs(pyramidXPosBottom) < width / 2) {
-                pyramidXPosBottom += pyramidMoveSpeed;
-            } else {
-                pyramidsVisible = true;
-            }
-            currentRotationY += rotationSpeed;
-            if (transparentColour > 0) {
-                transparentColour -= 1;
-            }
-            else{// else stay
-                pyramidsVisible=true;
-            }
-            pyramidFillAlpha += 2; // Increase alpha gradually
-            pyramidFillAlpha = constrain(pyramidFillAlpha, 0, 255); // Limit alpha to max 255
-            
-        }
-
-        float totalAmplitude = 0;
-
-        for (int i = 0; i < fft.specSize(); i++) {
-            totalAmplitude += fft.getBand(i);
-        }
-
-        // Top pyramid and its additional bottom pyramid
-        pushMatrix();
-        translate(width / 2 + pyramidXPosTop, height / 2, -200);
-        rotateY(pyramidRotation);
-    
-        // Draw the top pyramid (inverted)
-        pushMatrix();
-        translate(0, -pyramidSize, 0);
-        rotateX(PI);
-        if (playIntro &&!startDrawingShapes){
-            fill(totalAmplitude, 50, totalAmplitude, transparentColour);
-            //println(transparentColour);
-            //println("in intro"); //debugging statement
-        }
-        if (modes[0] &&startDrawingShapes)// colour scheme for mode 0
-        {
-            //println("in visualizer");
-            if (extremeColour){
-                float hue = map(totalAmplitude, 0, 2000, 40, 180);  // Ranges from all colours aggresively
-                hue = hue % 360;  // Ensure the hue wraps around correctly
-                fill(hue,100,100);
-                //println("extreme colours");
-            }else if (!extremeColour){
-                float hue = map(totalAmplitude, 0, 2000, 240, 360);  // Ranges from purple to pink aggresively
-                hue = hue % 360;  // Ensure the hue wraps around correctly
-                fill(hue,100,100);
-                //println("not extreme colours");
-            }
-            
-        }else if(modes[1]){
-            //println(totalAmplitude); //debugging statement
-            if (totalAmplitude>1500){
-                fill(totalAmplitude/2, 50, totalAmplitude/4, pyramidFillAlpha);
-                stroke(0);
-            }else if(totalAmplitude>1800){
-                fill(totalAmplitude/6, 50, totalAmplitude/6, pyramidFillAlpha);
-                stroke(0);
-            }else{ 
-                fill(totalAmplitude/3, 50, totalAmplitude/3, pyramidFillAlpha);
-                stroke(0);
-            }
-            
-        }
-
-        
-        drawPyramid(pyramidSize);
-        popMatrix();
-    
-        // Draw the additional bottom pyramid (upright) underneath the top pyramid
-        if (abs(pyramidXPosTop) >= width / 3) {
-            translate(0, pyramidSize, 0);
-            drawPyramid(pyramidSize);
-        }
-        popMatrix();
-    
-        // Bottom pyramid and its additional top pyramid
-        pushMatrix();
-        translate(width / 2 + pyramidXPosBottom, height / 2, -200);
-        rotateY(pyramidRotation);
-    
-        // Draw the bottom pyramid (upright)
-        pushMatrix();
-        translate(0, pyramidSize, 0);
-        drawPyramid(pyramidSize);
-        popMatrix();
-    
-        // Draw the additional top pyramid (inverted) above the bottom pyramid
-        if (abs(pyramidXPosBottom) >= width / 3) {
-            translate(0, -pyramidSize, 0);
-            rotateX(PI);
-            drawPyramid(pyramidSize);
-        }
-        popMatrix();
-    }
-    
-    
-    public void drawAdditionalPyramid(float size, boolean isTop) {
-        translate(0, isTop ? size * 2 : -size * 2, 0); // Adjust position based on whether it's top or bottom pyramid
-        drawPyramid(size); // Uses the same drawPyramid method for the new pyramid
-    }
-    
-    public void drawPyramid(float size) {
-        beginShape(TRIANGLES);
-        if (pyramidsVisible) {
-            strokeWeight(2); // Outlines visible
-        } else {
-            strokeWeight(0); // Outlines invisible
-        }
-        vertex(-size / 2, -size / 2, -size / 2);
-        vertex(size / 2, -size / 2, -size / 2);
-        vertex(0, size / 2, 0);
-
-        vertex(size / 2, -size / 2, -size / 2);
-        vertex(size / 2, -size / 2, size / 2);
-        vertex(0, size / 2, 0);
-
-        vertex(size / 2, -size / 2, size / 2);
-        vertex(-size / 2, -size / 2, size / 2);
-        vertex(0, size / 2, 0);
-
-        vertex(-size / 2, -size / 2, size / 2);
-        vertex(-size / 2, -size / 2, -size / 2);
-        vertex(0, size / 2, 0);
-        endShape(CLOSE);
     }
 
     public void drawSoundWave(){
@@ -835,6 +678,7 @@ public class IntroVisual extends PApplet {
                 verySmallCubeLeft.setFillActivated(fillActivated);
                 verySmallCubeRight.setFillActivated(fillActivated);
                 pyramids.setfillActivated(fillActivated);
+                sphere.setFillActivated(fillActivated);
 
             }
             if (keyCode=='m'|| keyCode=='M'){ // middle or main objects on screen control
@@ -864,6 +708,7 @@ public class IntroVisual extends PApplet {
                 verySmallCubeLeft.setExtremeColour(extremeColour);
                 verySmallCubeRight.setExtremeColour(extremeColour);
                 pyramids.setExtremeColour(extremeColour);
+                sphere.setExtremeColour(extremeColour);
             }
         }
 
@@ -980,121 +825,9 @@ public class IntroVisual extends PApplet {
         text(text, x, y); // Draw the text at the original position
     }
 
-
-    void drawMovingSphere(float x, float y, float r) {
-        pushMatrix(); // Save the current state of transformations
-        translate(x, y); // Use the dynamic `sphereY` for y-position
-        
-        if (!startDrawingShapes){
-            angle += 0.01; // Continuously rotate the sphere
-        }else if(modes[0]&&startDrawingShapes){
-            angle+=0.001;
-        }
-
-        if (song.isPlaying() || !playIntro) {
-            
-            rotateX(angle);
-    
-            // Analyze the spectrum into bass, mid, and treble
-            float bassAmplitude = 0, trebleAmplitude = 0;
-            int bassCount = 0, trebleCount = 0;
-            
-            for (int i = 0; i < fft.specSize(); i++) {
-                float freq = fft.indexToFreq(i);
-                float amplitude = fft.getBand(i);
-    
-                // Define bass as frequencies below 150 Hz
-                if (freq < 150) {
-                    bassAmplitude += amplitude;
-                    bassCount++;
-                }
-                // Define treble as frequencies above 4000 Hz
-                else if (freq > 4000) {
-                    trebleAmplitude += amplitude;
-                    trebleCount++;
-                }
-            }
-    
-            // Calculate average amplitudes
-            bassAmplitude = (bassCount > 0) ? bassAmplitude / bassCount : 0;
-            trebleAmplitude = (trebleCount > 0) ? trebleAmplitude / trebleCount : 0;
-    
-            // Adjust movement speed based on bass amplitude
-            movementSpeed = map(bassAmplitude, 0, 10, 1, 5);
-            movementSpeed = constrain(movementSpeed, 1, 5);
-    
-            // Setting HSB color mode
-            colorMode(HSB, 360, 100, 100);
-    
-            // Optional: Adjust color based on treble amplitude
-            float hue = map(trebleAmplitude, 0, 2000, 0, 360); // Half range of hue
-            float saturation = map(bassAmplitude, 0, 10, 20, 100); // Saturation increases with bass
-            float brightness = 100; // Always full brightness for visibility
-    
-
-            float totalAmplitude = 0;
-
-            for (int i = 0; i < fft.specSize(); i++) { // needs to be added for extreme colours to work
-                totalAmplitude += fft.getBand(i);
-            }
-
-            // Adjust stroke width dynamically for a pulsing effect
-            float strokeWeightValue = map(trebleAmplitude, 0, 10, 0.5f, 15);
-            if (!fillActivated){
-                fill(255);
-            }else{
-                noFill(); 
-            }
-            
-            strokeWeight(strokeWeightValue);
-            if (modes[0]&& startDrawingShapes){
-                if (extremeColour){
-                    hue = map(totalAmplitude, 0, 2000, 0, 360);  // Ranges from half colour wheel
-                    hue = hue % 360;  // Ensure the hue wraps around correctly
-                    stroke(hue,100,100);
-                    r=r/5; //widen view for more aggresive effect
-                }else if (!extremeColour){
-                    hue = map(totalAmplitude, 0, 2000, 0, 80);  // Ranges from other half colour wheel
-                    hue = hue % 360;  // Ensure the hue wraps around correctly
-                    stroke(hue,100,100);
-                    //println("not extreme colours");
-                }
-            }else{
-                hue = map(totalAmplitude, 0, 2000, 300, 360);  // Ranges from half colour wheel
-                hue = hue % 360;  // Ensure the hue wraps around correctly
-                stroke(hue,100,100);
-            }
-
-                
-    
-            // Draw the sphere with the constant radius
-            sphere(r);
-        } else {
-            // Default color when music is paused
-            colorMode(RGB, 255); // Switch back to RGB for consistent color handling
-            //fill(255, 0, 100, 100);
-            noFill();
-            stroke(255);
-            strokeWeight(1);
-            sphere(r);
-        }
-    
-        popMatrix(); // Restore original state of transformations
-    }
-
     public void getTransparentColour(float transparentColour){
         diamond.transparentColour=transparentColour;
     }
     
-    
-    
-    
-    
-    
-    
-    
-
-    
-
 
 }
