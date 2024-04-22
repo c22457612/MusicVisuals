@@ -1,4 +1,4 @@
-package example.screens.IntroVisual;
+package example.IntroVisual;
 
 import processing.core.PApplet;
 import processing.core.PVector;

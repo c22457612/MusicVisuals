@@ -1,7 +1,7 @@
 //THIS IS A TESTER FILE NOT MAIN SCREEN , MAIN SCREEN IS IntroVisual.java
 
 
-package example.screens.IntroVisual;
+package example.IntroVisual;
 
 import processing.core.PApplet;
 import processing.core.PFont;

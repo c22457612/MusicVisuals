@@ -1,4 +1,4 @@
-package example.screens.IntroVisual;
+package example.IntroVisual;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -6,7 +6,7 @@ import ddf.minim.AudioPlayer;
 import ddf.minim.analysis.FFT;
 
 public class SoundWave {
-    private PApplet parent; // Reference to the PApplet for drawing
+    private IntroVisualScreen parent; // Reference to the PApplet for drawing
     private FFT fft; // FFT object for analyzing the audio
     private float waveHeight; // Height of the wave
     private boolean[] modes;
@@ -20,8 +20,8 @@ public class SoundWave {
     
 
     // Constructor
-    public SoundWave(PApplet parent, FFT fft, float waveHeight, boolean[] modes, boolean extremeColour, boolean startDrawingShapes, AudioPlayer player, AudioPlayer song, float width, float height, int frameCount) {
-        this.parent = parent;
+    public SoundWave(IntroVisualScreen introVisualScreen, FFT fft, float waveHeight, boolean[] modes, boolean extremeColour, boolean startDrawingShapes, AudioPlayer player, AudioPlayer song, float width, float height, int frameCount) {
+        this.parent = introVisualScreen;
         this.fft = fft;
         this.waveHeight = waveHeight;
         this.modes = modes;
@@ -36,7 +36,7 @@ public class SoundWave {
 
     public void drawSoundWave(){
         
-        parent.noiseDetail(10, 0.3f); // Adjust noise detail for smoother or rougher transitions
+        parent.mv.noiseDetail(10, 0.3f); // Adjust noise detail for smoother or rougher transitions
 
         float waveFrequency = 0.7f; // Controls the frequency of the sine wave
         float maxAmplitude = 1.4f; //double the frequency
@@ -54,14 +54,14 @@ public class SoundWave {
         }
 
         if (this.modes[0] && this.startDrawingShapes){
-            parent.strokeWeight(15);
+            parent.mv.strokeWeight(15);
             thicknessTop=1f;
             thicknessBottom=1.5f;
         }
 
         if (this.extremeColour){
-            parent.colorMode(PConstants.HSB, 360, 100, 100);  // Set HSB color mode
-            parent.strokeWeight(28); // increase soundwaves naturally
+            parent.mv.colorMode(PConstants.HSB, 360, 100, 100);  // Set HSB color mode
+            parent.mv.strokeWeight(28); // increase soundwaves naturally
         }
         
         
@@ -75,10 +75,10 @@ public class SoundWave {
         
             // Change the color over time based on the amplitude
             int colorValue = (int) PApplet.map(amplitude, 0, maxAmplitude, 0, 255);
-            parent.stroke(parent.color(255 - colorValue, colorValue, 255));
+            parent.mv.stroke(parent.mv.color(255 - colorValue, colorValue, 255));
         
             // Draw the wave by connecting points vertically
-            parent.line(x, y, x, y - thicknessTop); // Draw points upward for a vertical wave
+            parent.mv.line(x, y, x, y - thicknessTop); // Draw points upward for a vertical wave
         }
 
         //top right pyramid
@@ -91,10 +91,10 @@ public class SoundWave {
         
             // Change the color over time based on the amplitude
             int colorValue = (int) PApplet.map(amplitude, 0, maxAmplitude, 0, 255);
-            parent.stroke(parent.color(255 - colorValue, colorValue, 255));
+            parent.mv.stroke(parent.mv.color(255 - colorValue, colorValue, 255));
         
             // Draw the wave by connecting points vertically
-            parent.line(x, y, x, y - thicknessTop); // Draw points upward for a vertical wave
+            parent.mv.line(x, y, x, y - thicknessTop); // Draw points upward for a vertical wave
         }
 
         // bottom left pyramid
@@ -107,9 +107,9 @@ public class SoundWave {
             x += width/4.1f;
 
             int colorValue = (int) PApplet.map(amplitude, 0, maxAmplitude, 0, 255);
-            parent.stroke(parent.color(255 - colorValue, colorValue, 255));
+            parent.mv.stroke(parent.mv.color(255 - colorValue, colorValue, 255));
 
-            parent.line(x, y, x, y +thicknessBottom);
+            parent.mv.line(x, y, x, y +thicknessBottom);
         }
 
         //bottom right pyramid
@@ -120,9 +120,9 @@ public class SoundWave {
             x += width/1.323f;
 
             int colorValue = (int) PApplet.map(amplitude, 0, maxAmplitude, 0, 255);
-            parent.stroke(parent.color(255 - colorValue, colorValue, 255));
+            parent.mv.stroke(parent.mv.color(255 - colorValue, colorValue, 255));
 
-            parent.line(x, y, x, y + thicknessBottom);
+            parent.mv.line(x, y, x, y + thicknessBottom);
         }
     }
 

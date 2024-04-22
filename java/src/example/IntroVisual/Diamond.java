@@ -1,11 +1,11 @@
-package example.screens.IntroVisual;
+package example.IntroVisual;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
 import ddf.minim.analysis.FFT;
 
 public class Diamond {
-    PApplet parent; // Reference to the PApplet object for drawing
+    IntroVisualScreen parent; // Reference to the PApplet object for drawing
     FFT fft; // FFT object for audio analysis
     float currentRotationY; // Rotation angle
     boolean extremeColour; // Flag for color mode
@@ -18,8 +18,8 @@ public class Diamond {
     boolean playIntro;
 
     // Constructor
-    public Diamond(PApplet parent, FFT fft, float currentRotationY, boolean extremeColour, boolean fillActivated, float transparentColour,boolean startDrawingShapes,boolean xRotateDiamond,boolean yRotateDiamond,boolean playIntro) {
-        this.parent = parent;
+    public Diamond(IntroVisualScreen introVisualScreen, FFT fft, float currentRotationY, boolean extremeColour, boolean fillActivated, float transparentColour,boolean startDrawingShapes,boolean xRotateDiamond,boolean yRotateDiamond,boolean playIntro) {
+        this.parent = introVisualScreen;
         this.fft = fft;
         this.currentRotationY = currentRotationY;
         this.extremeColour = extremeColour;
@@ -37,8 +37,8 @@ public class Diamond {
         this.setDrawingShapes(startDrawingShapes);
         this.setExtremeColour(extremeColour);
 
-        this.parent.pushMatrix();
-        this.parent.translate(parent.width / 2, parent.height / 2, -400);
+        this.parent.mv.pushMatrix();
+        this.parent.mv.translate(parent.mv.width / 2, parent.mv.height / 2, -400);
 
         if (rotationSpeed < 0.05) {
             rotationSpeed += 0.0001;
@@ -50,21 +50,21 @@ public class Diamond {
         if (this.startDrawingShapes){ //in visualizer 
             if (this.xRotateDiamond){
                 if (this.extremeColour){
-                    this.parent.rotateX(currentRotationY*2);
+                    this.parent.mv.rotateX(currentRotationY*2);
                 }else{
-                    parent.rotateX(currentRotationY);
+                    parent.mv.rotateX(currentRotationY);
                 } 
             }
             if (this.yRotateDiamond){
                 if (this.extremeColour){
-                    parent.rotateY(this.currentRotationY*2);
+                    parent.mv.rotateY(this.currentRotationY*2);
                 }else{
-                    parent.rotateY(this.currentRotationY);
+                    parent.mv.rotateY(this.currentRotationY);
                 } 
             }
         }else if (!this.startDrawingShapes){
-            this.parent.rotateX(currentRotationY);
-            this.parent.rotateY(currentRotationY);
+            this.parent.mv.rotateX(currentRotationY);
+            this.parent.mv.rotateY(currentRotationY);
         }
         
         
@@ -75,76 +75,76 @@ public class Diamond {
             totalAmplitude += fft.getBand(i);
         }
         
-        parent.stroke((parent.frameCount % 255), 255, 255);
-        parent.strokeWeight(2);
+        parent.mv.stroke((parent.mv.frameCount % 255), 255, 255);
+        parent.mv.strokeWeight(2);
 
         if (!this.startDrawingShapes &&this.playIntro){
             transparentColour -= 0.6; 
             this.setTransparentColour(transparentColour);
-            parent.fill(340, 100, 100, transparentColour);
+            parent.mv.fill(340, 100, 100, transparentColour);
         }else if(this.startDrawingShapes){
             if (this.extremeColour){
                 if (this.fillActivated){
                     float hue = PApplet.map(totalAmplitude, 0, 2000, 0, 360);  // custom hue for diamond
                     hue=hue%360;
-                    parent.fill(hue,100,100);
+                    parent.mv.fill(hue,100,100);
                 }else{
-                    parent.noFill();
+                    parent.mv.noFill();
                 }
                 
             }else if (this.startDrawingShapes){
                 if (this.fillActivated){
                     float hue = PApplet.map(totalAmplitude, 0, 2000, 300, 360);  // custom hue for diamond
-                    parent.fill(hue,100,100);
-                    parent.stroke(255);//white outline
+                    parent.mv.fill(hue,100,100);
+                    parent.mv.stroke(255);//white outline
                 }
                 
             }
             
         }else{
-            parent.fill(340, 100, 100, transparentColour);
+            parent.mv.fill(340, 100, 100, transparentColour);
         }
         
         float size = 180;
         float mid = size / 2;
         
         // Draw the diamond
-        parent.beginShape(PConstants.TRIANGLES);
-        parent.vertex(0, -size, 0);// top pyramid 1   
-        parent.vertex(-mid, 0, -mid);
-        parent.vertex(mid, 0, -mid);
+        parent.mv.beginShape(PConstants.TRIANGLES);
+        parent.mv.vertex(0, -size, 0);// top pyramid 1   
+        parent.mv.vertex(-mid, 0, -mid);
+        parent.mv.vertex(mid, 0, -mid);
 
-        parent.vertex(0, -size, 0); //top pyramid 2
-        parent.vertex(mid, 0, -mid);
-        parent.vertex(mid, 0, mid);
+        parent.mv.vertex(0, -size, 0); //top pyramid 2
+        parent.mv.vertex(mid, 0, -mid);
+        parent.mv.vertex(mid, 0, mid);
 
-        parent.vertex(0, -size, 0); // top pyramid 3
-        parent.vertex(mid, 0, mid);
-        parent.vertex(-mid, 0, mid);
+        parent.mv.vertex(0, -size, 0); // top pyramid 3
+        parent.mv.vertex(mid, 0, mid);
+        parent.mv.vertex(-mid, 0, mid);
 
-        parent.vertex(0, -size, 0); //top pyramid 4
-        parent.vertex(-mid, 0, mid);
-        parent.vertex(-mid, 0, -mid);
+        parent.mv.vertex(0, -size, 0); //top pyramid 4
+        parent.mv.vertex(-mid, 0, mid);
+        parent.mv.vertex(-mid, 0, -mid);
 
-        parent.vertex(0, size, 0); //bottom pyramid 1
-        parent.vertex(-mid, 0, -mid);
-        parent.vertex(mid, 0, -mid);
+        parent.mv.vertex(0, size, 0); //bottom pyramid 1
+        parent.mv.vertex(-mid, 0, -mid);
+        parent.mv.vertex(mid, 0, -mid);
 
-        parent.vertex(0, size, 0); //bottom pyramid 2
-        parent.vertex(mid, 0, -mid);
-        parent.vertex(mid, 0, mid);
+        parent.mv.vertex(0, size, 0); //bottom pyramid 2
+        parent.mv.vertex(mid, 0, -mid);
+        parent.mv.vertex(mid, 0, mid);
 
-        parent.vertex(0, size, 0);//bottom pyramid 3
-        parent.vertex(mid, 0, mid);
-        parent.vertex(-mid, 0, mid);
+        parent.mv.vertex(0, size, 0);//bottom pyramid 3
+        parent.mv.vertex(mid, 0, mid);
+        parent.mv.vertex(-mid, 0, mid);
 
-        parent.vertex(0, size, 0);//bottom pyramid 4
-        parent.vertex(-mid, 0, mid);
-        parent.vertex(-mid, 0, -mid);
+        parent.mv.vertex(0, size, 0);//bottom pyramid 4
+        parent.mv.vertex(-mid, 0, mid);
+        parent.mv.vertex(-mid, 0, -mid);
 
-        this.parent.endShape(PConstants.CLOSE);
+        this.parent.mv.endShape(PConstants.CLOSE);
         
-        this.parent.popMatrix();
+        this.parent.mv.popMatrix();
     }
 
     public void setDrawingShapes(boolean startDrawingShapes){

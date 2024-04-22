@@ -1,4 +1,4 @@
-package example.screens.IntroVisual;
+package example.IntroVisual;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -7,13 +7,8 @@ import ddf.minim.analysis.FFT;
 
 public class Pyramids {
     // Pyramid properties
-    private PApplet parent; // Reference to the PApplet (to use Processing's drawing functions)
-    private float x, y, z; // Position of the pyramid
-    private float size; // Size of the pyramid
-    private float rotation; // Rotation of the pyramid
-    private boolean isVisible; // Visibility of the pyramid
+    private IntroVisualScreen parent; // Reference to the PApplet (to use Processing's drawing functions)
     private FFT fft; // Reference to the FFT object for audio analysis
-    private float fillAlpha; // Transparency of the pyramid fill
     float rotationSpeed;
     float pyramidRotation;
     float pyramidXPosTop;
@@ -34,8 +29,8 @@ public class Pyramids {
 
 
     // Constructor
-    public Pyramids(PApplet parent, FFT fft,boolean spinning,float rotationSpeed,float pyramidRotation,float pyramidXPosTop,float pyramidXPosBottom,float pyramidMoveSpeed,boolean pyramidsVisible,float currentRotationY,AudioPlayer song,float pyramidFillAlpha,float pyramidSize,boolean playIntro,boolean startDrawingShapes,boolean[] modes,boolean extremeColour,float transparentColour,boolean fillActivated) {
-        this.parent = parent;
+    public Pyramids(IntroVisualScreen introVisualScreen, FFT fft,boolean spinning,float rotationSpeed,float pyramidRotation,float pyramidXPosTop,float pyramidXPosBottom,float pyramidMoveSpeed,boolean pyramidsVisible,float currentRotationY,AudioPlayer song,float pyramidFillAlpha,float pyramidSize,boolean playIntro,boolean startDrawingShapes,boolean[] modes,boolean extremeColour,float transparentColour,boolean fillActivated) {
+        this.parent = introVisualScreen;
         this.fft = fft;
         this.spinning=spinning;
         this.rotationSpeed=rotationSpeed;
@@ -61,12 +56,12 @@ public class Pyramids {
                 this.rotationSpeed += 0.0001;
             }
             this.pyramidRotation += this.rotationSpeed; // Keep rotating the pyramids continuously
-            if (PApplet.abs(pyramidXPosTop) < parent.width / 3) {
+            if (PApplet.abs(pyramidXPosTop) < parent.mv.width / 3) {
                 this.pyramidXPosTop -= this.pyramidMoveSpeed;
             } else {
                 this.pyramidsVisible = true;
             }
-            if (PApplet.abs(pyramidXPosBottom) < parent.width / 3) {
+            if (PApplet.abs(pyramidXPosBottom) < parent.mv.width / 3) {
                 this.pyramidXPosBottom += this.pyramidMoveSpeed;
             } else {
                 this.pyramidsVisible = true;
@@ -82,12 +77,12 @@ public class Pyramids {
                 this.rotationSpeed += 0.0001;
             }
             this.pyramidRotation += this.rotationSpeed; // Keep rotating the pyramids continuously
-            if (PApplet.abs(pyramidXPosTop) < parent.width / 2) {
+            if (PApplet.abs(pyramidXPosTop) < parent.mv.width / 2) {
                 this.pyramidXPosTop -= this.pyramidMoveSpeed;
             } else {
                 this.pyramidsVisible = true;
             }
-            if (PApplet.abs(pyramidXPosBottom) < parent.width / 2) {
+            if (PApplet.abs(pyramidXPosBottom) < parent.mv.width / 2) {
                 this.pyramidXPosBottom += this.pyramidMoveSpeed;
             } else {
                 this.pyramidsVisible = true;
@@ -111,16 +106,16 @@ public class Pyramids {
         }
 
         // Top pyramid and its additional bottom pyramid
-        parent.pushMatrix();
-        parent.translate(parent.width / 2 + this.pyramidXPosTop, parent.height / 2, -200);
-        parent.rotateY(pyramidRotation);
+        parent.mv.pushMatrix();
+        parent.mv.translate(parent.mv.width / 2 + this.pyramidXPosTop, parent.mv.height / 2, -200);
+        parent.mv.rotateY(pyramidRotation);
     
         // Draw the top pyramid (inverted)
-        parent.pushMatrix();
-        parent.translate(0, -this.pyramidSize, 0);
-        parent.rotateX(PConstants.PI);
+        parent.mv.pushMatrix();
+        parent.mv.translate(0, -this.pyramidSize, 0);
+        parent.mv.rotateX(PConstants.PI);
         if (this.playIntro &&!this.startDrawingShapes){ //intro
-            parent.fill(totalAmplitude, 50, totalAmplitude, this.transparentColour);
+            parent.mv.fill(totalAmplitude, 50, totalAmplitude, this.transparentColour);
             //println(transparentColour);
             //PApplet.println("in intro"); //debugging statement
             //PApplet.println(totalAmplitude);
@@ -131,86 +126,86 @@ public class Pyramids {
             if (this.extremeColour){
                 float hue = PApplet.map(totalAmplitude, 0, 2000, 40, 180);  // Ranges from all colours aggresively
                 hue = hue % 360;  // Ensure the hue wraps around correctly
-                parent.fill(hue,100,100);
+                parent.mv.fill(hue,100,100);
                 //println("extreme colours");
             }else if (!this.extremeColour){
                 float hue = PApplet.map(totalAmplitude, 0, 2000, 240, 360);  // Ranges from purple to pink aggresively
                 hue = hue % 360;  // Ensure the hue wraps around correctly
-                parent.fill(hue,100,100);
+                parent.mv.fill(hue,100,100);
                 //println("not extreme colours");
             }
             
         }else if(this.modes[1]){
             //println(totalAmplitude); //debugging statement
             if (totalAmplitude>1500){
-                parent.fill(totalAmplitude/2, 50, totalAmplitude/4, pyramidFillAlpha);
-                parent.stroke(0);
+                parent.mv.fill(totalAmplitude/2, 50, totalAmplitude/4, pyramidFillAlpha);
+                parent.mv.stroke(0);
             }else if(totalAmplitude>1800){
-                parent.fill(totalAmplitude/6, 50, totalAmplitude/6, pyramidFillAlpha);
-                parent.stroke(0);
+                parent.mv.fill(totalAmplitude/6, 50, totalAmplitude/6, pyramidFillAlpha);
+                parent.mv.stroke(0);
             }else{ 
-                parent.fill(totalAmplitude/3, 50, totalAmplitude/3, pyramidFillAlpha);
-                parent.stroke(0);
+                parent.mv.fill(totalAmplitude/3, 50, totalAmplitude/3, pyramidFillAlpha);
+                parent.mv.stroke(0);
             }
             
         }
 
         
         this.drawPyramid(this.pyramidSize);
-        parent.popMatrix();
+        parent.mv.popMatrix();
     
         // Draw the additional bottom pyramid (upright) underneath the top pyramid
-        if (PApplet.abs(this.pyramidXPosTop) >= parent.width / 3) {
-            parent.translate(0, this.pyramidSize, 0);
+        if (PApplet.abs(this.pyramidXPosTop) >= parent.mv.width / 3) {
+            parent.mv.translate(0, this.pyramidSize, 0);
             this.drawPyramid(this.pyramidSize);
         }
-        parent.popMatrix();
+        parent.mv.popMatrix();
     
         // Bottom pyramid and its additional top pyramid
-        parent.pushMatrix();
-        parent.translate(parent.width / 2 + this.pyramidXPosBottom, parent.height / 2, -200);
-        parent.rotateY(this.pyramidRotation);
+        parent.mv.pushMatrix();
+        parent.mv.translate(parent.mv.width / 2 + this.pyramidXPosBottom, parent.mv.height / 2, -200);
+        parent.mv.rotateY(this.pyramidRotation);
     
         // Draw the bottom pyramid (upright)
-        parent.pushMatrix();
-        parent.translate(0, this.pyramidSize, 0);
+        parent.mv.pushMatrix();
+        parent.mv.translate(0, this.pyramidSize, 0);
         this.drawPyramid(this.pyramidSize);
-        parent.popMatrix();
+        parent.mv.popMatrix();
     
         // Draw the additional top pyramid (inverted) above the bottom pyramid
-        if (PApplet.abs(this.pyramidXPosBottom) >= parent.width / 3) {
-            parent.translate(0, -this.pyramidSize, 0);
-            parent.rotateX(PConstants.PI);
+        if (PApplet.abs(this.pyramidXPosBottom) >= parent.mv.width / 3) {
+            parent.mv.translate(0, -this.pyramidSize, 0);
+            parent.mv.rotateX(PConstants.PI);
             this.drawPyramid(this.pyramidSize);
         }
-        parent.popMatrix();
+        parent.mv.popMatrix();
     }
 
     public void drawPyramid(float size) {
         //PApplet.println("in draw pyramid method");
-        parent.beginShape(PConstants.TRIANGLES);
+        parent.mv.beginShape(PConstants.TRIANGLES);
         //PApplet.println(size);
         if (this.pyramidsVisible) {
-            parent.strokeWeight(2); // Outlines visible
+            parent.mv.strokeWeight(2); // Outlines visible
         } else {
-            parent.strokeWeight(0); // Outlines invisible
+            parent.mv.strokeWeight(0); // Outlines invisible
         }
-        this.parent.vertex(-size / 2, -size / 2, -size / 2);
-        this.parent.vertex(size / 2, -size / 2, -size / 2);
-        this.parent.vertex(0, size / 2, 0);
+        this.parent.mv.vertex(-size / 2, -size / 2, -size / 2);
+        this.parent.mv.vertex(size / 2, -size / 2, -size / 2);
+        this.parent.mv.vertex(0, size / 2, 0);
 
-        this.parent.vertex(size / 2, -size / 2, -size / 2);
-        this.parent.vertex(size / 2, -size / 2, size / 2);
-        this.parent.vertex(0, size / 2, 0);
+        this.parent.mv.vertex(size / 2, -size / 2, -size / 2);
+        this.parent.mv.vertex(size / 2, -size / 2, size / 2);
+        this.parent.mv.vertex(0, size / 2, 0);
 
-        this.parent.vertex(size / 2, -size / 2, size / 2);
-        this.parent.vertex(-size / 2, -size / 2, size / 2);
-        this.parent.vertex(0, size / 2, 0);
+        this.parent.mv.vertex(size / 2, -size / 2, size / 2);
+        this.parent.mv.vertex(-size / 2, -size / 2, size / 2);
+        this.parent.mv.vertex(0, size / 2, 0);
 
-        this.parent.vertex(-size / 2, -size / 2, size / 2);
-        this.parent.vertex(-size / 2, -size / 2, -size / 2);
-        this.parent.vertex(0, size / 2, 0);
-        this.parent.endShape(PConstants.CLOSE);
+        this.parent.mv.vertex(-size / 2, -size / 2, size / 2);
+        this.parent.mv.vertex(-size / 2, -size / 2, -size / 2);
+        this.parent.mv.vertex(0, size / 2, 0);
+        this.parent.mv.endShape(PConstants.CLOSE);
     }
 
     public void setPlayIntro(boolean playIntro){

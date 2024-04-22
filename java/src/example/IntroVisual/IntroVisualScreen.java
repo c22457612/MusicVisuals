@@ -1,6 +1,10 @@
-package example.screens.IntroVisual;
+package example.IntroVisual;
+
+import example.Drawable;
+import example.MyVisual;
 
 import processing.core.PApplet;
+import processing.core.PConstants;
 import processing.core.PFont;
 import processing.core.PVector;
 
@@ -8,7 +12,9 @@ import java.util.ArrayList;
 
 import ddf.minim.*;
 import ddf.minim.analysis.FFT;
-import example.*;
+import example.Drawable;
+import example.MyVisual;
+
 
 public class IntroVisualScreen extends Drawable {
     Minim minim;
@@ -24,7 +30,7 @@ public class IntroVisualScreen extends Drawable {
     boolean spinning = false; // Start without spinning
     boolean stopping = false;
     float currentRotationY = 0;
-    float targetRotationY = PI / 37; // Default upright position
+    float targetRotationY = mv.PI / 37; // Default upright position
     float rotationIncrement = 0.01f;
     float rotationSpeed = 0.01f;
     float stoppingSpeed = 0.005f;
@@ -46,7 +52,7 @@ public class IntroVisualScreen extends Drawable {
     float pyramidFillAlpha = 0; // Transparency for the pyramid fill
 
     float pyramidCenterX = 208;
-    float pyramidCenterY = height / 2;
+    float pyramidCenterY = mv.height / 2;
 
     // Determine the range of Y values to draw the squiggly line.
     float startY = pyramidCenterY - pyramidSize;
@@ -67,8 +73,8 @@ public class IntroVisualScreen extends Drawable {
     ArrayList<PVector> wavePoints = new ArrayList<PVector>();
 
     //rainbow wave variables
-    float centerX = width * 0.5f;
-    float centerY = height * 0.5f;
+    float centerX = mv.width * 0.5f;
+    float centerY = mv.height * 0.5f;
     float baseRadius = 140; // Base radius of the wave
     float maxWaveAmplitude = 5000; // Max additional amplitude, adjusted for smoother wave
     float smoothingFactor = 0.2f; // Increase for smoother transitions
@@ -101,11 +107,11 @@ public class IntroVisualScreen extends Drawable {
     float[] faceOpacities = new float[6]; // Opacity for each face
     boolean fadeInActive = false;
     int faceColorIndex = 0;
-    int[] colors = {color(255, 0, 0), color(0, 255, 0), color(0, 0, 255), color(255, 255, 0), color(0, 255, 255), color(255, 0, 255)};
+    int[] colors = {mv.color(255, 0, 0), mv.color(0, 255, 0), mv.color(0, 0, 255), mv.color(255, 255, 0), mv.color(0, 255, 255), mv.color(255, 0, 255)};
     float bigCubeSize = 100; // Initial size of the big cube
     float smallCubeSize=50;
     float verySmallCubeSize=25;
-    float offset=height/0.6f; // used for small cube offset
+    float offset=mv.height/0.6f; // used for small cube offset
     float bigCubeSpeed=0.1f;
     float smallCubeSpeed=0.02f;
     boolean shrinkActive = false; // Control whether the cube should shrink
@@ -115,11 +121,11 @@ public class IntroVisualScreen extends Drawable {
     float angleY;
     float angleZ;
 
-    float sphereY=height/2;         // Current y-position of the sphere
+    float sphereY=mv.height/2;         // Current y-position of the sphere
     float sphereRadius = 5000; // Radius of the sphere
     float movementSpeed = 2; // Speed of vertical movement
     boolean movingUp = true; // Direction control flag
-    float sphereOffset=height/0.7f;// slightly more than pyramid offset so sphere hits top of pyramid
+    float sphereOffset=mv.height/0.7f;// slightly more than pyramid offset so sphere hits top of pyramid
     float smallSphereRadius=100f;
 
     ArrayList<PVector> smallCubePositions = new ArrayList<PVector>();
@@ -161,15 +167,21 @@ public class IntroVisualScreen extends Drawable {
 
     FadingCircle fadingCircle;
 
+    public IntroVisualScreen(MyVisual mv) {
+        super(mv); // Pass the PApplet instance to the Drawable superclass
+        // Other initialization code...
+    }
+    
+
 
     public static void main(String[] args) {
-        PApplet.main("example.IntroVisual");
+        PApplet.main("example.IntroVisualScreen");
     }
 
     public void settings() {
         //size(800, 600, P3D); // this caused mouse clicking issues
         
-        fullScreen(P3D); // this fixed mouse clicking issues
+        mv.fullScreen(PConstants.P3D); // this fixed mouse clicking issues
     
         
     }
@@ -184,8 +196,8 @@ public class IntroVisualScreen extends Drawable {
         sound5 = minim.loadFile("data/8bitSound5.mp3", 2048);// continue to audio visualizer maybe constraint so can only be pressed once
         song = minim.loadFile("data/Radiohead.mp3", 2048);
         
-        pyramidTopTargetY = height * 0.1f; // Move near the top of the window
-        pyramidBottomTargetY = height * 0.9f; // Move near the bottom of the window
+        pyramidTopTargetY = mv.height * 0.1f; // Move near the top of the window
+        pyramidBottomTargetY = mv.height * 0.9f; // Move near the bottom of the window
 
     
         fft = new FFT(sound1.bufferSize(), sound1.sampleRate());
@@ -195,14 +207,14 @@ public class IntroVisualScreen extends Drawable {
         fft.logAverages(22, 5);
     
         prevAmplitudes = new float[fft.specSize()];
-        font = createFont("Monospaced.bold", fontSize);
-        textFont(font);
+        font = mv.createFont("Monospaced.bold", fontSize);
+        mv.textFont(font);
         
         // Font settings
-        textAlign(CENTER, CENTER);
+        mv.textAlign(PConstants.CENTER, PConstants.CENTER);
 
-        smallCubePositions.add(new PVector(width / 1.14f, height / 2, 0)); 
-        smallCubePositions.add(new PVector(width / 8.4f, height / 2, 0)); 
+        smallCubePositions.add(new PVector(mv.width / 1.14f, mv.height / 2, 0)); 
+        smallCubePositions.add(new PVector(mv.width / 8.4f, mv.height / 2, 0)); 
         for (int i = 0; i < NUM_MODES; i++) {
             modes[i] = false;
         }
@@ -210,39 +222,39 @@ public class IntroVisualScreen extends Drawable {
         
 
         //big cube initialization
-        bigCube = new Cube(this, bigCubeSize, width/2, height/2, 0, bigCubeSpeed, fft, song, extremeColour, modes, fillActivated);
-        smallCubeAbove = new Cube(this, smallCubeSize, width / 2, height / 2 - offset, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
-        smallCubeAboveLeft = new Cube(this, smallCubeSize, width / 2.6f, height / 2 - offset, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
-        smallCubeAboveRight = new Cube(this, smallCubeSize, width / 1.65f, height / 2 - offset, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
-        smallCubeMiddleLeft = new Cube(this, smallCubeSize, width / 2.6f, height / 2, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
-        smallCubeMiddleRight=new Cube(this, smallCubeSize, width / 1.65f, height / 2 , 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
-        smallCubeBottomLeft=new Cube(this, smallCubeSize, width / 2.6f, height / 2 + offset, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
-        smallCubeBottom =new Cube(this, smallCubeSize, width /2, height / 2+offset, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
-        smallCubeBottomRight =new Cube(this, smallCubeSize, width / 1.65f, height / 2 + offset, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
-        smallCubeFurtherAbove =new Cube(this, smallCubeSize, width / 2, height / 2 - offset*1.75f, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
-        smallCubeFurtherAboveLeft =new Cube(this, smallCubeSize, width / 2.6f, height / 2 - offset*1.75f, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
-        smallCubeFurtherAboveRight = new Cube(this, smallCubeSize, width / 1.65f, height / 2 -offset*1.75f, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
-        smallCubeFurtherBottom =new Cube(this, smallCubeSize, width /2, height / 2+offset*1.75f, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
-        smallCubeFurtherBottomLeft =new Cube(this, smallCubeSize, width / 2.6f, height / 2 +offset*1.75f, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
-        smallCubeFurtherBottomRight =new Cube(this, smallCubeSize, width / 1.65f, height / 2 +offset*1.75f, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
-        verySmallCubeLeft=new Cube(this, verySmallCubeSize, width / 1.14f, height / 2, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
-        verySmallCubeRight=new Cube(this, verySmallCubeSize, width / 8.4f, height / 2, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        bigCube = new Cube(this, bigCubeSize, mv.width/2, mv.height/2, 0, bigCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeAbove = new Cube(this, smallCubeSize, mv.width / 2, mv.height / 2 - offset, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeAboveLeft = new Cube(this, smallCubeSize, mv.width / 2.6f, mv.height / 2 - offset, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeAboveRight = new Cube(this, smallCubeSize, mv.width / 1.65f, mv.height / 2 - offset, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeMiddleLeft = new Cube(this, smallCubeSize, mv.width / 2.6f, mv.height / 2, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeMiddleRight=new Cube(this, smallCubeSize, mv.width / 1.65f, mv.height / 2 , 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeBottomLeft=new Cube(this, smallCubeSize, mv.width / 2.6f, mv.height / 2 + offset, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeBottom =new Cube(this, smallCubeSize, mv.width /2, mv.height / 2+offset, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeBottomRight =new Cube(this, smallCubeSize, mv.width / 1.65f, mv.height / 2 + offset, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeFurtherAbove =new Cube(this, smallCubeSize, mv.width / 2, mv.height / 2 - offset*1.75f, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeFurtherAboveLeft =new Cube(this, smallCubeSize, mv.width / 2.6f, mv.height / 2 - offset*1.75f, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeFurtherAboveRight = new Cube(this, smallCubeSize, mv.width / 1.65f, mv.height / 2 -offset*1.75f, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeFurtherBottom =new Cube(this, smallCubeSize, mv.width /2, mv.height / 2+offset*1.75f, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeFurtherBottomLeft =new Cube(this, smallCubeSize, mv.width / 2.6f, mv.height / 2 +offset*1.75f, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        smallCubeFurtherBottomRight =new Cube(this, smallCubeSize, mv.width / 1.65f, mv.height / 2 +offset*1.75f, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        verySmallCubeLeft=new Cube(this, verySmallCubeSize, mv.width / 1.14f, mv.height / 2, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
+        verySmallCubeRight=new Cube(this, verySmallCubeSize, mv.width / 8.4f, mv.height / 2, 0, smallCubeSpeed, fft, song, extremeColour, modes, fillActivated);
 
         diamond = new Diamond(this, fft, currentRotationY, extremeColour, fillActivated, transparentColour, startDrawingShapes, xRotateDiamond, yRotateDiamond,playIntro);
         pyramids = new Pyramids(this,fft,spinning,rotationSpeed,pyramidRotation,pyramidXPosTop,pyramidXPosBottom,pyramidMoveSpeed,pyramidsVisible,currentRotationY,song,pyramidFillAlpha,pyramidSize,playIntro,startDrawingShapes,modes,extremeColour,transparentColour,fillActivated);
         sphere= new Sphere(this,fft,song,playIntro,startDrawingShapes,modes,fillActivated,extremeColour,sphereRadius,movementSpeed);
-        soundWave= new SoundWave(this,fft,waveHeight,modes,extremeColour,startDrawingShapes,player,song,width,height,frameCount);
-        rainbowWave= new RainbowWave(this,fft,baseRadius,maxWaveAmplitude,smoothingFactor,maxFFTAmplitude,modes,prevAmplitudes);
+        soundWave= new SoundWave(this,fft,waveHeight,modes,extremeColour,startDrawingShapes,player,song,mv.width,mv.height,mv.frameCount);
+        //rainbowWave= new RainbowWave(this,fft,baseRadius,maxWaveAmplitude,smoothingFactor,maxFFTAmplitude,modes,prevAmplitudes);
         controlManager = new ControlManager(this, smallCubePositions, modes, currentModeIndex, displayDiamond);
         fadingCircle=new FadingCircle(this,circleOpacity,circleMaxRadius);
     }
 
-    public void draw() {
-        background(0); // Set background to black
+    public void render() {
+        mv.background(0); // Set background to black
 
         if (playIntro){
             
-            currentRotationY %= TWO_PI;
+            currentRotationY %= PConstants.TWO_PI;
             if (!startDrawingShapes){ //logic for intro
                 //println("not started drawing shapes");
                 //drawDiamond();
@@ -271,7 +283,7 @@ public class IntroVisualScreen extends Drawable {
                     isFirstSoundtrackFinished = true; // Mark that the first soundtrack has finished
                     circleVisible = true; // Show circle since the soundtrack finished
                 }
-                if (circleFadeStartTime > 0 && millis() > circleFadeStartTime &&!startFading) {// initial fade in
+                if (circleFadeStartTime > 0 && mv.millis() > circleFadeStartTime &&!startFading) {// initial fade in
                     //println("in block 1");
                     //drawFadingCircleWithTiming();
                     //fadingCircle.getCircleOpacity(circleOpacity);
@@ -280,22 +292,22 @@ public class IntroVisualScreen extends Drawable {
 
                 // Draw the fading circle if visible
                 if (circleVisible && !startFading) {
-                    println("in block 2");
+                    PApplet.println("in block 2");
                     //drawFadingCircleWithTiming();
                     fadingCircle.drawFadingCircleWithTiming();
                 }
 
                 if (spinning && player.position() > 9000) { // Check if 8 seconds have passed
                     // Draw the neon text at the bottom center of the screen
-                    drawNeonTextWithFade("Press Enter:", width / 2, height - fontSize, color(0, 255, 255), player.position() - 9000);
+                    drawNeonTextWithFade("Press Enter:", mv.width / 2, mv.height - fontSize, mv.color(0, 255, 255), player.position() - 9000);
                 }
             }else if (startDrawingShapes){ //logic for other shapes
                 if (modes[0]){
-                    colorMode(HSB, 360, 100, 100);  // Set HSB color mode
-                    pushMatrix();  // Save the current transformation matrix state
+                    mv.colorMode(PConstants.HSB, 360, 100, 100);  // Set HSB color mode
+                    mv.pushMatrix();  // Save the current transformation matrix state
                     //drawMovingSphere(width /2, height/2, sphereRadius);
                     sphere.setStartDrawingShapes(startDrawingShapes);
-                    sphere.drawMovingSphere(width/2,height/2,sphereRadius);
+                    sphere.drawMovingSphere(mv.width/2,mv.height/2,sphereRadius);
 
                     if (displayDiamond){
                         diamond.setDrawingShapes(startDrawingShapes);
@@ -323,8 +335,8 @@ public class IntroVisualScreen extends Drawable {
                     pyramids.setDrawingShapes(startDrawingShapes);
                     pyramids.drawPyramids();
                     
-                    colorMode(RGB, 255, 255, 255);  // Switch back to RGB color mode for drawing other elements
-                    popMatrix(); 
+                    mv.colorMode(PConstants.RGB, 255, 255, 255);  // Switch back to RGB color mode for drawing other elements
+                    mv.popMatrix(); 
                     //drawSoundWave();
                     soundWave.setStartDrawingShapes(startDrawingShapes);
                     soundWave.drawSoundWave();
@@ -339,9 +351,9 @@ public class IntroVisualScreen extends Drawable {
                         }
                         soundWave.drawSoundWave();
                         sphere.setSongStatus();
-                        sphere.drawMovingSphere(width/2,height/2,sphereRadius);
-                        fill(173, 216, 230); //light blue
-                        text("Paused",width/2,height-fontSize);
+                        sphere.drawMovingSphere(mv.width/2,mv.height/2,sphereRadius);
+                        mv.fill(173, 216, 230); //light blue
+                        mv.text("Paused",mv.width/2,mv.height-fontSize);
                     }
                 }
             }
@@ -363,9 +375,9 @@ public class IntroVisualScreen extends Drawable {
     
             if (startFading) {
                 circleVisible=false;
-                long timeElapsed = millis() - fadeStartTime;
-                fadeAmount = map(timeElapsed, 0, 3000, 0, 255); // Fade over 3 seconds
-                fadeAmount = constrain(fadeAmount, 0, 255); // Ensure fadeAmount does not exceed 255
+                long timeElapsed = mv.millis() - fadeStartTime;
+                fadeAmount = PApplet.map(timeElapsed, 0, 3000, 0, 255); // Fade over 3 seconds
+                fadeAmount = PApplet.constrain(fadeAmount, 0, 255); // Ensure fadeAmount does not exceed 255
                 updateFading();
                 //println("fade amount"+fadeAmount); //debugging statement
                 
@@ -377,33 +389,33 @@ public class IntroVisualScreen extends Drawable {
         
             // Apply the fade effect by drawing a rectangle covering the entire screen
             if (fadeAmount > 0) {
-                fill(0, fadeAmount);
-                rect(0, 0, width, height);
+                mv.fill(0, fadeAmount);
+                mv.rect(0, 0, mv.width, mv.height);
             }
         }else{ // prompt user to start intro
-            fill(180, 230, 230); //light blue
-            text("press space",width/2,height-fontSize);
+            mv.fill(180, 230, 230); //light blue
+            mv.text("press space",mv.width/2,mv.height-fontSize);
             diamond.drawDiamond();
-            noFill();
+            mv.noFill();
             //drawMovingSphere(width /2, height/2, sphereRadius);
-            sphere.drawMovingSphere(width/2,height/2,sphereRadius);
+            sphere.drawMovingSphere(mv.width/2,mv.height/2,sphereRadius);
         }
     }
     
     public void stop() {
         player.close();
         minim.stop();
-        super.stop();
+        super.mv.stop();
     }
 
     public void drawRainbowWave() {
-        colorMode(HSB, 360, 100, 100);
+        mv.colorMode(PConstants.HSB, 360, 100, 100);
         // Recalculate angleStep based on the current fft specSize
-        float angleStep = TWO_PI / fft.specSize();
+        float angleStep = PConstants.TWO_PI / fft.specSize();
     
         // Calculate maximum FFT amplitude for normalization
         for (int i = 0; i < fft.specSize(); i++) {
-            maxFFTAmplitude = max(maxFFTAmplitude, fft.getBand(i));
+            maxFFTAmplitude = PApplet.max(maxFFTAmplitude, fft.getBand(i));
         }
     
         // Ensure there's no divide by zero issue
@@ -415,41 +427,41 @@ public class IntroVisualScreen extends Drawable {
         rainbowWaveRotationAngle += 0.01;
     
         // Start matrix transformation
-        pushMatrix();
+        mv.pushMatrix();
         // Translate to the center of the screen
-        translate(width/2, height/2);
+        mv.translate(mv.width/2, mv.height/2);
         // Rotate the whole wave by the current rotation angle
         if (modes[0]){
-            rotate(rainbowWaveRotationAngle);
+            mv.rotate(rainbowWaveRotationAngle);
         }
-        noFill();
-        strokeWeight(3);
-        beginShape();
+        mv.noFill();
+        mv.strokeWeight(3);
+        mv.beginShape();
     
         for (int i = 0; i < fft.specSize(); i++) {
             float amplitude = fft.getBand(i);
             // Smooth the transition of amplitude values
-            prevAmplitudes[i] = lerp(prevAmplitudes[i], amplitude, smoothingFactor);
+            prevAmplitudes[i] = PApplet.lerp(prevAmplitudes[i], amplitude, smoothingFactor);
             // Normalize and scale the amplitude
-            float normalizedAmplitude = map(prevAmplitudes[i], 0, maxFFTAmplitude, 0, maxWaveAmplitude);
+            float normalizedAmplitude = PApplet.map(prevAmplitudes[i], 0, maxFFTAmplitude, 0, maxWaveAmplitude);
     
             // Calculate wave points
-            float x = (baseRadius + normalizedAmplitude) * cos(i * angleStep);
-            float y = (baseRadius + normalizedAmplitude) * sin(i * angleStep);
+            float x = (baseRadius + normalizedAmplitude) * PApplet.cos(i * angleStep);
+            float y = (baseRadius + normalizedAmplitude) * PApplet.sin(i * angleStep);
     
             // Dynamic coloring based on position
-            int colorValue = (int) (128 + 128 * sin(i * 0.1f + frameCount * 0.02f));
-            stroke(color(255 - colorValue, colorValue, 255));
+            int colorValue = (int) (128 + 128 * PApplet.sin(i * 0.1f + mv.frameCount * 0.02f));
+            mv.stroke(mv.color(255 - colorValue, colorValue, 255));
     
-            vertex(x, y);
+            mv.vertex(x, y);
         }
     
-        endShape(CLOSE);
-        popMatrix(); // Restore matrix state
+        mv.endShape(PConstants.CLOSE);
+        mv.popMatrix(); // Restore matrix state
     }
     
     public void keyPressed() {
-        if (key == ' ') {
+        if (mv.key == ' ') {
             spinning = !spinning; // Toggle spinning state
             if(spinning){
                 player.play();
@@ -461,43 +473,43 @@ public class IntroVisualScreen extends Drawable {
                 isFirstSoundtrackFinished = false; // Reset this flag when the first soundtrack starts
                 circleOpacity = 0; // Reset opacity to allow fade-in effect
                 // Set the start time for the circle to fade in (e.g., after 10 seconds)
-                circleFadeStartTime = millis() + 10000; // 10,000 milliseconds from now
+                circleFadeStartTime = mv.millis() + 10000; // 10,000 milliseconds from now
             } else {
                 player.pause();
             }
-        } else if (key == '1') {
+        } else if (mv.key == '1') {
             if (!startDrawingShapes){
                 playSound(sound1);
             }
-        } else if (key == '2') {
+        } else if (mv.key == '2') {
             if (!startDrawingShapes){
                 playSound(sound2);
             }
-        }else if(key=='3'){
+        }else if(mv.key=='3'){
             if (!startDrawingShapes){
                 playSound(sound3);
             }
-        }else if(key=='4'){
+        }else if(mv.key=='4'){
             if (!startDrawingShapes){
                 playSound(sound4);
             }
-        }else if(key==ENTER){
+        }else if(mv.key==PConstants.ENTER){
             playIntro=true;
             isFirstSoundtrackFinished=true;
             drawRainbowWave();
             //rainbowWave.drawRainbowWave();
             playSound(sound5);
             startFading = true;
-            fadeStartTime = millis(); //will eventually trigger startDrawingShapes boolean
+            fadeStartTime = mv.millis(); //will eventually trigger startDrawingShapes boolean
             
-        }else if(key=='5'){
+        }else if(mv.key=='5'){
             playSound(song);
             startFading=false;
             startDrawingShapes=true; //manually start
         }
 
         if (startDrawingShapes){ // when we are using audio visualization for shapes, we can pause and resume
-            if (key == 'p' || key == 'P') {
+            if (mv.key == 'p' || mv.key == 'P') {
                 if (song.isPlaying()) {
                     song.pause();
                     movePyramidTopUp = false;
@@ -507,19 +519,19 @@ public class IntroVisualScreen extends Drawable {
                 }
             }
 
-            if (keyCode == UP) {// controlling cube speeds
+            if (mv.keyCode == PConstants.UP) {// controlling cube speeds
                 if (bigCubeSpeed>-1){
                     bigCube.setCubeSpeedUp();
                     xRotateDiamond=true;
                     diamond.setxRotateDiamond(xRotateDiamond);
                 }
-            } else if (keyCode == DOWN) {
+            } else if (mv.keyCode == PConstants.DOWN) {
                 if (bigCubeSpeed>0){
                     bigCube.setCubeSpeedDown();
                     xRotateDiamond=false;
                     diamond.setxRotateDiamond(xRotateDiamond);
                 }
-            } else if (keyCode == LEFT) {
+            } else if (mv.keyCode == PConstants.LEFT) {
                 if (smallCubeSpeed>0){
                     smallCubeAbove.setCubeSpeedDown();
                     smallCubeAboveLeft.setCubeSpeedDown();
@@ -540,7 +552,7 @@ public class IntroVisualScreen extends Drawable {
                     yRotateDiamond=false;
                     diamond.setyRotateDiamond(yRotateDiamond);
                 }
-            } else if (keyCode == RIGHT) {
+            } else if (mv.keyCode == PConstants.RIGHT) {
                 if (smallCubeSpeed>-1){
                     smallCubeAbove.setCubeSpeedUp();
                     smallCubeAboveLeft.setCubeSpeedUp();
@@ -563,7 +575,7 @@ public class IntroVisualScreen extends Drawable {
                 }
             }
 
-            if (keyCode=='f'|| keyCode=='F'){
+            if (mv.keyCode=='f'|| mv.keyCode=='F'){
                 fillActivated=!fillActivated;
                 //bigCube.setFillActivated(fillActivated);
                 //diamond.setFillActivated(fillActivated);
@@ -587,15 +599,15 @@ public class IntroVisualScreen extends Drawable {
                 sphere.setFillActivated(fillActivated);
 
             }
-            if (keyCode=='m'|| keyCode=='M'){ // middle or main objects on screen control
+            if (mv.keyCode=='m'|| mv.keyCode=='M'){ // middle or main objects on screen control
                 fillActivated=!fillActivated;
                 bigCube.setFillActivated(fillActivated);
                 diamond.setFillActivated(fillActivated);
             }
 
-            if (keyCode=='e'|| keyCode=='E'){
+            if (mv.keyCode=='e'|| mv.keyCode=='E'){
                 extremeColour = !extremeColour;
-                println("extremeColour toggled to: " + extremeColour);
+                PApplet.println("extremeColour toggled to: " + extremeColour);
                 bigCube.setExtremeColour(extremeColour);
                 smallCubeAbove.setExtremeColour(extremeColour);
                 smallCubeAboveLeft.setExtremeColour(extremeColour);
@@ -629,7 +641,7 @@ public class IntroVisualScreen extends Drawable {
     }
     
     public void updateFading() {
-        if (startFading && millis() - fadeStartTime > fadeDuration) {
+        if (startFading && mv.millis() - fadeStartTime > fadeDuration) {
             startFading = false; // Stop fading after 6 seconds
             startDrawingShapes=true;
             playSound(song);
@@ -637,14 +649,14 @@ public class IntroVisualScreen extends Drawable {
 
         if (startFading) {
             // Perform fading logic here
-            fadeAmount = map(millis() - fadeStartTime, 0, fadeDuration, 0, 255);
-            fadeAmount = constrain(fadeAmount, 0, 255);
+            fadeAmount = PApplet.map(mv.millis() - fadeStartTime, 0, fadeDuration, 0, 255);
+            fadeAmount = PApplet.constrain(fadeAmount, 0, 255);
         }
     }
 
     private void playSound(AudioPlayer sound) {
         if (sound == null) {
-            println("Error: Attempted to play a null sound.");
+            PApplet.println("Error: Attempted to play a null sound.");
             return;
         }
     
@@ -686,29 +698,29 @@ public class IntroVisualScreen extends Drawable {
 
     void drawNeonTextWithFade(String text, float x, float y, int glowColor, float time) {
         // Calculate fade in based on time
-        float fade = map(time, 0, 2000, 0, 255); // fade in over 2 seconds
-        fade = constrain(fade, 0, 255); // Make sure fade doesn't go beyond 255
+        float fade = PApplet.map(time, 0, 2000, 0, 255); // fade in over 2 seconds
+        fade = PApplet.constrain(fade, 0, 255); // Make sure fade doesn't go beyond 255
     
         // Set the text size for the solid text on top
-        textSize(fontSize);
+        mv.textSize(fontSize);
     
         // Draw the glowing text with fewer layers for a simpler look
-        fill(glowColor, fade); // Use fade for alpha
+        mv.fill(glowColor, fade); // Use fade for alpha
         for (int i = 3; i > 0; i--) { // Only 3 layers of glow for simplicity
-            text(text, x, y + i); // Slight offset for the glow layers
+            mv.text(text, x, y + i); // Slight offset for the glow layers
         }
     
         // Draw the solid text on top
-        fill(255, fade); // Use fade for alpha
-        text(text, x, y); // Draw the text at the original position
+        mv.fill(255, fade); // Use fade for alpha
+        mv.text(text, x, y); // Draw the text at the original position
     }
 
     public void getTransparentColour(float transparentColour){
         diamond.transparentColour=transparentColour;
     }
     
-    public void render() {
-
+    public void draw() {
+        render();
         
 
     }

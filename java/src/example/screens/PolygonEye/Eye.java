@@ -32,6 +32,7 @@ public class Eye extends Drawable {
             float oppenedR,
             float eyeSocketWidth,
             float eyeBallWidth, float opacity) {
+        super(mv);
         this.mv = mv;
         this.cx = cx;
         this.cy = cy;

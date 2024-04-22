@@ -1,4 +1,4 @@
-package example.screens.IntroVisual;
+package example.IntroVisual;
 /*package example;
 
 import ddf.minim.AudioPlayer;

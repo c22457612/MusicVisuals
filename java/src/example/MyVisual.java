@@ -1,7 +1,7 @@
 package example;
 
+import example.IntroVisual.IntroVisualScreen;
 import example.screens.PolygonEye.PolygonEyeScreen;
-import example.screens.IntroVisual.IntroVisualScreen;
 import ie.tudublin.*;
 
 public class MyVisual extends Visual {
@@ -44,8 +44,8 @@ public class MyVisual extends Visual {
         // Array of screens
         screens = new Drawable[NUM_SCREENS];
 
-        screens[0] = new PolygonEyeScreen(sIndex, this);
-        screens[1]=new IntroVisualScreen(sIndex,this);
+        screens[0] = new IntroVisualScreen(this);
+        screens[1] = new PolygonEyeScreen(sIndex, this);
     }
 
     public void keyPressed() {
@@ -79,7 +79,9 @@ public class MyVisual extends Visual {
 
         // Call this is you want to get the average amplitude
         calculateAverageAmplitude();
+        screens[0].render();
 
-        screens[sIndex.value].render();
+        //screens[sIndex.value].render();
     }
+    
 }

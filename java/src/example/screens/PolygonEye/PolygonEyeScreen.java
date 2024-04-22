@@ -17,6 +17,7 @@ public class PolygonEyeScreen extends Drawable {
 
     // Constructor
     public PolygonEyeScreen(ScreenIndex _sIndex, MyVisual _mv) {
+        super(_mv);
         this.sIndex = _sIndex; // Screen index
         this.mv = _mv; // MyVisual/PApplet object
         this.cx = mv.width / 2; // Get center (x)

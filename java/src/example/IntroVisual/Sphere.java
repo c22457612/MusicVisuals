@@ -1,4 +1,4 @@
-package example.screens.IntroVisual;
+package example.IntroVisual;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -6,7 +6,7 @@ import ddf.minim.AudioPlayer;
 import ddf.minim.analysis.FFT;
 
 public class Sphere {
-    private PApplet parent;
+    private IntroVisualScreen parent;
     private FFT fft;
     private AudioPlayer song;
     private boolean playIntro;
@@ -20,8 +20,8 @@ public class Sphere {
     boolean pauseActivated;
 
     // Constructor
-    public Sphere(PApplet parent, FFT fft, AudioPlayer song, boolean playIntro, boolean startDrawingShapes, boolean[] modes, boolean fillActivated, boolean extremeColour, float sphereRadius,float movementSpeed) {
-        this.parent = parent;
+    public Sphere(IntroVisualScreen introVisualScreen, FFT fft, AudioPlayer song, boolean playIntro, boolean startDrawingShapes, boolean[] modes, boolean fillActivated, boolean extremeColour, float sphereRadius,float movementSpeed) {
+        this.parent = introVisualScreen;
         this.fft = fft;
         this.song = song;
         this.playIntro = playIntro;
@@ -29,7 +29,6 @@ public class Sphere {
         this.modes = modes;
         this.fillActivated = fillActivated;
         this.extremeColour = extremeColour;
-        this.r = r;
         this.angle = 0.0f;
         this.movementSpeed=movementSpeed;
         this.pauseActivated=false;
@@ -37,8 +36,8 @@ public class Sphere {
 
     // Draw the moving sphere
     void drawMovingSphere(float x, float y, float r) {
-        parent.pushMatrix(); // Save the current state of transformations
-        parent.translate(x, y); // Use the dynamic `sphereY` for y-position
+        parent.mv.pushMatrix(); // Save the current state of transformations
+        parent.mv.translate(x, y); // Use the dynamic `sphereY` for y-position
         
         if (!this.startDrawingShapes){
             this.angle += 0.01; // Continuously rotate the sphere
@@ -47,13 +46,13 @@ public class Sphere {
                 this.angle+=0.001;
             }else{
                 this.angle=0;
-                parent.noFill();
+                parent.mv.noFill();
             }
         }
 
         if (this.song.isPlaying() || !this.playIntro) {
             
-            parent.rotateX(this.angle);
+            parent.mv.rotateX(this.angle);
     
             // Analyze the spectrum into bass, mid, and treble
             float bassAmplitude = 0, trebleAmplitude = 0;
@@ -84,7 +83,7 @@ public class Sphere {
             this.movementSpeed = PApplet.constrain(this.movementSpeed, 1, 5);
     
             // Setting HSB color mode
-            parent.colorMode(PConstants.HSB, 360, 100, 100);
+            parent.mv.colorMode(PConstants.HSB, 360, 100, 100);
     
             // Optional: Adjust color based on treble amplitude
             float hue = PApplet.map(trebleAmplitude, 0, 2000, 0, 360); // Half range of hue
@@ -101,45 +100,45 @@ public class Sphere {
             // Adjust stroke width dynamically for a pulsing effect
             float strokeWeightValue = PApplet.map(trebleAmplitude, 0, 10, 0.5f, 15);
             if (!this.fillActivated){
-                parent.fill(255);
+                parent.mv.fill(255);
             }else{
-                parent.noFill(); 
+                parent.mv.noFill(); 
             }
             
-            parent.strokeWeight(strokeWeightValue);
+            parent.mv.strokeWeight(strokeWeightValue);
             if (this.modes[0]&& this.startDrawingShapes){
                 if (this.extremeColour){
                     hue = PApplet.map(totalAmplitude, 0, 2000, 0, 360);  // Ranges from half colour wheel
                     hue = hue % 360;  // Ensure the hue wraps around correctly
-                    parent.stroke(hue,100,100);
+                    parent.mv.stroke(hue,100,100);
                     r=r/5; //widen view for more aggresive effect
                 }else if (!extremeColour){
                     hue = PApplet.map(totalAmplitude, 0, 2000, 0, 80);  // Ranges from other half colour wheel
                     hue = hue % 360;  // Ensure the hue wraps around correctly
-                    parent.stroke(hue,100,100);
+                    parent.mv.stroke(hue,100,100);
                     //println("not extreme colours");
                 }
             }else{
                 hue = PApplet.map(totalAmplitude, 0, 2000, 300, 360);  // Ranges from half colour wheel
                 hue = hue % 360;  // Ensure the hue wraps around correctly
-                parent.stroke(hue,100,100);
+                parent.mv.stroke(hue,100,100);
             }
 
                 
     
             // Draw the sphere with the constant radius
-            parent.sphere(r);
+            parent.mv.sphere(r);
         } else {
             // Default color when music is paused
-            parent.colorMode(PConstants.RGB, 255); // Switch back to RGB for consistent color handling
+            parent.mv.colorMode(PConstants.RGB, 255); // Switch back to RGB for consistent color handling
             //fill(255, 0, 100, 100);
-            parent.noFill();
-            parent.stroke(255);
-            parent.strokeWeight(1);
-            parent.sphere(r);
+            parent.mv.noFill();
+            parent.mv.stroke(255);
+            parent.mv.strokeWeight(1);
+            parent.mv.sphere(r);
         }
     
-        parent.popMatrix(); // Restore original state of transformations
+        parent.mv.popMatrix(); // Restore original state of transformations
     }
 
     // Getter and setter methods

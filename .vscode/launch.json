@@ -2,6 +2,34 @@
     "configurations": [
         {
             "type": "java",
+            "name": "MyVisual",
+            "request": "launch",
+            "mainClass": "example.MyVisual",
+            "projectName": "java"
+        },
+        {
+            "type": "java",
+            "name": "IntroVisualScreen",
+            "request": "launch",
+            "mainClass": "example.IntroVisual.IntroVisualScreen",
+            "projectName": "java"
+        },
+        {
+            "type": "java",
+            "name": "IntroVisualScreen",
+            "request": "launch",
+            "mainClass": "example.screens.IntroVisual.IntroVisualScreen",
+            "projectName": "java"
+        },
+        {
+            "type": "java",
+            "name": "playIntro",
+            "request": "launch",
+            "mainClass": "example.screens.IntroVisual.playIntro",
+            "projectName": "java"
+        },
+        {
+            "type": "java",
             "name": "IntroVisual",
             "request": "launch",
             "mainClass": "example.IntroVisual",

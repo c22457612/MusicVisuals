@@ -1,4 +1,4 @@
-package example.screens.IntroVisual;
+package example.IntroVisual;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -6,7 +6,7 @@ import ddf.minim.AudioPlayer;
 import ddf.minim.analysis.FFT;
 
 public class Cube {
-    private PApplet parent; // Reference to PApplet (Processing sketch)
+    private IntroVisualScreen parent; // Reference to PApplet (Processing sketch)
     private float x, y, z; // Position of the cube
     private float side; // Length of each side of the cube
     private float cubeSpeed; // Rotation speed of the cube
@@ -18,8 +18,8 @@ public class Cube {
     private boolean fillActivated;
 
     // Constructor
-    public Cube(PApplet parent, float side, float x, float y, float z, float cubeSpeed, FFT fft, AudioPlayer song, boolean extremeColour,boolean modes[],boolean fillActivated) {
-        this.parent = parent;
+    public Cube(IntroVisualScreen introVisualScreen, float side, float x, float y, float z, float cubeSpeed, FFT fft, AudioPlayer song, boolean extremeColour,boolean modes[],boolean fillActivated) {
+        this.parent = introVisualScreen;
         this.side = side;
         this.x = x;
         this.y = y;
@@ -101,80 +101,80 @@ public class Cube {
 
         float normalizedLoudness = PApplet.map(totalLoudness, 0, 200, 1, 10); // Adjust range 0-200 to 1-10, 
         normalizedLoudness = PApplet.constrain(normalizedLoudness, 0, 3); // Ensure stroke weight doesn't get too high
-        this.parent.pushMatrix();
-        this.parent.translate(this.x,this.y,this.z);
-        this.parent.rotateX(this.angleX*this.cubeSpeed);
-        this.parent.rotateY(this.angleY*this.cubeSpeed);
-        this.parent.rotateZ(this.angleZ*this.cubeSpeed);
+        this.parent.mv.pushMatrix();
+        this.parent.mv.translate(this.x,this.y,this.z);
+        this.parent.mv.rotateX(this.angleX*this.cubeSpeed);
+        this.parent.mv.rotateY(this.angleY*this.cubeSpeed);
+        this.parent.mv.rotateZ(this.angleZ*this.cubeSpeed);
 
         if (modes[0]){
-            parent.strokeWeight(normalizedLoudness); // Set the outline weight
+            parent.mv.strokeWeight(normalizedLoudness); // Set the outline weight
             if (song.isPlaying()){
-                parent.strokeWeight(normalizedLoudness); // Set the outline weight
-                parent.stroke(hue,100,100); 
+                parent.mv.strokeWeight(normalizedLoudness); // Set the outline weight
+                parent.mv.stroke(hue,100,100); 
             }
             else
             {
-                parent.strokeWeight(2); // thin outline
-                parent.stroke(255);// white outline
+                parent.mv.strokeWeight(2); // thin outline
+                parent.mv.stroke(255);// white outline
             }
             if (this.fillActivated){// if cubes are very small we want to fill them or if fill activated
-                parent.fill(hue,100,100);  
-                parent.strokeWeight(2); // thin outline
-                parent.stroke(255);// white outline
+                parent.mv.fill(hue,100,100);  
+                parent.mv.strokeWeight(2); // thin outline
+                parent.mv.stroke(255);// white outline
             }else{
-                parent.noFill(); // Do not fill the shapes
+                parent.mv.noFill(); // Do not fill the shapes
             }
         }else if(modes[1]){
-            parent.fill(hue,100,100);
+            parent.mv.fill(hue,100,100);
         }
         
             
         
-        parent.beginShape(PConstants.QUADS);
+        parent.mv.beginShape(PConstants.QUADS);
         for (int i = 0; i < 6; i++) {
             switch (i) {
                 case 0: // Front face
-                    parent.vertex(-halfSide, -halfSide, halfSide);
-                    parent.vertex(halfSide, -halfSide, halfSide);
-                    parent.vertex(halfSide, halfSide, halfSide);
-                    parent.vertex(-halfSide, halfSide, halfSide);
+                    parent.mv.vertex(-halfSide, -halfSide, halfSide);
+                    parent.mv.vertex(halfSide, -halfSide, halfSide);
+                    parent.mv.vertex(halfSide, halfSide, halfSide);
+                    parent.mv.vertex(-halfSide, halfSide, halfSide);
                     break;
                 case 1: // Back face
-                    parent.vertex(halfSide, -halfSide, -halfSide);
-                    parent.vertex(-halfSide, -halfSide, -halfSide);
-                    parent.vertex(-halfSide, halfSide, -halfSide);
-                    parent.vertex(halfSide, halfSide, -halfSide);
+                    parent.mv.vertex(halfSide, -halfSide, -halfSide);
+                    parent.mv.vertex(-halfSide, -halfSide, -halfSide);
+                    parent.mv.vertex(-halfSide, halfSide, -halfSide);
+                    parent.mv.vertex(halfSide, halfSide, -halfSide);
                     break;
                 // Add other faces similarly
                 case 2: // Top face
-                    parent.vertex(-halfSide, -halfSide, -halfSide);
-                    parent.vertex(halfSide, -halfSide, -halfSide);
-                    parent.vertex(halfSide, -halfSide, halfSide);
-                    parent.vertex(-halfSide, -halfSide, halfSide);
+                    parent.mv.vertex(-halfSide, -halfSide, -halfSide);
+                    parent.mv.vertex(halfSide, -halfSide, -halfSide);
+                    parent.mv.vertex(halfSide, -halfSide, halfSide);
+                    parent.mv.vertex(-halfSide, -halfSide, halfSide);
                     break;
                 case 3: // Bottom face
-                    parent.vertex(-halfSide, halfSide, halfSide);
-                    parent.vertex(halfSide, halfSide, halfSide);
-                    parent.vertex(halfSide, halfSide, -halfSide);
-                    parent.vertex(-halfSide, halfSide, -halfSide);
+                    parent.mv.vertex(-halfSide, halfSide, halfSide);
+                    parent.mv.vertex(halfSide, halfSide, halfSide);
+                    parent.mv.vertex(halfSide, halfSide, -halfSide);
+                    parent.mv.vertex(-halfSide, halfSide, -halfSide);
                     break;
                 case 4: // Right face
-                    parent.vertex(halfSide, -halfSide, halfSide);
-                    parent.vertex(halfSide, -halfSide, -halfSide);
-                    parent.vertex(halfSide, halfSide, -halfSide);
-                    parent.vertex(halfSide, halfSide, halfSide);
+                    parent.mv.vertex(halfSide, -halfSide, halfSide);
+                    parent.mv.vertex(halfSide, -halfSide, -halfSide);
+                    parent.mv.vertex(halfSide, halfSide, -halfSide);
+                    parent.mv.vertex(halfSide, halfSide, halfSide);
                     break;
                 case 5: // Left face
-                    parent.vertex(-halfSide, -halfSide, -halfSide);
-                    parent.vertex(-halfSide, -halfSide, halfSide);
-                    parent.vertex(-halfSide, halfSide, halfSide);
-                    parent.vertex(-halfSide, halfSide, -halfSide);
+                    parent.mv.vertex(-halfSide, -halfSide, -halfSide);
+                    parent.mv.vertex(-halfSide, -halfSide, halfSide);
+                    parent.mv.vertex(-halfSide, halfSide, halfSide);
+                    parent.mv.vertex(-halfSide, halfSide, -halfSide);
                     break;
             }
         }
-        parent.endShape(PConstants.CLOSE);
-        this.parent.popMatrix();
+        parent.mv.endShape(PConstants.CLOSE);
+        this.parent.mv.popMatrix();
     }
 
     public void setFillActivated(boolean fill) {
