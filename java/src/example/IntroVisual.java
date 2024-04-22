@@ -158,6 +158,8 @@ public class IntroVisual extends PApplet {
     RainbowWave rainbowWave;
     ControlManager controlManager;
 
+    FadingCircle fadingCircle;
+
 
     public static void main(String[] args) {
         PApplet.main("example.IntroVisual");
@@ -231,6 +233,7 @@ public class IntroVisual extends PApplet {
         soundWave= new SoundWave(this,fft,waveHeight,modes,extremeColour,startDrawingShapes,player,song,width,height,frameCount);
         rainbowWave= new RainbowWave(this,fft,baseRadius,maxWaveAmplitude,smoothingFactor,maxFFTAmplitude,modes,prevAmplitudes);
         controlManager = new ControlManager(this, smallCubePositions, modes, currentModeIndex, displayDiamond);
+        fadingCircle=new FadingCircle(this,circleOpacity,circleMaxRadius);
     }
 
     public void draw() {
@@ -268,12 +271,17 @@ public class IntroVisual extends PApplet {
                     circleVisible = true; // Show circle since the soundtrack finished
                 }
                 if (circleFadeStartTime > 0 && millis() > circleFadeStartTime &&!startFading) {// initial fade in
-                    drawFadingCircleWithTiming();
+                    //println("in block 1");
+                    //drawFadingCircleWithTiming();
+                    //fadingCircle.getCircleOpacity(circleOpacity);
+                    fadingCircle.drawFadingCircleWithTiming();
                 }
 
                 // Draw the fading circle if visible
                 if (circleVisible && !startFading) {
-                    drawFadingCircleWithTiming();
+                    println("in block 2");
+                    //drawFadingCircleWithTiming();
+                    fadingCircle.drawFadingCircleWithTiming();
                 }
 
                 if (spinning && player.position() > 9000) { // Check if 8 seconds have passed
@@ -438,33 +446,6 @@ public class IntroVisual extends PApplet {
         endShape(CLOSE);
         popMatrix(); // Restore matrix state
     }
-    
-
-        
-    public void drawFadingCircleWithTiming() {
-        if (circleOpacity < 255) {
-            circleOpacity += 5; // Control the speed of the fade-in effect
-        }
-    
-        // Draw the circle with the current opacity
-        int colorValue = (int) (128 + 128 * sin(frameCount * 0.05f));
-        noFill(); // Do not fill the circle
-        stroke(color(255 - colorValue, colorValue, 255), circleOpacity); // Set the stroke color and opacity
-        strokeWeight(2); // Set the stroke width
-        ellipse(width / 2, height / 2, circleMaxRadius * 2, circleMaxRadius * 2); // Draw the circle centered
-    }
-
-    public void drawFadingCircle() {
-        if (circleOpacity < 255) {
-            circleOpacity += 5; // Control the speed of the fade-in effect
-        }
-        int colorValue = (int) (128 + 128 * sin(frameCount * 0.05f));
-        noFill();
-        stroke(color(255 - colorValue, colorValue, 255), circleOpacity);
-        strokeWeight(2);
-        ellipse(width / 2, height / 2, circleMaxRadius * 2, circleMaxRadius * 2);
-    }
-    
     
     public void keyPressed() {
         if (key == ' ') {
