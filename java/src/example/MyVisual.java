@@ -1,6 +1,7 @@
 package example;
 
 import example.screens.PolygonEye.PolygonEyeScreen;
+import example.screens.IntroVisual.IntroVisualScreen;
 import ie.tudublin.*;
 
 public class MyVisual extends Visual {
@@ -11,6 +12,7 @@ public class MyVisual extends Visual {
 
     // WaveForm wf;
     PolygonEyeScreen v1;
+    IntroVisualScreen v2;
 
     public void settings() {
         size(1800, 900);
@@ -43,6 +45,7 @@ public class MyVisual extends Visual {
         screens = new Drawable[NUM_SCREENS];
 
         screens[0] = new PolygonEyeScreen(sIndex, this);
+        screens[1]=new IntroVisualScreen(sIndex,this);
     }
 
     public void keyPressed() {

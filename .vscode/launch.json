@@ -2,6 +2,111 @@
     "configurations": [
         {
             "type": "java",
+            "name": "IntroVisual",
+            "request": "launch",
+            "mainClass": "example.IntroVisual",
+            "projectName": "java"
+        },
+        {
+            "type": "java",
+            "name": "VisualizerApp",
+            "request": "launch",
+            "mainClass": "example.VisualizerApp",
+            "projectName": "java"
+        },
+        {
+            "type": "java",
+            "name": "Sphere",
+            "request": "launch",
+            "mainClass": "example.Sphere",
+            "projectName": "java"
+        },
+        {
+            "type": "java",
+            "name": "playIntro",
+            "request": "launch",
+            "mainClass": "example.playIntro",
+            "projectName": "java"
+        },
+        {
+            "type": "java",
+            "name": "Cube",
+            "request": "launch",
+            "mainClass": "example.Cube",
+            "projectName": "java"
+        },
+        {
+            "type": "java",
+            "name": "Psychedelic",
+            "request": "launch",
+            "mainClass": "example.Psychedelic",
+            "projectName": "java"
+        },
+        {
+            "type": "java",
+            "name": "NeonWireframe",
+            "request": "launch",
+            "mainClass": "example.NeonWireframe",
+            "projectName": "java"
+        },
+        {
+            "type": "java",
+            "name": "Visualization2",
+            "request": "launch",
+            "mainClass": "example.Visualization2",
+            "projectName": "java"
+        },
+        {
+            "type": "java",
+            "name": "Visualization",
+            "request": "launch",
+            "mainClass": "example.Visualization",
+            "projectName": "java"
+        },
+        {
+            "type": "java",
+            "name": "Fractal",
+            "request": "launch",
+            "mainClass": "example.Fractal",
+            "projectName": "java"
+        },
+        {
+            "type": "java",
+            "name": "FractalAudioVisualizer",
+            "request": "launch",
+            "mainClass": "example.FractalAudioVisualizer",
+            "projectName": "java"
+        },
+        {
+            "type": "java",
+            "name": "FractalApp",
+            "request": "launch",
+            "mainClass": "example.FractalApp",
+            "projectName": "java"
+        },
+        {
+            "type": "java",
+            "name": "intro",
+            "request": "launch",
+            "mainClass": "example.intro",
+            "projectName": "java"
+        },
+        {
+            "type": "java",
+            "name": "bubbles",
+            "request": "launch",
+            "mainClass": "example.bubbles",
+            "projectName": "java"
+        },
+        {
+            "type": "java",
+            "name": "MyTest",
+            "request": "launch",
+            "mainClass": "example.MyTest",
+            "projectName": "java"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - Main",
             "request": "launch",
             "mainClass": "ie.tudublin.Main",
