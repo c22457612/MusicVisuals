@@ -1,13 +1,19 @@
 package example;
 
+import example.screens.PolygonEye.PolygonEyeScreen;
 import ie.tudublin.*;
 
 public class MyVisual extends Visual {
-    WaveForm wf;
-    AudioBandsVisual abv;
+    ScreenIndex sIndex; // Screen index
+    Drawable[] screens; // Screens' array
+
+    int NUM_SCREENS = 10;
+
+    // WaveForm wf;
+    PolygonEyeScreen v1;
 
     public void settings() {
-        size(1024, 500);
+        size(1800, 900);
 
         // Use this to make fullscreen
         // fullScreen();
@@ -19,21 +25,42 @@ public class MyVisual extends Visual {
     public void setup() {
         startMinim();
 
+        colorMode(HSB);
+
         // Call loadAudio to load an audio file to process
-        // loadAudio("heroplanet.mp3");
+        String path = "C:\\Users\\luisp\\Desktop\\tud\\Year 2\\OOP\\2\\MusicVisuals\\java\\data\\";
+        String fileName = "heroplanet.mp3";
+        loadAudio(path + fileName);
 
         // Call this instead to read audio from the microphone
-        startListening();
 
-        wf = new WaveForm(this);
-        abv = new AudioBandsVisual(this);
+        // startListening();
+
+        // Screen index object
+        sIndex = new ScreenIndex(0);
+
+        // Array of screens
+        screens = new Drawable[NUM_SCREENS];
+
+        screens[0] = new PolygonEyeScreen(sIndex, this);
     }
 
     public void keyPressed() {
         if (key == ' ') {
             getAudioPlayer().cue(0);
             getAudioPlayer().play();
+        } else if (key == CODED) { // Key is a special key
+            if (keyCode == RIGHT) {
+                // Code to execute when the right arrow is pressed
+                sIndex.value += 1;
+                sIndex.value %= NUM_SCREENS;
+            } else if (keyCode == LEFT) {
+                // Code to execute when the right arrow is pressed
+                sIndex.value -= 1;
+                sIndex.value %= NUM_SCREENS;
+            }
         }
+
     }
 
     public void draw() {
@@ -49,7 +76,7 @@ public class MyVisual extends Visual {
 
         // Call this is you want to get the average amplitude
         calculateAverageAmplitude();
-        wf.render();
-        abv.render();
+
+        screens[sIndex.value].render();
     }
 }
