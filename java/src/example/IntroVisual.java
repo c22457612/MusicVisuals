@@ -155,6 +155,8 @@ public class IntroVisual extends PApplet {
     Pyramids pyramids;
     Sphere sphere;
     SoundWave soundWave;
+    RainbowWave rainbowWave;
+    ControlManager controlManager;
 
 
     public static void main(String[] args) {
@@ -227,6 +229,8 @@ public class IntroVisual extends PApplet {
         pyramids = new Pyramids(this,fft,spinning,rotationSpeed,pyramidRotation,pyramidXPosTop,pyramidXPosBottom,pyramidMoveSpeed,pyramidsVisible,currentRotationY,song,pyramidFillAlpha,pyramidSize,playIntro,startDrawingShapes,modes,extremeColour,transparentColour,fillActivated);
         sphere= new Sphere(this,fft,song,playIntro,startDrawingShapes,modes,fillActivated,extremeColour,sphereRadius,movementSpeed);
         soundWave= new SoundWave(this,fft,waveHeight,modes,extremeColour,startDrawingShapes,player,song,width,height,frameCount);
+        rainbowWave= new RainbowWave(this,fft,baseRadius,maxWaveAmplitude,smoothingFactor,maxFFTAmplitude,modes,prevAmplitudes);
+        controlManager = new ControlManager(this, smallCubePositions, modes, currentModeIndex, displayDiamond);
     }
 
     public void draw() {
@@ -248,6 +252,7 @@ public class IntroVisual extends PApplet {
                 if (soundToVisualize != null) {
                     fft.forward(soundToVisualize.mix);
                     drawRainbowWave();
+                    //rainbowWave.drawRainbowWave();
                     circleVisible = false; // Hide the circle when the rainbow wave is drawn
                 } else {
                     // No sound is playing from the interactive sounds, check for first soundtrack finish
@@ -498,6 +503,7 @@ public class IntroVisual extends PApplet {
             playIntro=true;
             isFirstSoundtrackFinished=true;
             drawRainbowWave();
+            //rainbowWave.drawRainbowWave();
             playSound(sound5);
             startFading = true;
             fadeStartTime = millis(); //will eventually trigger startDrawingShapes boolean
@@ -636,39 +642,10 @@ public class IntroVisual extends PApplet {
     }
 
     public void mouseClicked() {
-        for (int i = 0; i < smallCubePositions.size(); i++) {
-            PVector cubePos = smallCubePositions.get(i);
-            float screenX = screenX(cubePos.x, cubePos.y, cubePos.z);
-            float screenY = screenY(cubePos.x, cubePos.y, cubePos.z);
-            float distance = dist(mouseX, mouseY, screenX, screenY);
-            
-            if (distance < 20) {
-                println("Clicked on cube at " + cubePos);
-                if (i == 0) {  // Assuming index 0 is the left cube
-                    displayDiamond = false;
-                } else if (i == 1) {  // Assuming index 1 is the right cube
-                    displayDiamond = true;
-                }
-                break;
-            }
-        }
+        controlManager.mouseClicked();
+        displayDiamond = controlManager.displayDiamond; // Update the main display flag after interaction
     }
     
-    
-    public void handleCubeClick(PVector cubePosition) {
-        // Handle the event when a cube is clicked
-        println("Cube clicked at: " + cubePosition);
-        cycleModes();
-        cubeClicked=true;
-    }
-
-    void cycleModes() {
-        modes[currentModeIndex] = false;  // Deactivate the current mode
-        //currentModeIndex = (currentModeIndex + 1) % NUM_MODES;  // Move to the next mode, wrapping around if necessary
-        modes[currentModeIndex] = true;  // Activate the new mode
-    }
-    
-
     public void updateFading() {
         if (startFading && millis() - fadeStartTime > fadeDuration) {
             startFading = false; // Stop fading after 6 seconds
