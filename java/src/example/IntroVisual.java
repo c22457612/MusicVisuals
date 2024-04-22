@@ -16,7 +16,7 @@ public class IntroVisual extends PApplet {
     int bands;
     float[] bandWidth;
     float[] smoothedBands;
-    float waveHeight = 3; // Height of the soundwave
+    float waveHeight = 5; // Height of the soundwave
     
 
     //diamond variables
@@ -154,6 +154,7 @@ public class IntroVisual extends PApplet {
     Diamond diamond;
     Pyramids pyramids;
     Sphere sphere;
+    SoundWave soundWave;
 
 
     public static void main(String[] args) {
@@ -225,6 +226,7 @@ public class IntroVisual extends PApplet {
         diamond = new Diamond(this, fft, currentRotationY, extremeColour, fillActivated, transparentColour, startDrawingShapes, xRotateDiamond, yRotateDiamond,playIntro);
         pyramids = new Pyramids(this,fft,spinning,rotationSpeed,pyramidRotation,pyramidXPosTop,pyramidXPosBottom,pyramidMoveSpeed,pyramidsVisible,currentRotationY,song,pyramidFillAlpha,pyramidSize,playIntro,startDrawingShapes,modes,extremeColour,transparentColour,fillActivated);
         sphere= new Sphere(this,fft,song,playIntro,startDrawingShapes,modes,fillActivated,extremeColour,sphereRadius,movementSpeed);
+        soundWave= new SoundWave(this,fft,waveHeight,modes,extremeColour,startDrawingShapes,player,song,width,height,frameCount);
     }
 
     public void draw() {
@@ -239,7 +241,8 @@ public class IntroVisual extends PApplet {
                 diamond.drawDiamond();
                 //drawPyramids();
                 pyramids.drawPyramids();
-                drawSoundWave();
+                soundWave.drawSoundWave();
+                //drawSoundWave();
                 
 
                 if (soundToVisualize != null) {
@@ -308,7 +311,9 @@ public class IntroVisual extends PApplet {
                     
                     colorMode(RGB, 255, 255, 255);  // Switch back to RGB color mode for drawing other elements
                     popMatrix(); 
-                    drawSoundWave();
+                    //drawSoundWave();
+                    soundWave.setStartDrawingShapes(startDrawingShapes);
+                    soundWave.drawSoundWave();
                     verySmallCubeLeft.drawCube();
                     verySmallCubeRight.drawCube();
                     if (!song.isPlaying()){ //paused logic
@@ -318,7 +323,9 @@ public class IntroVisual extends PApplet {
                             bigCube.drawCube();
                             //drawCube(bigCubeSize,width/2,height/2,0,bigCubeSpeed);
                         }
-                        drawSoundWave();
+                        soundWave.drawSoundWave();
+                        sphere.setSongStatus();
+                        sphere.drawMovingSphere(width/2,height/2,sphereRadius);
                         fill(173, 216, 230); //light blue
                         text("Paused",width/2,height-fontSize);
                     }
@@ -709,6 +716,7 @@ public class IntroVisual extends PApplet {
                 verySmallCubeRight.setExtremeColour(extremeColour);
                 pyramids.setExtremeColour(extremeColour);
                 sphere.setExtremeColour(extremeColour);
+                soundWave.setExtremeColour(extremeColour);
             }
         }
 
