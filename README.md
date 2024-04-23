@@ -1,8 +1,12 @@
 # Music Visualiser Project
 
-Name:
+Name: Glenn Collins
 
-Student Number: 
+Student Number: C22457612
+
+Name: Luis Perez
+
+Student Number: C22734141
 
 ## Instructions
 - Fork this repository and use it a starter project for your assignment
@@ -12,6 +16,8 @@ Student Number:
 - Check out the WaveForm and AudioBandsVisual for examples of how to call the Processing functions from other classes that are not subclasses of PApplet
 
 # Description of the assignment
+This project uses geometric multicoloured shapes to create an audio visualizer. It begins with a 3D retro videogame intro and transitions into a 3D audio visualizer 
+that uses shapes such as cubes,pyramids,diamonds sphere's etc that react to audio. This visualizer has custom features that allows you to interact with the visualizer as the music plays, making certain shapes more or less reactive, increasing the hue, inverting the colour scheme etc.
 
 # Instructions
 
