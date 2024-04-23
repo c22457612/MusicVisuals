@@ -54,7 +54,7 @@ The visualizer takes a wide range of controls that effect many different parts o
 - Extreme Colour mode toggle
 - Fill mode (inverted mode) toggle
 
-These controls and toggles can be used to visualize different parts of the song and make them more harmonious
+These controls and toggles can be used to visualize different parts of the song more uniquely and make them more harmonious
 
 # What I am most proud of in the assignment
 
