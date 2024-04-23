@@ -13,7 +13,7 @@ public class MyVisual extends Visual {
     PolygonEyeScreen v1;
 
     public void settings() {
-        size(1800, 900);
+        size(1800, 900, P3D);
 
         // Use this to make fullscreen
         // fullScreen();
@@ -28,8 +28,8 @@ public class MyVisual extends Visual {
         colorMode(HSB);
 
         // Call loadAudio to load an audio file to process
-        String path = "C:\\Users\\luisp\\Desktop\\tud\\Year 2\\OOP\\2\\MusicVisuals\\java\\data\\";
-        String fileName = "heroplanet.mp3";
+        String path = "C:\\Users\\luisp\\Desktop\\tud\\Year2\\OOP\\2\\MusicVisuals\\java\\data\\";
+        String fileName = "pushup.mp3";
         loadAudio(path + fileName);
 
         // Call this instead to read audio from the microphone

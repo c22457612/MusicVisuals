@@ -49,8 +49,12 @@ public class Polygon extends Drawable {
     // Polygon with variable num of sides
     public void render() {
 
+        mv.translate(0, 0); // Move the origin to the center of the window
+        float angle = mv.radians(mv.frameCount); // Convert frame count to radians for continuous rotation
+
         // Get num of sides of polygon based on avg amplitude
         numSides = (int) mv.map(mv.getSmoothedAmplitude(), minAmp, maxAmp, minSides, maxSides);
+        // mv.rotateZ(mv.frameCount); // Rotate around the Z-axis
 
         // Angle
         ang = mv.TWO_PI / numSides;
@@ -77,11 +81,11 @@ public class Polygon extends Drawable {
 
             if (i < 0) {
                 mv.stroke(hue % 360, 255, 255,
-                        mv.map(mv.getSmoothedAmplitude(), minAmp, maxAmp, 0.03f, 0.5f)
+                        mv.map(mv.getSmoothedAmplitude(), minAmp, maxAmp, 0.1f, 0.5f)
                                 * mv.map(i, -numStrokes, 0, 0, 255));
             } else if (i > 0) {
                 mv.stroke(hue % 360, 255, 255,
-                        mv.map(mv.getSmoothedAmplitude(), minAmp, maxAmp, 0.03f, 0.5f)
+                        mv.map(mv.getSmoothedAmplitude(), minAmp, maxAmp, 0.1f, 0.5f)
                                 * (255 - mv.map(i, 0, numStrokes, 0, 255)));
             } else {
                 mv.stroke(hue % 360, 255, 255, 255);

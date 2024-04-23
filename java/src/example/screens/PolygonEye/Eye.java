@@ -55,7 +55,7 @@ public class Eye extends Drawable {
         drawEyeSocket(cx - eyeSocketWidth / 2, cx + eyeSocketWidth / 2, arcRadius, 1); // Down
 
         ampPer = mv.map(mv.getSmoothedAmplitude(), minAmp, maxAmp, 0, 100);
-        float red = mv.map(ampPer, 0, 100, 0, 255) * 1.3f;
+        float red = mv.map(ampPer, 0, 100, 0, 255) * 1.6f;
         mv.strokeWeight(1);
         mv.stroke(red, 0, 255 - red, opacity);
         mv.fill(red, 0, 255 - red, opacity);
@@ -121,7 +121,7 @@ public class Eye extends Drawable {
         for (int x = (int) a; x <= b; x++) {
             // Y of arc
             float y = (float) (arcCy + direction * Math.sqrt(Math.pow(r, 2) - Math.pow(x - cx, 2)));
-            mv.vertex(x, y);
+            mv.vertex(x, y, opacity == 255 ? 10 : -10);
 
         }
         // End shape
@@ -149,17 +149,17 @@ public class Eye extends Drawable {
 
             if (direction == 1) {
                 if (circY < y) {
-                    mv.vertex(x, circY);
+                    mv.vertex(x, circY, opacity == 255 ? 10 : -10);
                 } else {
-                    mv.vertex(x, y);
+                    mv.vertex(x, y, opacity == 255 ? 10 : -10);
                 }
             }
 
             else {
                 if (circY > y) {
-                    mv.vertex(x, circY);
+                    mv.vertex(x, circY, opacity == 255 ? 10 : -10);
                 } else {
-                    mv.vertex(x, y);
+                    mv.vertex(x, y, opacity == 255 ? 10 : -10);
                 }
             }
 

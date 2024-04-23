@@ -5,7 +5,7 @@ import example.*;
 import java.util.ArrayList;
 import java.util.List;
 
-// This is an example of a visual that renders the Visual1
+// PolygonEyeScreen
 public class PolygonEyeScreen extends Drawable {
 
     Eye centerEye, leftEye, rightEye; // 3 eyes
