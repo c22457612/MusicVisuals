@@ -31,7 +31,7 @@ public class Polygon extends Drawable {
 
     public Polygon(MyVisual _mv, float cx, float cy, float minR, float maxR, float minAmp, float maxAmp, float minSides,
             float maxSides, int i, int num) {
-
+        super(_mv);
         this.mv = _mv;
         this.cx = cx;
         this.cy = cy;
