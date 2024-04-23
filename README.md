@@ -32,6 +32,18 @@ that uses shapes such as cubes,pyramids,diamonds sphere's etc that react to audi
 - Click on right cube on far right in between pyramids to swap back to cube shape
 
 # How it works
+# Intro
+The visualizer begins in the intro screen, prompting the user to press space to begin the intro animation as a sphere visual spins in the background.
+The animation plays, drawing two mirroring pyramids rotating away from the diamond.
+At a certain distance, each pyramid gains another mirroring pyramid as it loses its colour and it gains soundwaves on the peak of its shape.
+When the pyramids gain their soundwaves, a circle fades in and neon text fades in as the User is prompted to press Enter.
+When the User presses Enter, the circle dissapears and a new rainbow wave circle appears, reacting to the audio sound effect played in that moment.
+As this happens a timer counts down that fades the objects on screen out of sight.
+# Visualizer
+When the fade is finished, the visualizer is loaded, the pyramids move out further, a small cube will be inside each pyramid, the soundwaves will be 
+larger and the sphere will be drawn again.
+The visualizer takes a wide range of controls that effect many different parts of the visualizer(see Instructions), including pause feature
+
 
 # What I am most proud of in the assignment
 
