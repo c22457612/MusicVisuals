@@ -42,8 +42,19 @@ As this happens a timer counts down that fades the objects on screen out of sigh
 # Visualizer
 When the fade is finished, the visualizer is loaded, the pyramids move out further, a small cube will be inside each pyramid, the soundwaves will be 
 larger and the sphere will be drawn again.
-The visualizer takes a wide range of controls that effect many different parts of the visualizer(see Instructions), including pause feature
+The visualizer is made up of soundwaves, pyramids,diamonds,spheres and cubes that all react in different ways to the music played.
+The cubes, including the big one, change angle depending on the mid,bass and treble of the song, so every song will actually give slightly different rotations for the 
+cubes. The small cubes are less reactive at first in comparison to the big one but that can be changed.
+The pyramids change hue depending on the song and the soundwaves react to the song being played too.
+The visualizer takes a wide range of controls that effect many different parts of the visualizer (see Instructions), including:
+- Controls for main centre shape 
+- Controls for small cubes
+- Mouse clicks to swap main shapes(diamond and cube)
+- Controls to change direction of diamond
+- Extreme Colour mode toggle
+- Fill mode (inverted mode) toggle
 
+These controls and toggles can be used to visualize different parts of the song and make them more harmonious
 
 # What I am most proud of in the assignment
 
