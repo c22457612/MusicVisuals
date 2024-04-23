@@ -20,6 +20,16 @@ This project uses geometric multicoloured shapes to create an audio visualizer. 
 that uses shapes such as cubes,pyramids,diamonds sphere's etc that react to audio. This visualizer has custom features that allows you to interact with the visualizer as the music plays, making certain shapes more or less reactive, increasing the hue, inverting the colour scheme etc.
 
 # Instructions
+Use SPACE to start the visualizer (indicated by start screen)
+After the intro plays press ENTER to proceed to visualizer
+In visualizer, use UP and DOWN arrow keys to control main shape speed.
+Use LEFT and RIGHT arrow keys to control small cube speed
+Use 'p' or 'P' to pause the visualizer
+Use 'e' or 'E' to turn on extreme colours mode
+Use 'f' or 'F' to turn on fill mode (inverted mode)
+Use 'm' or 'M' to turn on fill mode for the main shape (inverted mode)
+Click on left cube on far left in between pyramids to swap to diamond shape
+Click on right cube on far right in between pyramids to swap back to cube shape
 
 # How it works
 
