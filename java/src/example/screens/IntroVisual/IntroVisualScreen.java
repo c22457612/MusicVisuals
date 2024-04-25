@@ -159,7 +159,8 @@ public class IntroVisualScreen {
         centerY = mv.height * 0.046296f;
         colors = new int[] { mv.color(255, 0, 0), mv.color(0, 255, 0), mv.color(0, 0, 255), mv.color(255, 255, 0),
                 mv.color(0, 255, 255), mv.color(255, 0, 255) };
-        offset = mv.height / 6.48f;
+        // offset = mv.height / 6.48f;
+        offset = 190;
         sphereY = mv.height / 21.6f;
         sphereOffset = mv.height / 7.55999f;
         cx = mv.width / 38.4f;
