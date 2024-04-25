@@ -1,8 +1,11 @@
 package example.screens.PolygonEye;
 
 import example.*;
+import processing.core.PApplet;
 
-public class Polygon extends Drawable {
+public class Polygon extends PApplet {
+
+    PolygonEyeScreen polygonEyeScreen;
 
     // Circle container
     float minR;
@@ -28,10 +31,12 @@ public class Polygon extends Drawable {
     float hue = 0;
 
     int i;
+    private MyVisual mv;
 
-    public Polygon(MyVisual _mv, float cx, float cy, float minR, float maxR, float minAmp, float maxAmp, float minSides,
+    public Polygon(PolygonEyeScreen _polygonEyeScreen, MyVisual _mv, float cx, float cy, float minR, float maxR,
+            float minAmp, float maxAmp, float minSides,
             float maxSides, int i, int num) {
-        super(_mv);
+        this.polygonEyeScreen = _polygonEyeScreen;
         this.mv = _mv;
         this.cx = cx;
         this.cy = cy;
@@ -53,7 +58,8 @@ public class Polygon extends Drawable {
         float angle = mv.radians(mv.frameCount); // Convert frame count to radians for continuous rotation
 
         // Get num of sides of polygon based on avg amplitude
-        numSides = (int) mv.map(mv.getSmoothedAmplitude(), minAmp, maxAmp, minSides, maxSides);
+        numSides = (int) mv.map(mv.getSmoothedAmplitude(), minAmp, maxAmp, polygonEyeScreen.minSides,
+                polygonEyeScreen.maxSides);
         // mv.rotateZ(mv.frameCount); // Rotate around the Z-axis
 
         // Angle
@@ -81,11 +87,11 @@ public class Polygon extends Drawable {
 
             if (i < 0) {
                 mv.stroke(hue % 360, 255, 255,
-                        mv.map(mv.getSmoothedAmplitude(), minAmp, maxAmp, 0.1f, 0.5f)
+                        mv.map(mv.getSmoothedAmplitude(), minAmp, maxAmp, 0.1f, polygonEyeScreen.glowIntensity)
                                 * mv.map(i, -numStrokes, 0, 0, 255));
             } else if (i > 0) {
                 mv.stroke(hue % 360, 255, 255,
-                        mv.map(mv.getSmoothedAmplitude(), minAmp, maxAmp, 0.1f, 0.5f)
+                        mv.map(mv.getSmoothedAmplitude(), minAmp, maxAmp, 0.1f, polygonEyeScreen.glowIntensity)
                                 * (255 - mv.map(i, 0, numStrokes, 0, 255)));
             } else {
                 mv.stroke(hue % 360, 255, 255, 255);

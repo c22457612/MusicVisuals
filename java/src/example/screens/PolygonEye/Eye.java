@@ -1,9 +1,10 @@
 package example.screens.PolygonEye;
 
 import example.*;
+import processing.core.PApplet;
 
 // Eye Class
-public class Eye extends Drawable {
+public class Eye {
 
     float cx;
     float cy;
@@ -22,17 +23,17 @@ public class Eye extends Drawable {
     float closedR = 500;
     float oppenedR = eyeSocketWidth / 1.87f;
     float refreshRate = 0;
+    private MyVisual mv;
+
+    int extraX = 0;
+    int extraY = 0;
+
+    int t = 0;
 
     // Constructor
-    public Eye(
-            MyVisual mv,
-            float cx,
-            float cy,
-            float closedR,
-            float oppenedR,
-            float eyeSocketWidth,
-            float eyeBallWidth, float opacity) {
-        super(mv);
+    public Eye(MyVisual mv, float cx, float cy, float closedR, float oppenedR, float eyeSocketWidth, float eyeBallWidth,
+            float opacity) {
+        super();
         this.mv = mv;
         this.cx = cx;
         this.cy = cy;
@@ -79,7 +80,7 @@ public class Eye extends Drawable {
         // maxAmp, oppenedR, closedR);
 
         // if (refreshRate == 0) {
-        float amp = mv.getSmoothedAmplitude();
+        float amp = mv.getSmoothedAmplitude() * 0.9f;
         if (amp > maxAmp) {
             amp = maxAmp;
         }
@@ -136,31 +137,45 @@ public class Eye extends Drawable {
         // Begin shape
         mv.beginShape();
 
+        float myMouseX = mv.map(mv.mouseX, 0, mv.width, -mv.width / 2, mv.width / 2);
+        float myMouseY = mv.map(mv.mouseY, 0, mv.height, -mv.height / 2, mv.height / 2);
+
+        extraX = (int) mv.map(myMouseX, 0, mv.width, 0, 100);
+        extraY = (int) (mv.map(myMouseY, 0, mv.height, 0, 100));
+
         // Calculate vertical shift
         float vertShift = Math
                 .abs(cy - (float) (cy + Math.sqrt(Math.pow(r, 2) - Math.pow(cx - eyeSocketWidth / 2 - cx, 2))));
-        float arcCy = cy - direction * vertShift;
+        float arcCy1 = cy - direction * vertShift;
+        float arcCy2 = cy - -direction * vertShift;
 
-        for (int x = (int) a; x <= b; x++) {
+        for (int x = (int) (a + extraX); x <= b + extraX; x++) {
             // Y of arc
-            float y = (float) (arcCy + direction * Math.sqrt(Math.pow(r, 2) - Math.pow(x - cx, 2)));
+            float y1 = (float) (arcCy1 + direction * Math.sqrt(Math.pow(r, 2) - Math.pow(x - cx, 2)));
+            // Y of arc
+            float y2 = (float) (arcCy2 + -direction * Math.sqrt(Math.pow(r, 2) - Math.pow(x - cx, 2)));
 
             // Y of eye ball
-            float circY = cy + direction * (float) Math.sqrt(Math.pow(eyeBallWidth / 2, 2) - Math.pow(x - cx, 2));
+            float circY = cy + extraY
+                    + direction * (float) Math.sqrt(Math.pow(eyeBallWidth / 2, 2) - Math.pow(x - (cx + extraX), 2));
 
             if (direction == 1) {
-                if (circY < y) {
+                if (circY < y2) {
+                    mv.vertex(x, y2, opacity == 255 ? 10 : -10);
+                } else if (circY < y1) {
                     mv.vertex(x, circY, opacity == 255 ? 10 : -10);
                 } else {
-                    mv.vertex(x, y, opacity == 255 ? 10 : -10);
+                    mv.vertex(x, y1, opacity == 255 ? 10 : -10);
                 }
             }
 
             else {
-                if (circY > y) {
+                if (circY > y2) {
+                    mv.vertex(x, y2, opacity == 255 ? 10 : -10);
+                } else if (circY > y1) {
                     mv.vertex(x, circY, opacity == 255 ? 10 : -10);
                 } else {
-                    mv.vertex(x, y, opacity == 255 ? 10 : -10);
+                    mv.vertex(x, y1, opacity == 255 ? 10 : -10);
                 }
             }
 

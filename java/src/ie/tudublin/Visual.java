@@ -11,9 +11,9 @@ public abstract class Visual extends PApplet {
 	private float[] bands;
 	private float[] smoothedBands;
 
-	private Minim minim;
+	public Minim minim;
 	private AudioInput ai;
-	private AudioPlayer ap;
+	public AudioPlayer ap;
 	private AudioBuffer ab;
 	private FFT fft;
 
@@ -49,7 +49,7 @@ public abstract class Visual extends PApplet {
 			total += abs(ab.get(i));
 		}
 		amplitude = total / ab.size();
-		smothedAmplitude = PApplet.lerp(smothedAmplitude, amplitude, 0.05f);
+		smothedAmplitude = PApplet.lerp(smothedAmplitude, amplitude, 0.1f);
 	}
 
 	protected void calculateFrequencyBands() {
