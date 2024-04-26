@@ -80,7 +80,8 @@ public class Cube {
 
         float hue = PApplet.map(totalAmplitude, 50, 370, 180, 340); // Ranges from blue to purple to pink mostly
         if (this.extremeColour) {
-            hue = PApplet.map(totalAmplitude, 50, 200, 0, 360); // Ranges from all colours aggresively
+            hue = PApplet.map(totalAmplitude, 0, 1000, 0, 360); // Ranges from all colours aggresively
+            hue=hue%360;
             // PApplet.println(this.extremeColour);
         }
 

@@ -187,7 +187,7 @@ public class IntroVisualScreen {
         sound5 = mv.minim.loadFile("8bitSound5.mp3", 512);// continue to audio visualizer maybe constraint so
                                                           // can
         // only be pressed once
-        song = mv.minim.loadFile("Radiohead.mp3", 512);
+        song = mv.minim.loadFile("pushup.mp3", 512);
 
         pyramidTopTargetY = mv.height * 0.1f; // Move near the top of the window
         pyramidBottomTargetY = mv.height * 0.9f; // Move near the bottom of the window

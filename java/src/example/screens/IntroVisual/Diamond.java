@@ -86,7 +86,7 @@ public class Diamond {
         } else if (this.startDrawingShapes) {
             if (this.extremeColour) {
                 if (this.fillActivated) {
-                    float hue = PApplet.map(totalAmplitude, 0, 2000, 0, 360); // custom hue for diamond
+                    float hue = PApplet.map(totalAmplitude, 0, 400, 0, 240); // custom hue for diamond
                     hue = hue % 360;
                     mv.fill(hue, 100, 100);
                 } else {
@@ -95,7 +95,7 @@ public class Diamond {
 
             } else if (this.startDrawingShapes) {
                 if (this.fillActivated) {
-                    float hue = PApplet.map(totalAmplitude, 0, 2000, 300, 360); // custom hue for diamond
+                    float hue = PApplet.map(totalAmplitude, 0, 1000, 180, 320); // custom hue for diamond
                     mv.fill(hue, 100, 100);
                     mv.stroke(255);// white outline
                 }
