@@ -60,6 +60,12 @@ These controls and toggles can be used to visualize different parts of the song 
 I am most proud of the design of the intro that I decided to do with this assignment, I think it really added another layer of ambition to the project.
 I am also proud of the design of the main visualizer in using cubes that change direction based on mid,treble and bass, I think it added a really cool effect for certain songs that go from high to low amplitudes frequently. I am also proud of the level of interactivity I added to the visualizer as anyone can customize their experience as the visualizer is running.
 
+# Youtube Video
+
+This is our youtube video:
+
+(https://youtu.be/YN_FQglorQY)
+
 # Markdown Tutorial
 
 This is *emphasis*
